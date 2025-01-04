@@ -1,3 +1,5 @@
+import { ImageryLayer, ImageryProvider } from "cesium";
+
 export type Coordinate = {
     lat: number;
     lng: number;
@@ -9,3 +11,10 @@ export type HeadingPitchRoll = {
     pitch: number;
     roll: number;
 }
+
+export interface IViewer {
+    addImageryLayer(layer: ImageryProvider): void;
+    setView(position: Coordinate, orientation: HeadingPitchRoll): void;
+    removeImageryLayer(layer: ImageryLayer): void;
+    destroy(): void;
+} 

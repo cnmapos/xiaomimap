@@ -1,9 +1,11 @@
-import { Cartesian3, ImageryProvider, Viewer, Math, ImageryLayer } from 'cesium';
-import { Coordinate, HeadingPitchRoll } from './types';
+import { Cartesian3, ImageryProvider, Viewer, Math, ImageryLayer, Ion } from 'cesium';
+import { Coordinate, HeadingPitchRoll, IViewer } from './types';
 
-export class HZViewer {
+export class HZViewer implements IViewer {
     private viewer: Viewer;
     constructor(containerId: string) {
+        Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI';
+
         this.viewer = new Viewer(containerId, {
             baseLayerPicker: false,
             geocoder: false,
@@ -11,7 +13,11 @@ export class HZViewer {
             sceneModePicker: false,
             navigationHelpButton: false,
             animation: false,
-            timeline: false
+            timeline: false,
+            fullscreenButton: false,
+            infoBox: false,
+            selectionIndicator: false,
+            creditContainer: document.createElement('div'),
         });
     }
 
