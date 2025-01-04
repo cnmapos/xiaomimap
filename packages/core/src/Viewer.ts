@@ -3,8 +3,11 @@ import { Coordinate, HeadingPitchRoll, IViewer } from './types';
 
 export class HZViewer implements IViewer {
     private viewer: Viewer;
-    constructor(containerId: string) {
-        Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI';
+
+    static HZViewerKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI';
+
+    constructor(containerId: string, options?: { key?: string }) {
+        Ion.defaultAccessToken = options?.key || HZViewer.HZViewerKey;
 
         this.viewer = new Viewer(containerId, {
             baseLayerPicker: false,
