@@ -1,6 +1,9 @@
 # XIAOMIMAP
-仓库使用pnpm多包管理模式
-- node版本 >= v21.6.2
+## 开发环境
+- node: >= v21.6.2
+
+## 项目初始化
+- 安装pnpm `npm install -g pnpm`
 
 ## packages
 - core：地图基础库
