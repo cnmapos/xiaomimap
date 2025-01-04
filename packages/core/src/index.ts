@@ -1,3 +1,3 @@
-export function core() {
-    return "core";
-}
+import "cesium/Build/Cesium/Widgets/widgets.css"
+
+export { HZViewer } from './Viewer'

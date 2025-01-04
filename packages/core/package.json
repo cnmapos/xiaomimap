@@ -2,9 +2,9 @@
   "name": "@hztx/core",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "build": "vite build",
+    "build": "tsc --noEmit && vite build",
     "dev": "vite"
   },
   "keywords": [],
@@ -12,7 +12,8 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^5.7.2",
-    "vite": "^6.0.7"
+    "vite": "^6.0.7",
+    "vite-plugin-static-copy": "^2.2.0"
   },
   "dependencies": {
     "cesium": "^1.125.0"

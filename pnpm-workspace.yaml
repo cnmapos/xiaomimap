@@ -2,3 +2,4 @@ packages:
   - 'packages/core'
   - 'packages/animations'
   - 'packages/app'
+  - 'packages/examples'

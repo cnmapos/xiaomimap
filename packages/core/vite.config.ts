@@ -1,22 +1,42 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 
-export default defineConfig({
-  build: {
-    lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'), // 库的入口文件
-      name: 'core', // 全局变量名（用于 UMD 格式）
-      fileName: (format) => `core.${format}.js`, // 输出文件名
-      formats: ['es', 'umd'], // 输出格式（ES 模块和 UMD）
-    },
-    rollupOptions: {
-      // 确保外部化处理那些你不想打包进库的依赖
-      external: [],
-      output: {
-        globals: {
-          // 如果有外部依赖，可以在这里配置全局变量名
+async function loadPlugins() {
+    const { viteStaticCopy } = await import('vite-plugin-static-copy'); // 使用动态导入
+    return viteStaticCopy;
+}
+
+const cesiumSource = "node_modules/cesium/Build/Cesium";
+const cesiumBaseUrl = 'static';
+
+export default defineConfig(async () => {
+    const viteStaticCopy = await loadPlugins(); // 在异步函数中加载插件
+
+    return {
+        build: {
+            lib: {
+                entry: path.resolve(__dirname, 'src/index.ts'),
+                name: 'core',
+                fileName: (format) => `core.${format}.js`,
+                formats: ['es', 'umd'],
+            },
+            rollupOptions: {
+                output: {
+                    globals: {
+                        // 如果有外部依赖，可以在这里配置全局变量名
+                    },
+                },
+            },
         },
-      },
-    },
-  },
+        plugins: [
+            viteStaticCopy({
+                targets: [
+                    { src: `${cesiumSource}/ThirdParty`, dest: cesiumBaseUrl },
+                    { src: `${cesiumSource}/Workers`, dest: cesiumBaseUrl },
+                    { src: `${cesiumSource}/Assets`, dest: cesiumBaseUrl },
+                    { src: `${cesiumSource}/Widgets`, dest: cesiumBaseUrl }
+                ],
+            }),
+        ],
+    };
 });
