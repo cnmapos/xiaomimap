@@ -1,26 +1,33 @@
-import { useState, useEffect } from 'react'
-import { HZViewer } from '@hztx/core'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css'
+import Home from './Home'
+import routerConfig from './navigation/config'
 
+function createRouters() {
+  return routerConfig.map((n) => {
+    return n.children.map((c) => ({ path: c.path, element: <c.element /> }))
+  }).flat();
+}
+
+// 路由配置
+const routes = [
+  {
+    path: '/',
+    element: <Home />,
+  },
+  ...createRouters(),
+];
 
 function App() {
-  const [, setViewer] = useState<HZViewer>();
-
-  // 在组件挂载时实例化HZViewer
-  useEffect(() => {
-    const newViewer = new HZViewer('map');
-    setViewer(newViewer);
-    // 清理函数
-    return () => {
-      newViewer.destroy();
-    };
-  }, []);
-
   return (
-    <>
-      <div id="map" style={{ width: '100vw', height: '100vh' }}></div>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        {routes.map((route, index) => (
+          <Route key={index} path={route.path} element={route.element} />
+        ))}
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App

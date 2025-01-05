@@ -2,7 +2,7 @@ import { Cartesian3, ImageryProvider, Viewer, Math, ImageryLayer, Ion } from 'ce
 import { Coordinate, HeadingPitchRoll, IViewer } from './types';
 
 export class HZViewer implements IViewer {
-    private viewer: Viewer;
+    viewer: Viewer;
 
     static HZViewerKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI';
 

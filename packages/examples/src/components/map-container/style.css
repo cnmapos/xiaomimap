@@ -1,0 +1,10 @@
+.map-container {
+    height: 100%;
+    width: 100%;
+    background: #000;
+}
+
+.mobile {
+    height: 100%;
+    width: calc(100vh * 9 / 16)
+}
