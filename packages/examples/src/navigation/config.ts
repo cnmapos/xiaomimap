@@ -1,5 +1,6 @@
 import NewMap from '../starts/NewMap'
 import AniPath from '../anims/Path'
+import CircleHalo from '../anims/CircleHalo'
 
 export default [
     {
@@ -21,6 +22,12 @@ export default [
                 path: '/ani-path',
                 thumbnail: 'XXXXXXX',
                 element: AniPath
+            },
+            {
+                name: '路径动画',
+                path: '/circle-halo',
+                thumbnail: 'XXXXXXX',
+                element: CircleHalo
             }
         ]
     }
