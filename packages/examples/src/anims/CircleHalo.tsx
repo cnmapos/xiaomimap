@@ -20,7 +20,7 @@ function CircleHalo() {
         // const imageEntity = viewer.entities.add({
         //     rectangle: {
         //         coordinates: new CallbackProperty(() => rectangleCoordinates, false), // 动态更新坐标
-        //         material: "/circle-halo-demo.png", // 替换为你的图片 URL
+        //         material: "/circle-halo1.png", // 替换为你的图片 URL
         //     },
         // });
 
@@ -28,7 +28,7 @@ function CircleHalo() {
         // let rectangleCoordinates = new Rectangle(west, south, east, north);
 
         // // 动画参数
-        // let scaleFactor = 0.0005; // 缩放因子
+        // let scaleFactor = 0.005; // 缩放因子
         // let expanding = true; // 控制放大或缩小
 
         // // 动画控制
@@ -59,16 +59,20 @@ function CircleHalo() {
         //         );
         //     }
 
+        //     console.log(width)
         //     // 控制缩放范围
-        //     if (width > 2 || height > 2) expanding = false; // 达到最大范围后缩小
-        //     if (width < 0.05 || height < 0.05) expanding = true; // 达到最小范围后放大
+        //     if (width > 0.2 || height > 0.2) {
+        //         expanding = false; // 达到最大范围后缩小
+        //     } else {
+        //         expanding = true;
+        //     }
         // });
 
 
-        // 方案2
+        // 方案2 billboard实现，需要素材
         // 添加扩散圆光环
         const glowRing = viewer.entities.add({
-            position: Cartesian3.fromDegrees(113.0, 34.0),
+            position: Cartesian3.fromDegrees(-75.59777, 40.03883),
             billboard: {
                 width: 50,
                 height: 50,
@@ -89,14 +93,71 @@ function CircleHalo() {
               scale += 0.01; // 放大
               if (scale > 1.5) expanding = false;
             } else {
-              scale -= 0.2; // 缩小
+              scale -= 0.3; // 缩小
               if (scale < 1.0) expanding = true;
             }
           
             // 更新光环的 scale 和透明度
             glowRing.billboard.scale = scale;
-            glowRing.billboard.color = Color.YELLOW.withAlpha(1.0 - (scale - 1.0) / 2.0);
+            glowRing.billboard.color = Color.ORANGE.withAlpha(1.0 - (scale - 1.0) / 2.0);
           });
+
+
+        // 方案3： 用shader实现，无需素材、
+        // const glowMaterial = new Material({
+        //     fabric: {
+        //         type: 'Glow',
+        //         uniforms: {
+        //             color: new Color(1.0, 1.0, 0.0, 1.0), // 光晕颜色
+        //             speed: 1.0, // 光晕速度
+        //         },
+        //         source: `
+        //             uniform vec4 color;
+        //             uniform float speed;
+        //             czm_material czm_getMaterial(czm_materialInput materialInput) {
+        //                 czm_material material = czm_getDefaultMaterial(materialInput);
+        //                 float time = czm_frameNumber * speed * 0.01;
+        //                 float glow = sin(time) * 0.5 + 0.5;
+        //                 material.diffuse = color.rgb * glow;
+        //                 material.alpha = color.a * glow;
+        //                 return material;
+        //             }
+        //         `,
+        //     },
+        // });
+        
+        // const point = viewer.entities.add({
+        //     position: Cartesian3.fromDegrees(-75.59777, 40.03883),
+        //     point: {
+        //         pixelSize: 50,
+        //         material: glowMaterial,
+        //     },
+        // });
+
+        // let size = 10;
+        // let alpha = 1.0;
+        // let growing = true;
+
+        // viewer.clock.onTick.addEventListener(function(clock) {
+        //     if (growing) {
+        //         size += 1;
+        //         alpha -= 0.02;
+        //         if (size >= 50) {
+        //             growing = false;
+        //         }
+        //     } else {
+        //         // size -= 1;
+        //         size = 10;
+        //         alpha = 1;
+        //         // alpha += 0.02;
+        //         if (size <= 10) {
+        //             growing = true;
+        //         }
+        //     }
+
+        //     point.point.pixelSize = size;
+        //     point.point.color = Color.YELLOW.withAlpha(alpha);
+        // });
 
         return () => {
             viewer.destroy();
