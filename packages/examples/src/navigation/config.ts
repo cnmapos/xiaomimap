@@ -24,7 +24,7 @@ export default [
                 element: AniPath
             },
             {
-                name: '路径动画',
+                name: '圆光环动画',
                 path: '/circle-halo',
                 thumbnail: 'XXXXXXX',
                 element: CircleHalo
