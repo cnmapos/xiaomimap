@@ -1,0 +1,17 @@
+.hz-style {
+    display: flex;
+    flex-direction: column;
+}
+
+.hz-style-item {
+    display: flex;
+    padding: 5px 0;
+    /* font-size: 12px; */
+    align-items: center;
+}
+
+.hz-player {
+    .hz-btn {
+        margin: 0 5px;
+    }
+}
