@@ -1,5 +1,7 @@
 import NewMap from '../starts/NewMap'
 import AniPath from '../anims/Path'
+import CircleHalo from '../anims/CircleHalo'
+import TextAnim from '../anims/TextAnim'
 
 export default [
     {
@@ -21,6 +23,18 @@ export default [
                 path: '/ani-path',
                 thumbnail: 'XXXXXXX',
                 element: AniPath
+            },
+            {
+                name: '圆光环动画',
+                path: '/circle-halo',
+                thumbnail: 'XXXXXXX',
+                element: CircleHalo
+            },
+            {
+                name: '文字动画',
+                path: '/text-anim',
+                thumbnail: 'XXXXXXX',
+                element: TextAnim
             }
         ]
     }
