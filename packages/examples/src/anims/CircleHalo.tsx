@@ -1,7 +1,7 @@
 import { HZViewer } from "@hztx/core";
 import { useEffect } from "react";
 import MapContainer from '../components/map-container';
-import { Cartesian3, Color, KmlDataSource, PolylineDashMaterialProperty, Math, CallbackProperty, Rectangle, MaterialProperty, Material } from "cesium";
+import { Cartesian3, Color, KmlDataSource, PolylineDashMaterialProperty, CallbackProperty, Rectangle, MaterialProperty, Material } from "cesium";
 
 function CircleHalo() {
     useEffect(() => {
@@ -93,8 +93,8 @@ function CircleHalo() {
               scale += 0.01; // 放大
               if (scale > 1.5) expanding = false;
             } else {
-              scale -= 0.3; // 缩小
-              if (scale < 1.0) expanding = true;
+              scale -= 0.2; // 缩小
+              if (scale < 1) expanding = true;
             }
           
             // 更新光环的 scale 和透明度
