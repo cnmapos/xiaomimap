@@ -1,6 +1,6 @@
 import { HZViewer } from "@hztx/core";
 import { useEffect } from "react";
-import MapContainer from '../components/map-container';
+import MapContainer from '../../components/map-container';
 import { Cartesian3, Color, KmlDataSource, PolylineDashMaterialProperty, CallbackProperty, Rectangle, MaterialProperty, Material } from "cesium";
 
 function CircleHalo() {

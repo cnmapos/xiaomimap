@@ -33,6 +33,30 @@ function createTransparentImage(width, height, opacity = 0.5) {
   return canvas.toDataURL("image/png");
 }
 
+function createRotatedTextCanvas(text, angle, font = "24px sans-serif", color = "red") {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  canvas.width = 200; // 设置画布宽度
+  canvas.height = 100; // 设置画布高度
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 设置文本样式
+  context.font = font;
+  context.fillStyle = color;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+
+  // 旋转文本
+  context.translate(canvas.width / 2, canvas.height / 2);
+  context.rotate(angle); // 旋转角度
+  context.fillText(text, 0, 0);
+
+  return canvas;
+}
+
+
 // 文本的特效、最终还是用 billboard 实现吧，因为我们想要做文本的 旋转、但是 label 自身是没法旋转的，cesium并不支持。所以我们可以用动态创建文本图片的方式去模拟文本，还能借用billboard的旋转实现旋转效果。
 function TextAnim() {
   useEffect(() => {
@@ -41,39 +65,40 @@ function TextAnim() {
 
     const transparentImage = createTransparentImage(100, 100, 0.5);
 
-    const labelEntity = viewer.entities.add({
+    const textEty = viewer.entities.add({
       position: Cartesian3.fromDegrees(-75.1641667, 39.9522222),
-      
-      label: {
-        text: 'Hello, Cesium!',
-        font: '24px sans-serif',
-        fillColor: Color.RED,
-        outlineColor: Color.PINK,
-        outlineWidth: 2,
-        style: LabelStyle.FILL_AND_OUTLINE,
-        pixelOffset: new Cartesian2(0, 50), // 偏移量
+      billboard: {
+        image: createRotatedTextCanvas("Hello, Cesium!", 0).toDataURL(),
+        verticalOrigin: VerticalOrigin.CENTER,
         horizontalOrigin: HorizontalOrigin.CENTER,
-        verticalOrigin: VerticalOrigin.BOTTOM,
+        width: 200,
+        height: 100,
       },
+      // label: {
+      //   text: 'Hello, Cesium!',
+      //   font: '24px sans-serif',
+      //   fillColor: Color.RED,
+      //   outlineColor: Color.PINK,
+      //   outlineWidth: 2,
+      //   style: LabelStyle.FILL_AND_OUTLINE,
+      //   pixelOffset: new Cartesian2(0, 50), // 偏移量
+      //   horizontalOrigin: HorizontalOrigin.CENTER,
+      //   verticalOrigin: VerticalOrigin.BOTTOM,
+      // },
     })
 
 
-    let angle = 0; // 初始角度
-
+    // 动态更新旋转
+    let angle = 0; // 角度初始值
     viewer.clock.onTick.addEventListener(() => {
-      // 更新角度
       angle += CesiumMath.toRadians(2); // 每帧旋转 2 度
       if (angle >= Math.PI * 2) {
         angle = 0; // 重置角度
       }
 
-      // 根据角度计算像素偏移
-      const radius = 50; // 偏移半径
-      const offsetX = radius * Math.cos(angle);
-      const offsetY = radius * Math.sin(angle);
-
-      // 更新 Label 的 pixelOffset
-      labelEntity.label.pixelOffset = new Cartesian2(offsetX, offsetY);
+      // 更新 billboard 图像
+      const rotatedCanvas = createRotatedTextCanvas("Hello, Cesium!", angle);
+      textEty.billboard.image = rotatedCanvas.toDataURL();
     });
 
     /**
