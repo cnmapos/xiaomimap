@@ -2,6 +2,7 @@ import NewMap from '../starts/NewMap'
 import AniPath from '../anims/Path'
 import CircleHalo from '../anims/CircleHalo'
 import TextAnim from '../anims/TextAnim'
+import Arrow from '../anims/Arrow'
 
 export default [
     {
@@ -35,6 +36,12 @@ export default [
                 path: '/text-anim',
                 thumbnail: 'XXXXXXX',
                 element: TextAnim
+            },
+            {
+                name: '箭头动画',
+                path: '/arrow-anim',
+                thumbnail: 'XXXXXXX',
+                element: Arrow
             }
         ]
     }

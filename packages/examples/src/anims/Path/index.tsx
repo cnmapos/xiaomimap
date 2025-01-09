@@ -244,7 +244,7 @@ function Path() {
         return () => {
             viewer.destroy();
         };
-      }, [lineType, lineColor, lineWidth, outlineWidth, calcAngle, image, imageWidth, imageHeight, duration ]);
+      }, [lineType, lineColor, outlineColor, lineWidth, outlineWidth, calcAngle, image, imageWidth, imageHeight, duration ]);
 
     const play = () => {
       player.play();
