@@ -8,12 +8,7 @@ import { Cartesian3, Color, PolylineDashMaterialProperty, Math as CMath, Viewer,
 import PathGeoJSONData from '../assets/pathForBike.json';
 import { interpolateCoordinates } from "./tween";
 import { Button, ColorPicker, Input, InputNumber, Select, Switch } from "antd";
-
-interface IPlayer {
-  play: () => void;
-  pause: () => void;
-  replay: () => void;
-}
+import { IPlayer } from '../../types';
 
 type PolyLineStyle = {
   lineType?: 'full' | 'dash' | 'glow' | 'outline';

@@ -1,104 +1,181 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import MapContainer from "../../components/map-container";
 import { CallbackProperty, Cartesian3, Math as CMath, Cartographic, Color, PolylineArrowMaterialProperty, Cartesian2, Viewer, defined } from "cesium";
 import { HZViewer } from "@hztx/core";
+import { Button, ColorPicker, InputNumber, Switch } from "antd";
+import { ArrowPlayer } from "./ArrowPlayer";
+import { IPlayer } from "../../types";
 
 const Arrow = () => {
+    const [color, setColor] = useState('#FFF');
+    const [width, setWidth] = useState(10);
+    const [offset, setOffset] = useState(10);
+    const [offsetX, setOffsetX] = useState(10);
+    const [offsetY, setOffsetY] = useState(10);
+    const [offsetHeight, setOffsetHeight] = useState(0);
+    const [frameRate, setFrameRate] = useState(15);
+    const [alongTrack, setAlongTrack] = useState(false);
+
+    let player1: IPlayer;
+    let player2: IPlayer;
+    let player3: IPlayer;
+    let player4: IPlayer;
+
     useEffect(() => {
         const hz = new HZViewer('map');
         const { viewer }: { viewer: Viewer } = hz;
-        const coordinates = [
-            [104.167069626642999, 30.758156896017201, 0 ],
-            [104.167254997997003, 30.756885704837099, 0],
-        ];
 
-        const scene = viewer.scene;
-        const pixelToCoordinates = (pixel) => {
-            const screenWidth = scene.canvas.clientWidth;
-            const screenHeight = scene.canvas.clientHeight;
-            const startPixel = new Cartesian2(screenWidth / 2, screenHeight / 2); // 屏幕中心
-            const endPixel = new Cartesian2(startPixel.x + pixel, startPixel.y); // 向右 100 像素
-
-            // 将像素坐标转换为世界坐标
-            const startWorldPos = scene.globe.pick(viewer.camera.getPickRay(startPixel)!, scene);
-            const endWorldPos = scene.globe.pick(viewer.camera.getPickRay(endPixel)!, scene);
-
-            if (defined(startWorldPos) && defined(endWorldPos)) {
-                // 将世界坐标转换为经纬度
-                const startCartographic = Cartographic.fromCartesian(startWorldPos);
-                const endCartographic = Cartographic.fromCartesian(endWorldPos);
-
-                // 计算经纬度差值（以弧度表示）
-                const lonDiff = endCartographic.longitude - startCartographic.longitude;
-                const latDiff = endCartographic.latitude - startCartographic.latitude;
-
-                // 将弧度转换为度数
-                const lng = CMath.toDegrees(lonDiff);
-                const lat = CMath.toDegrees(latDiff);
-
-                return { lng, lat }
-            };
-        }
-
-        const destination = [coordinates[0][0], coordinates[0][1]];
         viewer.camera.setView({
-            destination: Cartesian3.fromDegrees(...destination, 1000),
-
+            destination: Cartesian3.fromDegrees(104.167069626642999, 30.758156896017201, 1000)
         });
 
-        const token = setTimeout(() => {
-            const buffer = pixelToCoordinates(10)!;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        player1 = new ArrowPlayer(
+            viewer,
+            [
+                [104.167069626642999, 30.758156896017201, 0 ],
+                [104.167569626642999, 30.758156896017201, 0 ],
+                // [104.167254997997003, 30.756885704837099, 100],
+            ],
+            {
+                color: color,
+                width: width,
+                offsetX: offsetX,
+                offsetY: offsetY,
+                offsetHeight: offsetHeight,
+                frameRate: frameRate,
+                alongTrack: alongTrack,
+                offset: offset,
+            }
+        );
 
-            let direction = -1, value = 0;
-            const frameCount = 10;
+        player2 = new ArrowPlayer(
+            viewer,
+            [
+                [104.167869626642999, 30.758956896017201, 0 ],
+                [104.167869626642999, 30.758456896017201, 0 ],
+                // [104.167254997997003, 30.756885704837099, 100],
+            ],
+            {
+                color: color,
+                width: width,
+                offsetX: offsetX,
+                offsetY: offsetY,
+                offsetHeight: offsetHeight,
+                frameRate: frameRate,
+                alongTrack: alongTrack,
+                offset: offset,
+            }
+        )
+
+        player3 = new ArrowPlayer(
+            viewer,
+            [
+                [104.168569626642999, 30.758156896017201, 0 ],
+                [104.168169626642999, 30.758156896017201, 0 ],
+                // [104.167254997997003, 30.756885704837099, 100],
+            ],
+            {
+                color: color,
+                width: width,
+                offsetX: offsetX,
+                offsetY: offsetY,
+                offsetHeight: offsetHeight,
+                frameRate: frameRate,
+                alongTrack: alongTrack,
+                offset: offset,
+            }
+        )
+
+        player4 = new ArrowPlayer(
+            viewer,
+            [
+                [104.167869626642999, 30.757056896017201, 0 ],
+                [104.167869626642999, 30.757856896017201, 0 ],
+                // [104.167254997997003, 30.756885704837099, 100],
+            ],
+            {
+                color: color,
+                width: width,
+                offsetX: offsetX,
+                offsetY: offsetY,
+                offsetHeight: offsetHeight,
+                frameRate: frameRate,
+                alongTrack: alongTrack,
+                offset: offset,
+            }
+        )
 
 
-            // const length = 20
-            viewer.entities.add({
-                name: "arrow",
-                id: 'arrow',
-                polyline: {
-                  positions: Cartesian3.fromDegreesArrayHeights(coordinates.flat()),
-                // positions: new CallbackProperty((e, result) => {
-                
-                //     value = (value + direction) % (frameCount * 2);
-                //     if (value === 0 || value === frameCount) {
-                //         direction *= -1; // 反转方向
-                //     }
-
-                //     const offset = { lng: 0, lat:  value < frameCount ? value * buffer.lng / frameCount : (frameCount * 2 - value) * buffer.lng / frameCount }; // 根据value计算offset
-                //     console.log(offset)
-                //     return Cartesian3.fromDegreesArrayHeights(coordinates.map((c) => [c[0] + offset.lng, c[1] + offset.lat, c[2]]).flat());
-                // }, false),
-                width: 30,
-                material: new PolylineArrowMaterialProperty(Color.ORANGE),
-                clampToGround: true,
-                },
-            });
-            viewer.entities.getById('arrow').polyline.positions = new CallbackProperty((e, result) => {
-                value = (value + direction) % (frameCount * 2);
-                if (value === 0 || value === frameCount) {
-                    direction *= -1; // 反转方向
-                }
-
-                const offset = { lng: 0, lat:  value < frameCount ? value * buffer.lng / frameCount : (frameCount * 2 - value) * buffer.lng / frameCount }; // 根据value计算offset
-                console.log(offset)
-                return Cartesian3.fromDegreesArrayHeights(coordinates.map((c) => [c[0] + offset.lng, c[1] + offset.lat, c[2]]).flat());
-            }, false)
-
-        }, 5000);
-
-          return () => {
+        return () => {
             viewer.destroy();
-            clearTimeout(token);
           }
-        }, []);
+        }, [color, width, offset, offsetX, offsetY, offsetHeight, frameRate, alongTrack]
+    );
+
+    const play = () => {
+        player1?.play();
+        player2?.play();
+        player3?.play();
+        player4?.play();
+    }
+
+    const pause = () => {
+        player1?.pause();
+        player2?.pause();
+        player3?.pause();
+        player4?.pause();
+    }
+
+    const replay = () => {
+        player1?.replay();
+        player2?.replay();
+        player3?.replay();
+        player4?.replay();
+    }
+            
 
     return (
         <MapContainer>
             <div style={{ width: '100%', height: '100%' }} id="map">
             </div>  
-            <div></div>
+            <div>
+              <div className="hz-player">
+                <Button className='hz-btn' onClick={play}>播放</Button>
+                <Button className='hz-btn'  onClick={pause}>暂停</Button>
+                <Button className='hz-btn'  onClick={replay}>重新播放</Button>
+              </div>
+              <div className="hz-style">
+                <div className="hz-style-item">
+                  <span>线颜色：</span>
+                  <ColorPicker showText defaultValue={color} onChange={(e) => setColor(`#${e.toHex()}`)} />
+                </div>
+                <div className="hz-style-item">
+                  <span>沿着轨迹</span>
+                  <Switch defaultValue={alongTrack} onChange={(e) => { setAlongTrack(e) }} />
+                </div>
+                {alongTrack &&
+                  <div className="hz-style-item">
+                    <InputNumber addonBefore="Offset" defaultValue={offset} onChange={(e) => setOffset(e)} />
+                  </div>
+                }
+                <div className="hz-style-item">
+                  <InputNumber addonBefore="箭头宽度" defaultValue={width} onChange={(e) => setWidth(e)} />
+                </div>
+                <div className="hz-style-item">
+                  <InputNumber addonBefore="Offset X" defaultValue={offsetX} onChange={(e) => setOffsetX(e)} />
+                </div>
+                <div className="hz-style-item">
+                  <InputNumber addonBefore="Offset Y" defaultValue={offsetY} onChange={(e) => setOffsetY(e)} />
+                </div>
+                <div className="hz-style-item">
+                  <InputNumber addonBefore="Offset Height" defaultValue={offsetHeight} onChange={(e) => setOffsetHeight(e)} />
+                </div>
+                <div className="hz-style-item">
+                  <InputNumber addonBefore="帧频次" defaultValue={frameRate} onChange={(e) => setFrameRate(e)} />
+                </div>
+              </div>
+            </div>   
         </MapContainer>
     )
 }
