@@ -3,6 +3,7 @@ import AniPath from '../anims/Path'
 import CircleHalo from '../anims/CircleHalo'
 import TextAnim from '../anims/TextAnim'
 import Arrow from '../anims/Arrow'
+import Polygon from '../anims/Polygon'
 
 export default [
     {
@@ -42,6 +43,12 @@ export default [
                 path: '/arrow-anim',
                 thumbnail: 'XXXXXXX',
                 element: Arrow
+            },
+            {
+                name: '多边形动画',
+                path: '/polygon-anim',
+                thumbnail: 'XXXXXXX',
+                element: Polygon
             }
         ]
     }
