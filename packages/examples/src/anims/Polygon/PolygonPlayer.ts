@@ -1,125 +1,185 @@
-import { Cartesian2, Cartographic, defined, Math as CMath, Viewer, Cartesian3, PolylinePolygonMaterialProperty, Color, Entity, CallbackProperty } from "cesium";
+import { Cartesian2, Cartographic, defined, Math as CMath, Viewer, Cartesian3, Color, Entity, CallbackProperty, Primitive, PolygonGeometry, GeometryInstance, MaterialAppearance, Material, PolygonOutlineGeometry, VertexFormat, PolygonHierarchy, ColorGeometryInstanceAttribute, PolylineMaterialAppearance, PerInstanceColorAppearance, PolylineGeometry, CustomShader, UniformType } from "cesium";
 import { IPlayer } from "../../types";
 
 type PolygonOptions = {
     color?: string;
-    width?: number;
-    offset?: number;
-    offsetX?: number;
-    offsetY?: number;
-    offsetHeight?: number;
-    frameRate?: number;
-    alongTrack?: boolean;
+    outlineColor?: string;
+    outlineWidth?: number;
+    showOutline?: boolean;
+    direction?: Direction;
+}
+
+type Rgba = {
+    r: number;
+    g: number;
+    b: number;
+    a?: number;
+}
+
+enum Direction {
+    leftRight = 0,
+    rightLeft = 1,
+    upDown = 2,
+    downUp = 3
 }
 
 export class PolygonPlayer implements IPlayer {
-    private offset: number;
-    private offsetX: number;
-    private offsetY: number;
-    private offsetHeight: number;
-    private entity: Entity;
+    private primitive: Primitive;
+    private edgePrimitive: Primitive;
+    private color: Rgba;
+    private outlineColor: Rgba;
+    private outlineWidth: number;
+    private showOutline: boolean;
     private pausing: boolean;
-    private frameRate: number;
-    private alongTrack: boolean;
+    private direction: Direction;
 
     constructor(private viewer: Viewer, private coordinates: any[], options?: PolygonOptions) {
         const { 
-            color = '#00F', 
-            width = 10,
-            offset = 0,
-            offsetX = 0,
-            offsetY = 0,
-            offsetHeight = 0,
-            frameRate = 15,
-            alongTrack = false,
+            color = '#FFFF00',
+            outlineColor = '#FFFFFF',
+            outlineWidth = 1.0,
+            showOutline = false,
+            direction = Direction.downUp,
         } = options || ({} as PolygonOptions);
-        this.pausing = true;
-        this.offset = offset;
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        this.offsetHeight = offsetHeight;
-        this.frameRate = frameRate;
-        this.alongTrack = alongTrack;
 
-        this.entity = this.viewer.entities.add({
-            name: "Polygon",
-            polyline: {
-                width,
-                positions: Cartesian3.fromDegreesArrayHeights(this.coordinates.flat()),
-                material: new PolylinePolygonMaterialProperty(Color.fromCssColorString(color)),
-            },
-            // clampToGround: true,
+        const points = Cartesian3.fromDegreesArray(this.coordinates.flat())
+
+        const edgeGeometry = new PolylineGeometry({
+            positions: points,
+            width: (this.outlineWidth = outlineWidth)
         });
+        const colorObj = Color.fromCssColorString(color);
+        this.color = { r: colorObj.red, g: colorObj.green, b: colorObj.blue };
+        const outColorObj = Color.fromCssColorString(outlineColor);
+        this.outlineColor = { r: outColorObj.red, g: outColorObj.green, b: outColorObj.blue };
+        this.showOutline = showOutline;
+        this.direction = direction;
+        this.primitive = this.viewer.scene.primitives.add(new Primitive({
+            geometryInstances: new GeometryInstance({
+              geometry: new PolygonGeometry({
+                polygonHierarchy: {
+                  positions: Cartesian3.fromDegreesArray(this.coordinates.flat()),
+                  holes: []
+                }
+              }),
+            }),
+            appearance: new MaterialAppearance({
+              material: new Material({
+                fabric: {
+                    type: 'FadeMaterial',
+                    uniforms: {
+                        time: 0.0,
+                        r: this.color.r,
+                        g: this.color.g,
+                        b: this.color.b,
+                    },
+                    source: `
+                    uniform float time;
+                    uniform float r;
+                    uniform float g;
+                    uniform float b;
+     
+                    czm_material czm_getMaterial(czm_materialInput materialInput)
+                    {
+                        czm_material material = czm_getDefaultMaterial(materialInput);
+                        float fade = smoothstep(0.0, 1.0, time);
+                        ${
+                            this.direction === Direction.leftRight ? `
+                                if (materialInput.st.x > fade) {
+                                    discard;
+                                }
+                            ` : this.direction === Direction.rightLeft ? `
+                                if (materialInput.st.x < 1.0 - fade) {
+                                    discard;
+                                }
+                            ` : this.direction === Direction.downUp ? `
+                                if (materialInput.st.y > fade) {
+                                    discard;
+                                }`
+                              : ` 
+                                 if (materialInput.st.y < 1.0 - fade) {
+                                    discard;
+                                }
+                              `
+                        }
+                        // if (materialInput.st.y > fade) {
+                        //     discard;
+                        // }
+
+                        fade = max(fade, 0.1);
+                        material.diffuse = vec3(r, g, b); // 红色
+                        material.alpha = fade;
+                        return material;
+                    }
+                `
+                }
+              })
+            }),
+          }));
+          this.edgePrimitive = this.viewer.scene.primitives.add(new Primitive({
+            geometryInstances: new GeometryInstance({
+                geometry: edgeGeometry,
+            }),
+            appearance: new PolylineMaterialAppearance({
+                material: new Material({
+                  fabric: {
+                      type: 'FadeMaterial',
+                      uniforms: {
+                          time: 0.0,
+                          r: this.outlineColor.r,
+                          g: this.outlineColor.g,
+                          b: this.outlineColor.b,
+                      },
+                      source: `
+                      uniform float time;
+                      uniform float r;
+                      uniform float g;
+                      uniform float b;
+       
+                      czm_material czm_getMaterial(czm_materialInput materialInput)
+                      {
+                          czm_material material = czm_getDefaultMaterial(materialInput);
+                          float fade = smoothstep(0.0, 1.0, time);
+      
+                          if (materialInput.st.y > fade) {
+                              discard;
+                          }
+
+                          fade = max(fade, 0.1);
+                          material.diffuse = vec3(r, g, b); // 红色
+                          material.alpha = ${this.showOutline ? 'fade' : '0.0' };
+                          return material;
+                      }
+                  `
+                  }
+                })
+              }),
+          }));
+        
+
+           // 更新材质的时间参数
+      let time = 0.0;
+      viewer.scene.preUpdate.addEventListener(() => {
+          time += 0.01; // 控制淡入淡出的速度
+          if (time > 1.0) {
+              time = 0.0; // 重置时间
+          }
+          this.primitive.appearance.material.uniforms.time = time;
+          this.edgePrimitive.appearance.material.uniforms.time = time;
+      });
     }
 
     play() {
-        this.pausing = false;
+        // this.primitive.appearance.material.uniforms.r = this.color.r;
+        // this.primitive.appearance.material.uniforms.g = this.color.g;
+        // this.primitive.appearance.material.uniforms.b = this.color.b;
+
     }
     pause() {
-        this.pausing = true;
+        // this.pausing = true;
     }
     replay() {
-        if (this.entity.polyline) {
-            this.entity.polyline.positions = this.getCallbackProperty();
-        }
-        this.play();
     }
 
-    private pixelToCoordinates(x: number, y: number) {
-        const screenWidth = this.viewer.scene.canvas.clientWidth;
-        const screenHeight = this.viewer.scene.canvas.clientHeight;
-        const startPixel = new Cartesian2(screenWidth / 2, screenHeight / 2); // 屏幕中心
-        const endPixel = new Cartesian2(startPixel.x + x, startPixel.y + y); // 向右 100 像素
-
-        // 将像素坐标转换为世界坐标
-        const startWorldPos = this.viewer.scene.globe.pick(this.viewer.camera.getPickRay(startPixel)!, this.viewer.scene);
-        const endWorldPos = this.viewer.scene.globe.pick(this.viewer.camera.getPickRay(endPixel)!, this.viewer.scene);
-
-        if (defined(startWorldPos) && defined(endWorldPos)) {
-            // 将世界坐标转换为经纬度
-            const startCartographic = Cartographic.fromCartesian(startWorldPos);
-            const endCartographic = Cartographic.fromCartesian(endWorldPos);
-
-            // 计算经纬度差值（以弧度表示）
-            const lonDiff = endCartographic.longitude - startCartographic.longitude;
-            const latDiff = endCartographic.latitude - startCartographic.latitude;
-
-            // 将弧度转换为度数
-            const lng = CMath.toDegrees(lonDiff);
-            const lat = CMath.toDegrees(latDiff);
-
-            return { lng, lat }
-        }
-    }
-
-    private getCallbackProperty() {
-        const firstPos = this.coordinates[0], lastPos = this.coordinates[this.coordinates.length - 1];
-        const PolygonDir = Cartesian3.subtract(Cartesian3.fromDegrees(...firstPos), Cartesian3.fromDegrees(...lastPos), new Cartesian3());
-        const angle = Math.atan2(PolygonDir.y, PolygonDir.x);
-
-        const { lng: length } = this.pixelToCoordinates(this.offset, 0)!;
-
-        const buffer = this.alongTrack ? ({
-            lng: length * Math.cos(angle), 
-            lat: length * Math.sin(angle),
-        }) : this.pixelToCoordinates(this.offsetX, this.offsetY)!;
-        let direction = 1, value = 0;
-
-       return new CallbackProperty((e, result) => {
-            if (!this.pausing) {
-                value = (value + direction) % (this.frameRate * 2);
-                if (value === 0 || value === this.frameRate) {
-                    direction *= -1; // 反转方向
-                }                
-            }
-
-            const offset = { 
-                lng: value < this.frameRate ? value * buffer.lng / this.frameRate : (this.frameRate * 2 - value) * buffer.lng / this.frameRate , 
-                lat:  value < this.frameRate ? value * buffer.lat / this.frameRate : (this.frameRate * 2 - value) * buffer.lat / this.frameRate,
-                height:  value < this.frameRate ? value * this.offsetHeight / this.frameRate : (this.frameRate * 2 - value) * this.offsetHeight / this.frameRate,
-            }; // 根据value计算offset
-            return Cartesian3.fromDegreesArrayHeights(this.coordinates.map((c) => [c[0] + offset.lng, c[1] + offset.lat, c[2] + offset.height]).flat());
-        }, false);
-    }
     
 }
