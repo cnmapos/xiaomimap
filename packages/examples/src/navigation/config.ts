@@ -4,6 +4,8 @@ import CircleHalo from '../anims/CircleHalo'
 import TextAnim from '../anims/TextAnim'
 import Arrow from '../anims/Arrow'
 import Polygon from '../anims/Polygon'
+import Glow from '../anims/Glow'
+import Video from '../anims/Video'
 
 export default [
     {
@@ -49,7 +51,19 @@ export default [
                 path: '/polygon-anim',
                 thumbnail: 'XXXXXXX',
                 element: Polygon
-            }
+            },
+            {
+                name: '发光动画',
+                path: '/glow-anim',
+                thumbnail: 'XXXXXXX',
+                element: Glow
+            },
+            {
+                name: '视频动画',
+                path: '/video-anim',
+                thumbnail: 'XXXXXXX',
+                element: Video
+            },
         ]
     }
 ]
