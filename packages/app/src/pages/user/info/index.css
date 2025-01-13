@@ -1,0 +1,17 @@
+.logout {
+    text-align: left;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 0;
+    border: none;
+}
+
+.logout:hover {
+    border: none;
+}
+
+.logout:focus {
+    border: none;
+    outline: none;
+}
