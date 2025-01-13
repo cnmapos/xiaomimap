@@ -30,7 +30,7 @@ const Tags = () => {
           // 计算图片底部中心位置
           const offsetCoordinate = pixel2Coordinates(viewer, offset.x, offset.y)!;
 
-          const imagePosition = Cartesian3.fromDegrees(coordinate[0] + Math.abs(offsetCoordinate.lng), coordinate[1] + Math.abs(offsetCoordinate.lat))
+          const imagePosition = Cartesian3.fromDegrees(coordinate[0] + offsetCoordinate.lng, coordinate[1] + offsetCoordinate.lat)
           // Cartesian3.add(position, Cartesian3.fromDegrees(offsetCoordinate.lng, offsetCoordinate.lat), new Cartesian3()); // 假设图片高度为150，底部中心位置为y偏移-75
       
           // 创建折线连接POI点和图片底部中心位置
@@ -38,22 +38,47 @@ const Tags = () => {
               polyline: {
                   positions: [position, imagePosition],
                   width: 2,
-                  material: Color.BLUE,
+                  material: Color.RED,
               }
           });
       
+          // 创建canvas并绘制图片
+          const createCanvasImage = (imageUrl: string, width: number, height: number) => {
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const context = canvas.getContext('2d')!;
+
+              return new Promise((resolve) => {
+                const image = new Image();
+                image.src = imageUrl;
+                image.onload = () => {
+                    context?.drawImage(image, 0, 0, width, height);
+                    // 在这里可以添加边框
+                    context.strokeStyle = 'red';
+                    context.lineWidth = 5;
+                    context.strokeRect(0, 0, width, height);
+
+                    resolve(canvas);
+                };                  
+              });
+          };
+
           // 创建图片标签
-          const billboardEntity = viewer.entities.add({
-              position: imagePosition,
-              billboard: {
-                  image: imageUrl,
-                  width: width,
-                  height: height,
-                  verticalOrigin: VerticalOrigin.BOTTOM,
-                  horizontalOrigin: HorizontalOrigin.CENTER,
-                  // pixelOffset: new Cartesian2(0, -80),
-              }
+          createCanvasImage(imageUrl, 200, 150).then((canvasImage: any) => {
+            const billboardEntity = viewer.entities.add({
+                position: imagePosition,
+                billboard: {
+                    image: canvasImage.toDataURL(), // 使用canvas的dataURL作为图像
+                    width: 200,
+                    height: 150,
+                    verticalOrigin: VerticalOrigin.BOTTOM,
+                    horizontalOrigin: HorizontalOrigin.CENTER,
+                    // pixelOffset: new Cartesian2(0, -40),
+                }
+            });            
           });
+
 
           // const picOffset = pixel2Coordinates(viewer, width, height)
           // const leftBottom = [coordinate[0] - Math.abs(picOffset!.lng) / 2, coordinate[1]];
@@ -75,11 +100,11 @@ const Tags = () => {
           //   }
           // });
       
-          return { poiEntity, lineEntity, billboardEntity };
+          return { poiEntity, lineEntity };
         };
         const coordinate = [104.167869626642999, 30.758956896017201];
         const imageUrl = 'assets/hangmu.png'; // 替换为你的图片路径
-        const offset = { x: 50, y: 50 }; // 图片相对于POI点的偏移量 
+        const offset = { x: 50, y: -50 }; // 图片相对于POI点的偏移量 
         
         viewer.camera.setView({
           destination: Cartesian3.fromDegrees(...[104.167869626642999, 30.758956896017201], 2990000)
@@ -87,7 +112,7 @@ const Tags = () => {
 
         setTimeout(() => {
           createPOI(coordinate, { imageUrl, offset, width: 200, height: 150 });
-        }, 5000);
+        }, 2000);
 
         
   
