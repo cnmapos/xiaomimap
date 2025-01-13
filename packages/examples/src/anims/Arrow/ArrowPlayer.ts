@@ -1,5 +1,6 @@
 import { Cartesian2, Cartographic, defined, Math as CMath, Viewer, Cartesian3, PolylineArrowMaterialProperty, Color, Entity, CallbackProperty } from "cesium";
 import { IPlayer } from "../../types";
+import { pixel2Coordinates } from "../../utils";
 
 type ArrowOptions = {
     color?: string;
@@ -65,44 +66,17 @@ export class ArrowPlayer implements IPlayer {
         this.play();
     }
 
-    private pixelToCoordinates(x: number, y: number) {
-        const screenWidth = this.viewer.scene.canvas.clientWidth;
-        const screenHeight = this.viewer.scene.canvas.clientHeight;
-        const startPixel = new Cartesian2(screenWidth / 2, screenHeight / 2); // 屏幕中心
-        const endPixel = new Cartesian2(startPixel.x + x, startPixel.y + y); // 向右 100 像素
-
-        // 将像素坐标转换为世界坐标
-        const startWorldPos = this.viewer.scene.globe.pick(this.viewer.camera.getPickRay(startPixel)!, this.viewer.scene);
-        const endWorldPos = this.viewer.scene.globe.pick(this.viewer.camera.getPickRay(endPixel)!, this.viewer.scene);
-
-        if (defined(startWorldPos) && defined(endWorldPos)) {
-            // 将世界坐标转换为经纬度
-            const startCartographic = Cartographic.fromCartesian(startWorldPos);
-            const endCartographic = Cartographic.fromCartesian(endWorldPos);
-
-            // 计算经纬度差值（以弧度表示）
-            const lonDiff = endCartographic.longitude - startCartographic.longitude;
-            const latDiff = endCartographic.latitude - startCartographic.latitude;
-
-            // 将弧度转换为度数
-            const lng = CMath.toDegrees(lonDiff);
-            const lat = CMath.toDegrees(latDiff);
-
-            return { lng, lat }
-        }
-    }
-
     private getCallbackProperty() {
         const firstPos = this.coordinates[0], lastPos = this.coordinates[this.coordinates.length - 1];
         const arrowDir = Cartesian3.subtract(Cartesian3.fromDegrees(...firstPos), Cartesian3.fromDegrees(...lastPos), new Cartesian3());
         const angle = Math.atan2(arrowDir.y, arrowDir.x);
 
-        const { lng: length } = this.pixelToCoordinates(this.offset, 0)!;
+        const { lng: length } = pixel2Coordinates(this.viewer, this.offset, 0)!;
 
         const buffer = this.alongTrack ? ({
             lng: length * Math.cos(angle), 
             lat: length * Math.sin(angle),
-        }) : this.pixelToCoordinates(this.offsetX, this.offsetY)!;
+        }) : pixel2Coordinates(this.viewer, this.offsetX, this.offsetY)!;
         let direction = 1, value = 0;
 
        return new CallbackProperty((e, result) => {

@@ -6,6 +6,7 @@ import Arrow from '../anims/Arrow'
 import Polygon from '../anims/Polygon'
 import Glow from '../anims/Glow'
 import Video from '../anims/Video'
+import Tags from '../anims/Tags'
 
 export default [
     {
@@ -64,6 +65,12 @@ export default [
                 thumbnail: 'XXXXXXX',
                 element: Video
             },
+            {
+                name: '元素标签',
+                path: '/tags-anim',
+                thumbnail: 'XXXXXXX',
+                element: Tags
+            }
         ]
     }
 ]
