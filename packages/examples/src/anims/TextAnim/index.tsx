@@ -1,61 +1,7 @@
 import { HZViewer } from '@hztx/core'
 import { useEffect } from 'react'
-import MapContainer from '../components/map-container'
-import {
-  Cartesian3,
-  Color,
-  KmlDataSource,
-  PolylineDashMaterialProperty,
-  Math as CesiumMath,
-  CallbackProperty,
-  Rectangle,
-  MaterialProperty,
-  Material,
-  LabelStyle,
-  Cartesian2,
-  JulianDate,
-  HorizontalOrigin,
-  VerticalOrigin,
-} from 'cesium'
-
-// 生成透明图片
-function createTransparentImage(width, height, opacity = 0.5) {
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-
-  const context = canvas.getContext("2d");
-
-  // 设置透明背景
-  context.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-  context.fillRect(0, 0, width, height);
-
-  return canvas.toDataURL("image/png");
-}
-
-function createRotatedTextCanvas(text, angle, font = "24px sans-serif", color = "red") {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-
-  canvas.width = 200; // 设置画布宽度
-  canvas.height = 100; // 设置画布高度
-
-  context.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 设置文本样式
-  context.font = font;
-  context.fillStyle = color;
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-
-  // 旋转文本
-  context.translate(canvas.width / 2, canvas.height / 2);
-  context.rotate(angle); // 旋转角度
-  context.fillText(text, 0, 0);
-
-  return canvas;
-}
-
+import MapContainer from '../../components/map-container'
+import { TextAnimPlayer } from './Player';
 
 // 文本的特效、最终还是用 billboard 实现吧，因为我们想要做文本的 旋转、但是 label 自身是没法旋转的，cesium并不支持。所以我们可以用动态创建文本图片的方式去模拟文本，还能借用billboard的旋转实现旋转效果。
 function TextAnim() {
@@ -63,42 +9,10 @@ function TextAnim() {
     const hz = new HZViewer('map')
     const { viewer } = hz
 
-    const transparentImage = createTransparentImage(100, 100, 0.5);
-
-    const textEty = viewer.entities.add({
-      position: Cartesian3.fromDegrees(-75.1641667, 39.9522222),
-      billboard: {
-        image: createRotatedTextCanvas("Hello, Cesium!", 0).toDataURL(),
-        verticalOrigin: VerticalOrigin.CENTER,
-        horizontalOrigin: HorizontalOrigin.CENTER,
-        width: 200,
-        height: 100,
-      },
-      // label: {
-      //   text: 'Hello, Cesium!',
-      //   font: '24px sans-serif',
-      //   fillColor: Color.RED,
-      //   outlineColor: Color.PINK,
-      //   outlineWidth: 2,
-      //   style: LabelStyle.FILL_AND_OUTLINE,
-      //   pixelOffset: new Cartesian2(0, 50), // 偏移量
-      //   horizontalOrigin: HorizontalOrigin.CENTER,
-      //   verticalOrigin: VerticalOrigin.BOTTOM,
-      // },
-    })
-
-
-    // 动态更新旋转
-    let angle = 0; // 角度初始值
-    viewer.clock.onTick.addEventListener(() => {
-      angle += CesiumMath.toRadians(2); // 每帧旋转 2 度
-      if (angle >= Math.PI * 2) {
-        angle = 0; // 重置角度
-      }
-
-      // 更新 billboard 图像
-      const rotatedCanvas = createRotatedTextCanvas("Hello, Cesium!", angle);
-      textEty.billboard.image = rotatedCanvas.toDataURL();
+    const coordinate = [-75.59777, 40.03883];
+    new TextAnimPlayer(viewer, coordinate, {
+      text: '智慧树上智慧果',
+      color: '#FFF'
     });
 
     /**
@@ -226,11 +140,6 @@ function TextAnim() {
       })
     }
 
-    // 调用特效函数
-    // fadeIn(labelEntity, 3) // 透明度从0到1，持续3秒
-    // rotate360(labelEntity, 3); // 360度翻转，持续3秒
-    // scaleUpDown(labelEntity, 3); // 放大缩小，持续3秒
-
     return () => {
       viewer.destroy()
     }
@@ -238,7 +147,11 @@ function TextAnim() {
 
   return (
     <MapContainer>
-      <div style={{ width: '100%', height: '100%' }} id="map"></div>
+      <div style={{ width: '100%', height: '100%', position: 'relative' }} id="map">
+        <div id="textOverlay" style={{ position: 'absolute', color: 'white', fontSize: '24px', zIndex: 999 }}>
+          Hello, Cesium!
+        </div>
+      </div>
     </MapContainer>
   )
 }
