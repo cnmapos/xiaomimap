@@ -72,10 +72,10 @@ const Tags = () => {
       ),
     });
     let player: IPlayer;
-    const size = 250;
+    const size = 200;
 
     const fileCount = 12;
-    const radius = 100;
+    const radius = 120;
     const angleUnit = CMath.toRadians(360 / (fileCount * 2));
     let angle = 0;
 
@@ -86,13 +86,15 @@ const Tags = () => {
       for (let i = 0; i < fileCount; i++) {
         for (let j = 0; j < 2; j++) {
           const currentTime = time;
+          const currentAngle = angle;
           setTimeout(() => {
-            const isBottom = Math.ceil(Math.random() * 10) % 2 ? 1 : 0;
+            const isBottom =
+              currentAngle >= 0 && currentAngle < Math.PI ? 0 : 1;
             new TagsPlayer(viewer, coordinate, {
               imageUrl: basePath[j] + `panda${i + 1}.png`,
               offset: {
-                x: 100 - Math.random() * 200,
-                y: isBottom ? -Math.random() * 100 : -Math.random() * 100,
+                x: radius * Math.cos(currentAngle),
+                y: -radius * Math.abs(Math.sin(currentAngle)),
               },
               align: aligns[isBottom],
               title: title,
