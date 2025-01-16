@@ -8,6 +8,7 @@ import Glow from '../anims/Glow';
 import Video from '../anims/Video';
 import Tags from '../anims/ImageTag';
 import TextTag from '../anims/TextTag';
+import WelcomeToChina from '../anims/WelcomeToChina';
 
 export default [
   {
@@ -77,6 +78,12 @@ export default [
         path: '/text-tags',
         thumbnail: 'XXXXXXX',
         element: TextTag,
+      },
+      {
+        name: '欢迎来到中国',
+        path: '/welcome-to-china',
+        thumbnail: 'XXXXXXX',
+        element: WelcomeToChina,
       },
     ],
   },
