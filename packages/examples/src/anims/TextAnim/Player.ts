@@ -3,7 +3,11 @@ import {
   SceneTransforms,
   Viewer,
 } from 'cesium';
+import anime from 'animejs';
 import { IAnimation, IPlayer } from '../../types';
+
+// 这个网站有一些用animejs实现的文字动画、效果都挺好的。可以参考实现
+// https://tobiasahlin.com/moving-letters/
 
 // 飞入方向
 enum SlideDirection {
@@ -50,10 +54,8 @@ export class TextAnimPlayer implements IPlayer {
   replay() {}
 
   private createText() {
-
     const textOverlay = document.getElementById('textOverlay');
     const position = Cartesian3.fromDegrees(...this.coordinates);
-    console.log(this.viewer, 1)
     const viewer = this.viewer;
     const updatePosition = () => {
         if (viewer) {
@@ -65,19 +67,26 @@ export class TextAnimPlayer implements IPlayer {
         }
         
         requestAnimationFrame(updatePosition);
-
-        // 将 WGS84 坐标转换为世界坐标
-        // const worldPosition = SceneTransforms.computeActualWgs84Position(this.viewer.scene, position);
-        
-        // // 将世界坐标转换为屏幕坐标
-        // const canvasPosition = SceneTransforms.computeWindowCoordinates(this.viewer.scene, worldPosition);
-        
-        // if (canvasPosition) {
-        //     textOverlay.style.left = `${canvasPosition.x}px`;
-        //     textOverlay.style.top = `${canvasPosition.y}px`;
-        // }
-        // requestAnimationFrame(updatePosition);
     };
     updatePosition();
+
+    textOverlay.innerHTML = textOverlay.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+
+    anime.timeline({loop: true})
+        .add({
+            targets: '#textOverlay .letter',
+            scale: [4,1],
+            opacity: [0,1],
+            translateZ: 0,
+            easing: "easeOutExpo",
+            duration: 950,
+            delay: (el, i) => 70*i
+        }).add({
+            targets: '#textOverlay',
+            opacity: 0,
+            duration: 1000,
+            easing: "easeOutExpo",
+            delay: 1000
+        });
   }
 }
