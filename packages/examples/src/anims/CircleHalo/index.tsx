@@ -1,149 +1,185 @@
 import { HZViewer } from "@hztx/core";
 import { useEffect, useState } from "react";
 import MapContainer from '../../components/map-container';
-import { Cartesian3, Color, KmlDataSource, PolylineDashMaterialProperty, CallbackProperty, Rectangle, MaterialProperty, Material, Viewer, Entity, JulianDate } from "cesium";
+import { Cartesian3, Color, KmlDataSource, PolylineDashMaterialProperty, HeightReference, Math as CesiumMath, CallbackProperty, Rectangle, MaterialProperty, Material, Viewer, Entity, JulianDate, Cartesian2, ImageMaterialProperty } from "cesium";
 import { Button, ColorPicker, Input, InputNumber } from "antd";
-
+// import Cesium from 'cesium';
 
 
 interface IPlayer {
   play: () => void;
   pause: () => void;
   replay: () => void;
+  destroy: () => void;
 }
 
 type CircleStyle = {
   color: string; // 光圈颜色
-  radius: number; // 光圈半径：米为单位
 }
 
 // 光圈效果的选项
 type CircleHaloOptions = {
-  image?: string; // 图片
-  style: CircleStyle;
-  frameRate?: number; // 动画帧率
-  minAlpha?: number; // 最小透明度
-  maxAlpha?: number; // 最大透明度
-  maxScale: number; // 最大缩放倍数
-  duration: number; // 动画运行时间、从初始状态到放大到最大、需要的时间
+  image: string; // 图片
+  color: string;
+  minAlpha: number; // 最小透明度
+  maxAlpha: number; // 最大透明度
+  initialRadius: number; // 初始半径
+  maxScale: number; // 最大缩放
+  duration: number; // 动画运行时间、从初始状态到放大到最大、需要的时间,浩淼
 }
 
 
 const DefaultOptions: CircleHaloOptions = {
-  style: {
-    color: '#00F',
-    radius: 50,
-  },
-  duration: 3,
+  color: '#00F',
+  duration: 3000,
+  initialRadius: 3000,
   maxScale: 2,
-  frameRate: 60,
   minAlpha: 1,
   maxAlpha: 1,
   image: 'assets/circle-halo1.png'
 }
+
+function calculateRectangleBounds(longitude, latitude, radius) {
+  // 地球半径（单位：米）
+  const earthRadius = 6378137.0;
+
+  // 将经纬度转换为弧度
+  const latRad = latitude * (Math.PI / 180);
+  const lonRad = longitude * (Math.PI / 180);
+
+  // 计算纬度的变化量
+  const deltaLat = radius / earthRadius;
+  // 计算经度的变化量，考虑纬度的影响
+  const deltaLon = radius / (earthRadius * Math.cos(latRad));
+
+  // 计算边界
+  const west = (lonRad - deltaLon) * (180 / Math.PI);
+  const south = (latRad - deltaLat) * (180 / Math.PI);
+  const east = (lonRad + deltaLon) * (180 / Math.PI);
+  const north = (latRad + deltaLat) * (180 / Math.PI);
+
+  return { west, south, east, north };
+}
+
 class CircleHaloPlayer implements IPlayer {
   private coordinates: any[];
   private viewer: Viewer;
   private ety: Entity;
   private options: CircleHaloOptions;
-
-  private currentTime: JulianDate;
+  private startTime: any;
+  private isPlaying: boolean;
 
   private pausing = true;
-
-  private scaleCallbackProperty: CallbackProperty;
 
   constructor(viewer: Viewer, coordinates: any[], options?: CircleHaloOptions) {
     this.viewer = viewer;
     this.coordinates = coordinates;
 
 
-    const { image, style: { color, radius } } = this.options = {
+    const { image, color, duration, minAlpha, maxAlpha, maxScale, initialRadius } = this.options = {
       ...DefaultOptions,
       ...options,
     };
 
+    this.startTime = null; // 动画开始时间
+    this.isPlaying = false; // 动画状态
+
+    const [longitude, latitude] = coordinates;
+    const maxRadius = maxScale * initialRadius;
+
+    const initialBounds = calculateRectangleBounds(longitude, latitude, initialRadius);
+
     this.ety = viewer.entities.add({
-      position: Cartesian3.fromDegrees(coordinates[0], coordinates[1]),
-      billboard: {
-        width: radius, // 宽高根据radio算
-        height: radius,
-        image: image,
-        scale: this.options.maxScale === 1 ? 1 : this.getScaleCallbackProperty(),
-        color: this.options.minAlpha === this.options.maxAlpha ? Color.fromCssColorString(this.options.style.color).withAlpha(this.options.maxAlpha) : this.getOpcityCallbackProperty()
+      rectangle: {
+        coordinates: new CallbackProperty((time, result) => {
+          // 动态计算边界
+          if (!this.startTime || !this.isPlaying) {
+            return Rectangle.fromDegrees(
+                initialBounds.west,
+                initialBounds.south,
+                initialBounds.east,
+                initialBounds.north
+            );
+          }
+          // 计算动画进度
+          const elapsedTime = JulianDate.secondsDifference(time, this.startTime);
+          const progress = Math.abs(Math.sin((elapsedTime / (duration / 1000)) * Math.PI)); // 正弦波动画
+          const currentRadius = initialRadius + (maxRadius - initialRadius) * progress;
+
+          const bounds = this._calculateBounds(currentRadius);
+
+          // 计算当前透明度
+          const currentAlpha = minAlpha + (maxAlpha - minAlpha) * progress;
+          // 更新透明度
+          if (this?.ety?.rectangle) {
+            this.ety.rectangle.material.color = Color.fromCssColorString(color).withAlpha(currentAlpha);
+          }
+
+          return Rectangle.fromDegrees(bounds.west, bounds.south, bounds.east, bounds.north);
+      }, false),
+        material: new ImageMaterialProperty({
+          image: image, // 替换为你的图片 URL
+          transparent: true, // 如果需要透明背景
+          color: Color.fromCssColorString(color).withAlpha(minAlpha)
+        })
       },
-    });
+    })
   }
 
-  // 控制缩放的callback属性
-  private getScaleCallbackProperty() {
-    let reset = true, result = 1;
-    return (this.scaleCallbackProperty = new CallbackProperty((time) => {
-      if (this.pausing) return result;
-      if (reset) {
-        result = 1;
-        reset = false;
-      }
+  // 计算矩形边界
+  _calculateBounds(radius) {
+    const earthRadius = 6378137.0;
+    const latRad = this.coordinates[1] * (Math.PI / 180);
+    const lonRad = this.coordinates[0] * (Math.PI / 180);
 
-      const elapsed = (Date.now() % (this.options.duration * 1000)) / 1000; // 已过去的时间（秒），范围 [0, duration]
-      const normalizedTime = elapsed / this.options.duration; // 归一化时间，范围 [0, 1]
+    const deltaLat = radius / earthRadius;
+    const deltaLon = radius / (earthRadius * Math.cos(latRad));
 
-      // 通过正弦函数让 scale 在 [1, maxScale] 之间变化
-      result = 1 + (this.options.maxScale - 1) * Math.sin(normalizedTime * Math.PI);
-      return result;
-    }, false))
+    return {
+        west: (lonRad - deltaLon) * (180 / Math.PI),
+        south: (latRad - deltaLat) * (180 / Math.PI),
+        east: (lonRad + deltaLon) * (180 / Math.PI),
+        north: (latRad + deltaLat) * (180 / Math.PI),
+    };
   }
 
-  private getOpcityCallbackProperty() {
-    let reset = true, result = Color.fromCssColorString(this.options.style.color);
-    const baseColor = Color.fromCssColorString(this.options.style.color);
-    const duration = this.options.duration;
-    const minAlpha = this.options.minAlpha;
-    const maxAlpha = this.options.maxAlpha;
-    return (this.scaleCallbackProperty = new CallbackProperty(() => {
-      if (this.pausing) return result;
-      if (reset) {
-        result = baseColor;
-        reset = false;
-      }
-      const elapsed = (Date.now() % (duration * 1000)) / 1000; // 当前周期内已过去的秒数
-      const normalizedTime = elapsed / duration; // 归一化时间，范围 [0, 1]
-
-      console.log(minAlpha, maxAlpha);
-      // 使用正弦函数控制透明度在 [minAlpha, maxAlpha] 之间变化
-      const alpha =
-        minAlpha +
-        (maxAlpha - minAlpha) * (0.5 + 0.5 * Math.sin(normalizedTime * Math.PI * 2));
-
-      result = baseColor.withAlpha(alpha);
-      // 返回动态颜色（保持其他颜色不变，仅动态控制 alpha）
-      return result;
-    }, false))
-  }
-
+  // 播放动画
   play() {
-    this.pausing = false;
-    this.currentTime = JulianDate.now();
+    if (!this.isPlaying) {
+        this.startTime = this.viewer.clock.currentTime;
+        this.isPlaying = true;
+        this.viewer.clock.shouldAnimate = true;
+    }
   }
+
+  // 暂停动画
   pause() {
-    this.pausing = true;
+    this.isPlaying = false;
+    this.viewer.clock.shouldAnimate = false;
   }
+
+  // 重新播放动画
   replay() {
-    this.ety.billboard!.scale = this.getScaleCallbackProperty();
-    this.play();
+    this.startTime = this.viewer.clock.currentTime;
+    this.isPlaying = true;
+    this.viewer.clock.shouldAnimate = true;
+  }
+
+  // 销毁矩形实体
+  destroy() {
+    this.viewer.entities.remove(this.ety);
   }
 }
-
 
 function CircleHalo() {
   let player: IPlayer;
 
   const [color, setColor] = useState('#F00');
   const [image, setImage] = useState('assets/circle-halo1.png');
-  const [radius, setRadius] = useState(50);
-  const [duration, setDuration] = useState(3);
-  const [maxScale, setMaxScale] = useState(2);
-  const [minAlpha, setMinAlpha] = useState(1);
+  const [radius, setRadius] = useState(50000);
+  const [duration, setDuration] = useState(3000);
+  const [maxScale, setMaxScale] = useState(1);
+  const [minAlpha, setMinAlpha] = useState(0.5);
   const [maxAlpha, setMaxAlpha] = useState(1);
 
   useEffect(() => {
@@ -167,7 +203,8 @@ function CircleHalo() {
     // });
 
     // // 初始矩形区域
-    // let rectangleCoordinates = new Rectangle(west, south, east, north);
+    // let 
+    //  = new Rectangle(west, south, east, north);
 
     // // 动画参数
     // let scaleFactor = 0.005; // 缩放因子
@@ -301,12 +338,9 @@ function CircleHalo() {
     // });
      */
 
-    console.log(color, image, radius, duration)
     player = new CircleHaloPlayer(viewer, [-75.59777, 40.03883], {
-      style: {
-        color,
-        radius,
-      },
+      color,
+      initialRadius: radius,
       image,
       duration,
       maxScale,
@@ -315,9 +349,10 @@ function CircleHalo() {
     })
 
     return () => {
+      player.destroy()
       viewer.destroy();
     };
-  }, [color, image, radius, duration, maxScale]);
+  }, [color, image, radius, duration, maxScale, minAlpha, maxAlpha]);
 
   const play = () => {
     player.play();
