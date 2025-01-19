@@ -52,7 +52,7 @@ function TextAnim() {
   return (
     <MapContainer>
       <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }} id="map"></div>
-      <div>
+      <div style={{ color: '#fff' }}>
         <div className="hz-player">
           <Button className='hz-btn' onClick={playIn}>入场</Button>
           <Button className='hz-btn' onClick={playOut}>出场</Button>
