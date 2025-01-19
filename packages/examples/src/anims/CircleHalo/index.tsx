@@ -32,8 +32,8 @@ type CircleHaloOptions = {
 const DefaultOptions: CircleHaloOptions = {
   color: '#00F',
   duration: 3000,
-  initialRadius: 3000,
-  maxScale: 2,
+  initialRadius: 30,
+  maxScale: 200,
   minAlpha: 1,
   maxAlpha: 1,
   image: 'assets/circle-halo1.png'
@@ -176,9 +176,9 @@ function CircleHalo() {
 
   const [color, setColor] = useState('#F00');
   const [image, setImage] = useState('assets/circle-halo1.png');
-  const [radius, setRadius] = useState(50000);
+  const [radius, setRadius] = useState(50);
   const [duration, setDuration] = useState(3000);
-  const [maxScale, setMaxScale] = useState(1);
+  const [maxScale, setMaxScale] = useState(2000);
   const [minAlpha, setMinAlpha] = useState(0.5);
   const [maxAlpha, setMaxAlpha] = useState(1);
 
