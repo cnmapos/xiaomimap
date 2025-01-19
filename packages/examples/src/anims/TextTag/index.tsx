@@ -23,7 +23,6 @@ const Tags = () => {
   const [title, setTitle] = useState<string | undefined>('我是大航母');
   const [offestX, setOffestX] = useState<number>(50);
   const [offestY, setOffestY] = useState<number>(-50);
-  const [imageUrl, setImageUrl] = useState<string>('assets/hangmu.png');
   const [color, setColor] = useState<string>('#ffffff');
 
   useEffect(() => {
@@ -86,13 +85,6 @@ const Tags = () => {
               <Radio value={'top'}>TOP</Radio>
               <Radio value={'bottom'}>BOTTOM</Radio>
             </Radio.Group>
-          </div>
-          <div className="hz-style-item">
-            <Input
-              addonBefore="图片地址"
-              defaultValue={imageUrl}
-              onChange={(e) => setImageUrl(e)}
-            />
           </div>
           <div className="hz-style-item">
             <Input

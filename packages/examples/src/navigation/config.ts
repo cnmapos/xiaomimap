@@ -9,6 +9,9 @@ import Video from '../anims/Video';
 import Tags from '../anims/ImageTag';
 import TextTag from '../anims/TextTag';
 import WelcomeToChina from '../anims/WelcomeToChina';
+import Bomb from '../anims/Bomb';
+import Gif from '../anims/Gif';
+import CircleHaloV2 from '../anims/CircleHaloV2';
 
 export default [
   {
@@ -36,6 +39,12 @@ export default [
         path: '/circle-halo',
         thumbnail: 'XXXXXXX',
         element: CircleHalo,
+      },
+      {
+        name: '圆光环动画V2',
+        path: '/circle-halo2',
+        thumbnail: 'XXXXXXX',
+        element: CircleHaloV2,
       },
       {
         name: '文字动画',
@@ -84,6 +93,18 @@ export default [
         path: '/welcome-to-china',
         thumbnail: 'XXXXXXX',
         element: WelcomeToChina,
+      },
+      {
+        name: '炸弹动画',
+        path: '/bomb-anim',
+        thumbnail: 'XXXXXXX',
+        element: Bomb,
+      },
+      {
+        name: 'Gif动画',
+        path: '/gif-anim',
+        thumbnail: 'XXXXXXX',
+        element: Gif,
       },
     ],
   },

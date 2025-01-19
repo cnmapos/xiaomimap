@@ -100,7 +100,7 @@ export class TagsPlayer implements IPlayer {
 
     const canvasImage = createCanvasText(this.title, {
       color: this.color,
-      position: 'top',
+      position: this.align,
       height: 30,
     });
     const billboardEntity = this.viewer.entities.add({
@@ -109,7 +109,8 @@ export class TagsPlayer implements IPlayer {
         image: canvasImage.toDataURL(), // 使用canvas的dataURL作为图像
         verticalOrigin:
           this.align === 'top' ? VerticalOrigin.BOTTOM : VerticalOrigin.TOP,
-        horizontalOrigin: HorizontalOrigin.LEFT,
+        horizontalOrigin:
+          this.offset.x >= 0 ? HorizontalOrigin.LEFT : HorizontalOrigin.RIGHT,
         // pixelOffset: new Cartesian2(0, -40),
       },
     });
