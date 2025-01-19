@@ -2,6 +2,9 @@ export interface IPlayer {
     play: () => void;
     pause: () => void;
     replay: () => void;
+
+    playIn?: () => void;
+    playOut?: () => void;
 }
   
 // 动画函数

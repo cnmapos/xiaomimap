@@ -1,6 +1,12 @@
 import {
-    Cartesian3,
+  CallbackProperty,
+  Cartesian3,
+  Color,
+  CustomShader,
+  HeightReference,
+  LabelStyle,
   SceneTransforms,
+  VerticalOrigin,
   Viewer,
 } from 'cesium';
 import anime from 'animejs';
@@ -8,30 +14,21 @@ import { IAnimation, IPlayer } from '../../types';
 
 // 这个网站有一些用animejs实现的文字动画、效果都挺好的。可以参考实现
 // https://tobiasahlin.com/moving-letters/
-
-// 飞入方向
-enum SlideDirection {
-    LEFT_RIGHT = 'LEFT_RIGHT',
-    RIGHT_LEFT = 'LEFT_RIGHT',
-    TOP_BOTTOM = 'LEFT_RIGHT',
-    BOTTOM_TOP = 'LEFT_RIGHT',
-}
-
-type TextSlideAnimation = IAnimation & {    
-    // 文字滑入动画的个性话属性
-    animation_slide_direction: SlideDirection, // 滑入方向
+enum TextAnimation {
+  JUMP
 }
 
 type TextOptions = {
   text: string;
   color?: string;
-  slide?: TextSlideAnimation | null; // 传入slide说明想要有滑动动画，不传则不需要动画
+  animationType: TextAnimation,
 };
 
 export class TextAnimPlayer implements IPlayer {
   
   private color: string;
   text: string;
+  id: string;
 
   constructor(
     private viewer: Viewer,
@@ -46,6 +43,9 @@ export class TextAnimPlayer implements IPlayer {
     this.color = color;
     this.text = text;
 
+    this.id = new Date().getTime() + '' + Math.random();
+
+    this.createDom();
     this.createText();
   }
 
@@ -53,11 +53,24 @@ export class TextAnimPlayer implements IPlayer {
   pause() {}
   replay() {}
 
+  private createDom() {
+    const textDom = document.createElement('div');
+    textDom.style.position = 'absolute';
+    textDom.style.zIndex = '999';
+    textDom.style.pointerEvents = 'none';
+    textDom.id = this.id;
+    this.viewer._container.appendChild(textDom);
+  }
+
   private createText() {
-    const textOverlay = document.getElementById('textOverlay');
-    const position = Cartesian3.fromDegrees(...this.coordinates);
-    const viewer = this.viewer;
-    const updatePosition = () => {
+    /*
+      使用dom方式实现动画效果
+    */
+      const textOverlay = document.getElementById('textOverlay');
+      const position = Cartesian3.fromDegrees(...this.coordinates);
+      const viewer = this.viewer;
+
+      const updatePosition = () => {
         if (viewer) {
             const canvasPosition = SceneTransforms.worldToWindowCoordinates(viewer.scene, position);
             if (canvasPosition) {
@@ -67,26 +80,27 @@ export class TextAnimPlayer implements IPlayer {
         }
         
         requestAnimationFrame(updatePosition);
-    };
-    updatePosition();
+      };
+      updatePosition();
 
-    textOverlay.innerHTML = textOverlay.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+      textOverlay.innerHTML = textOverlay.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
 
-    anime.timeline({loop: true})
-        .add({
-            targets: '#textOverlay .letter',
-            scale: [4,1],
-            opacity: [0,1],
-            translateZ: 0,
-            easing: "easeOutExpo",
-            duration: 950,
-            delay: (el, i) => 70*i
-        }).add({
-            targets: '#textOverlay',
-            opacity: 0,
-            duration: 1000,
-            easing: "easeOutExpo",
-            delay: 1000
-        });
+      anime.timeline({loop: true})
+          .add({
+              targets: '#textOverlay .letter',
+              scale: [4,1],
+              opacity: [0,1],
+              translateZ: 0,
+              easing: "easeOutExpo",
+              duration: 950,
+              delay: (el, i) => 70*i
+          }).add({
+              targets: '#textOverlay',
+              opacity: 0,
+              duration: 1000,
+              easing: "easeOutExpo",
+              delay: 1000
+          });
+    
   }
 }
