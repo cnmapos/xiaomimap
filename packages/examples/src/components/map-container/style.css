@@ -1,28 +1,28 @@
 .hz-map-container {
-    height: 100%;
-    width: 100%;
-    background: #000;
-    align-items: stretch;
-    justify-content: center;
-    display: flex;
+  height: 100%;
+  width: 100%;
+  background: #000;
+  align-items: stretch;
+  justify-content: center;
+  display: flex;
 }
 
 .mobile {
-    height: 100%;
-    width: calc(100vh * 9 / 16)
+  height: 100%;
+  width: calc(100vh * 9 / 16);
 }
 
 .hz-map-control {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: #FFF;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+  flex: 1;
 
-    .hz-title {
-        font-size: 1.5em;
-        font-weight: 700;
-        padding: 5px 0;
-    }
+  .hz-title {
+    font-size: 1.5em;
+    font-weight: 700;
+    padding: 5px 0;
+  }
 }
