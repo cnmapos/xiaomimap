@@ -24,10 +24,11 @@ const Tags = () => {
   const [offestX, setOffestX] = useState<number>(50);
   const [offestY, setOffestY] = useState<number>(-50);
   const [color, setColor] = useState<string>('#ffffff');
+  let viewer: any;
 
   useEffect(() => {
     const hz = new HZViewer('map');
-    const { viewer }: { viewer: Viewer } = hz;
+    viewer = hz.viewer;
 
     const coordinate = [104.167869626642999, 30.758956896017201];
 
@@ -40,23 +41,39 @@ const Tags = () => {
 
     setTimeout(() => {
       player = new TagsPlayer(viewer, coordinate, {
-        imageUrl,
+        imageUrl: '',
         offset: { x: offestX, y: offestY },
         align: align,
         title: title,
         color: color,
         fontColor: color,
       });
-    }, 3000);
+    }, 5000);
 
     return () => {
       viewer.destroy();
     };
   }, [align, title, offestX, offestY, color]);
 
-  const play = () => {};
+  let capturer, removeEvent;
+  const play = async () => {
+    capturer = new CCapture({ format: 'webm', framerate: 30 });
 
-  const pause = () => {};
+    capturer.start();
+
+    removeEvent = viewer.scene.postRender.addEventListener(function () {
+      capturer.capture(viewer.scene.canvas);
+    });
+  };
+
+  const pause = () => {
+    removeEvent?.();
+    capturer.stop();
+
+    window.open(capturer.save());
+
+    capturer = undefined;
+  };
 
   const replay = () => {};
 

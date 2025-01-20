@@ -5,7 +5,7 @@ import TextAnim from '../anims/TextAnim';
 import Arrow from '../anims/Arrow';
 import Polygon from '../anims/Polygon';
 import Glow from '../anims/Glow';
-import Video from '../anims/Video';
+import Video from '../anims/Video/IndexWithCcapture';
 import Tags from '../anims/ImageTag';
 import TextTag from '../anims/TextTag';
 import WelcomeToChina from '../anims/WelcomeToChina';

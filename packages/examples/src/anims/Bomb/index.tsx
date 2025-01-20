@@ -18,9 +18,10 @@ import { HZViewer } from '@hztx/core';
 import { Button, ColorPicker, Input, InputNumber, Radio } from 'antd';
 
 const Bomb = () => {
+  let viewer: any;
   useEffect(() => {
     const hz = new HZViewer('map');
-    const { viewer }: { viewer: Viewer } = hz;
+    viewer = hz.viewer;
 
     const coordinate = [104.167869626642999, 30.758956896017201];
 
@@ -123,9 +124,25 @@ const Bomb = () => {
     };
   }, []);
 
-  const play = () => {};
+  let capturer, removeEvent;
+  const play = async () => {
+    capturer = new CCapture({ format: 'webm', framerate: 30 });
 
-  const pause = () => {};
+    capturer.start();
+
+    removeEvent = viewer.scene.postRender.addEventListener(function () {
+      capturer.capture(viewer.scene.canvas);
+    });
+  };
+
+  const pause = () => {
+    removeEvent?.();
+    capturer.stop();
+
+    window.open(capturer.save());
+
+    capturer = undefined;
+  };
 
   const replay = () => {};
 

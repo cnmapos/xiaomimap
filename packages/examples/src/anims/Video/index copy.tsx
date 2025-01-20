@@ -25,19 +25,7 @@ import { IPlayer } from '../../types';
 import { PolygonPlayer } from './PolygonPlayer';
 import html2canvas from 'html2canvas';
 import 'whammy';
-import { WhammyRecorder } from 'recordrtc';
 // import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-
-async function getScreenStream() {
-  const stream = await navigator.mediaDevices.getDisplayMedia({
-    video: {
-      width: { ideal: 1920 }, // 设置分辨率
-      height: { ideal: 1080 },
-    },
-    audio: false, // 是否录制音频
-  });
-  return stream;
-}
 
 const Video = () => {
   const [color, setColor] = useState('#24BF7C');
@@ -46,8 +34,7 @@ const Video = () => {
   const [direction, setLineType] = useState(0);
   const [outlineWidth, setOutlineWidth] = useState(2);
   const currentRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const context = useRef({ recorder: null, images: [] });
+  const context = useRef({ recording: false, images: [] });
 
   let player1: IPlayer;
   let player2: IPlayer;
@@ -123,6 +110,15 @@ const Video = () => {
       outlineColor,
     });
 
+    // viewer.scene.preUpdate.addEventListener(() => {
+    //   if (context.current.recording) {
+    //     html2canvas(currentRef.current!).then((canvas) => {
+    //       const image = canvas;
+    //       context.current.images.push(image);
+    //     });
+    //   }
+    // });
+
     return () => {
       viewer.destroy();
     };
@@ -136,27 +132,23 @@ const Video = () => {
   ]);
 
   let video;
-  const play = async () => {
-    if (!context.current.recorder) {
-      const stream = await getScreenStream();
-      context.current.recorder = new WhammyRecorder(stream);
-    }
-    context.current.recorder.record();
+  const play = () => {
+    context.current.recording = true;
+
+    video = new global.Whammy.Video(15); // 15 是帧率
+    video.add(currentRef.current.querySelector('canvas'));
   };
 
   const stop = () => {
-    context.current.recorder.stop(function (blob) {
-      const video = videoRef.current;
-      video.src = URL.createObjectURL(blob);
-      video.load();
-      video.onloadeddata = function () {
-        video.play();
-      };
-      // const a = document.createElement('a');
-      // a.href = videoUrl;
-      // a.download = 'output.webm';
-      // a.click();
-    });
+    context.current.recording = false;
+
+    const videoBlob = video.compile();
+    const videoUrl = URL.createObjectURL(videoBlob);
+
+    const a = document.createElement('a');
+    a.href = videoUrl;
+    a.download = 'output.mp4';
+    a.click();
   };
 
   const replay = () => {};
@@ -181,13 +173,51 @@ const Video = () => {
           </Button>
         </div>
         <div className="hz-style">
-          <video
-            type="video/webm"
-            width={300}
-            height={300}
-            style={{ background: '#000' }}
-            ref={videoRef}
-          ></video>
+          <div className="hz-style-item">
+            <span>线颜色：</span>
+            <ColorPicker
+              showText
+              defaultValue={color}
+              onChange={(e) => setColor(`#${e.toHex()}`)}
+            />
+          </div>
+          <div className="hz-style-item">
+            <Select
+              defaultValue={direction}
+              style={{ width: 120 }}
+              onChange={(e) => setLineType(e)}
+              options={[
+                { value: 0, label: '从左至右' },
+                { value: 1, label: '从右至左' },
+                { value: 2, label: '从上至下' },
+                { value: 3, label: '从下至上' },
+              ]}
+            />
+          </div>
+          <div className="hz-style-item">
+            <span>显示边框</span>
+            <Switch
+              defaultValue={showOutline}
+              onChange={(e) => {
+                setShowOutline(e);
+              }}
+            />
+          </div>
+          <div className="hz-style-item">
+            <InputNumber
+              addonBefore="边框宽度"
+              defaultValue={outlineWidth}
+              onChange={(e) => setOutlineWidth(e)}
+            />
+          </div>
+          <div className="hz-style-item">
+            <span>边框颜色：</span>
+            <ColorPicker
+              showText
+              defaultValue={outlineColor}
+              onChange={(e) => setOutlineColor(`#${e.toHex()}`)}
+            />
+          </div>
         </div>
       </div>
     </MapContainer>
