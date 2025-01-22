@@ -12,6 +12,8 @@ import {
 import anime from 'animejs';
 import { IAnimation, IPlayer } from '../../types';
 
+// 这个网站有一些用animejs实现的文字动画、效果都挺好的。可以参考实现
+// https://tobiasahlin.com/moving-letters/
 export class TextAnimation implements IPlayer {
     constructor(viewer, coordinates, options) {
         this.viewer = viewer;

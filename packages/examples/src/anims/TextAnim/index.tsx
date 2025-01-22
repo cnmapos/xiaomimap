@@ -6,6 +6,8 @@ import { TextAnimation } from './Player2';
 import { Button, ColorPicker, Input, InputNumber, Select } from 'antd';
 import { IPlayer } from '../../types';
 
+import { CallbackProperty, Math as CesiumMath, Cartesian3, Color, GeometryInstance, ImageMaterialProperty, JulianDate, LabelStyle, Material, MaterialAppearance, Primitive, Rectangle, RectangleGeometry, Texture, Cartesian2, ClockRange, CustomShader, UniformType, getTimestamp, Model, Cesium3DTileset, ColorGeometryInstanceAttribute, VertexFormat, Appearance, PerInstanceColorAppearance, EllipsoidSurfaceAppearance } from 'cesium';
+
 // 文本的特效、最终还是用 billboard 实现吧，因为我们想要做文本的 旋转、但是 label 自身是没法旋转的，cesium并不支持。所以我们可以用动态创建文本图片的方式去模拟文本，还能借用billboard的旋转实现旋转效果。
 function TextAnim() {
   let player: IPlayer;
@@ -15,21 +17,138 @@ function TextAnim() {
   const [inType, setInType] = useState('fadeIn');
   const [outType, setOutType] = useState('fadeOut');
 
+  // useEffect(() => {
+  //   const hz = new HZViewer('map')
+  //   const { viewer } = hz
+
+  //   // 创建文字动画对象
+  //   player = new TextAnimation(viewer, [39.9522222, -75.1641667], {
+  //     text: text,
+  //     color: color,
+  //     animationIn: inType, // 入场动画
+  //     animationOut: outType, // 出场动画
+  //   });
+
+  //   return () => {
+  //     viewer.destroy();
+  //     player.destroy();
+  //   }
+  // }, [text, color, inType, outType])
+
+  const canvasTextAni = (viewer) => {
+
+    // 创建动态 Canvas
+    const canvas = document.createElement("canvas");
+    canvas.width = 400;
+    canvas.height = 100;
+    const ctx = canvas.getContext("2d");
+
+    // 实时更新 Canvas 内容（旋转文字）
+    let rotation = 0;
+    function updateCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(rotation);
+      ctx.fillStyle = "white";
+      ctx.font = "40px sans-serif";
+      ctx.fillText("Rotating Text", -70, 5);
+      ctx.restore();
+      rotation += 0.05;
+      requestAnimationFrame(updateCanvas);
+    }
+    updateCanvas();
+
+    // 创建 Billboard 实体
+    const billboard = viewer.entities.add({
+      position: Cartesian3.fromDegrees(-75.1641667, 39.9522222),
+      billboard: {
+        image: new CallbackProperty(() => canvas.toDataURL(), false), // 动态更新纹理
+        scale: 0.5,
+        width: canvas.width,
+        height: canvas.height,
+      },
+    });
+  }
+
+  const cesiumTextAni = (viewer) => {
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 256; // 设置图片宽度
+    canvas.height = 256; // 设置图片高度
+    const ctx = canvas.getContext('2d');
+
+    // 绘制矩形
+    ctx.fillStyle = '#FF0000'; // 红色
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 绘制文本
+    ctx.font = '30px Arial';
+    ctx.fillStyle = '#FFFFFF'; // 白色文字
+    ctx.fillText('矩形中心', 40, 128); // 文本位置
+
+    // 简单的 GLSL 着色器代码
+    const shaderSource = `
+      uniform sampler2D image;
+      uniform float time;
+
+      czm_material czm_getMaterial(czm_materialInput materialInput) {
+          vec2 st = materialInput.st;
+          st.x = fract(st.x + time * 0.1);
+          vec4 color = texture(image, st);
+
+          czm_material material;
+          material.diffuse = color.rgb;
+          material.alpha = color.a;
+          return material;
+      }
+    `;
+
+    // 创建材质
+    const material = new Material({
+      fabric: {
+          uniforms: {
+              image: canvas, // 替换为实际的纹理图片路径
+              time: 0.0 // 动画时间，初始为 0
+          },
+          source: shaderSource,
+      },
+    });
+
+    // 创建矩形几何体和 Primitive
+    const rectangle = Rectangle.fromDegrees(-75.0, 40.0, -74.0, 41.0);
+    const rectanglePrimitive = new Primitive({
+      geometryInstances: new GeometryInstance({
+          geometry: new RectangleGeometry({
+              rectangle: rectangle,
+              vertexFormat: MaterialAppearance.VERTEX_FORMAT,
+          }),
+      }),
+      appearance: new MaterialAppearance({
+          material: material,
+          translucent: true, // 允许透明
+      }),
+    });
+
+    // 添加到 Cesium 场景
+    viewer.scene.primitives.add(rectanglePrimitive);
+
+    let startTime = Date.now();
+    viewer.scene.preRender.addEventListener(function () {
+        const elapsed = (Date.now() - startTime) / 1000.0; // 计算动画经过的时间（秒）
+        material.uniforms.time = elapsed; // 更新材质时间
+    });
+
+  }
+
   useEffect(() => {
     const hz = new HZViewer('map')
     const { viewer } = hz
 
-    // 创建文字动画对象
-    player = new TextAnimation(viewer, [39.9522222, -75.1641667], {
-      text: text,
-      color: color,
-      animationIn: inType, // 入场动画
-      animationOut: outType, // 出场动画
-    });
+    cesiumTextAni(viewer);
 
     return () => {
       viewer.destroy();
-      player.destroy();
     }
   }, [text, color, inType, outType])
 
