@@ -31,6 +31,8 @@ export class HZViewer implements IViewer {
       selectionIndicator: false,
       creditContainer: document.createElement("div"),
     });
+
+    this.viewer.clock.shouldAnimate = true;
   }
 
   // 封装添加图层的方法

@@ -24,8 +24,9 @@ import chinaJSON from '../../assets/china.json';
 import { IPlayer } from '../../types';
 import { PolygonPlayer } from './PolygonPlayer';
 import html2canvas from 'html2canvas';
-import 'whammy';
-import { WhammyRecorder } from 'recordrtc';
+// import 'whammy';
+// import { WhammyRecorder } from 'recordrtc';
+// import 'ccapture.js';
 // import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
 async function getScreenStream() {
@@ -51,12 +52,13 @@ const Video = () => {
 
   let player1: IPlayer;
   let player2: IPlayer;
+  let viewer;
 
   // const ffmpeg = createFFmpeg({ log: true });
   // ffmpeg.load();
   useEffect(() => {
     const hz = new HZViewer('map');
-    const { viewer }: { viewer: Viewer } = hz;
+    viewer = hz.viewer;
 
     const [positions1] =
       chinaJSON.features.find((f) => f.properties.name === '四川')?.geometry
@@ -135,28 +137,24 @@ const Video = () => {
     direction,
   ]);
 
-  let video;
+  let capturer, removeEvent;
   const play = async () => {
-    if (!context.current.recorder) {
-      const stream = await getScreenStream();
-      context.current.recorder = new WhammyRecorder(stream);
-    }
-    context.current.recorder.record();
+    capturer = new CCapture({ format: 'webm', framerate: 30 });
+
+    capturer.start();
+
+    removeEvent = viewer.scene.postRender.addEventListener(function () {
+      capturer.capture(viewer.scene.canvas);
+    });
   };
 
   const stop = () => {
-    context.current.recorder.stop(function (blob) {
-      const video = videoRef.current;
-      video.src = URL.createObjectURL(blob);
-      video.load();
-      video.onloadeddata = function () {
-        video.play();
-      };
-      // const a = document.createElement('a');
-      // a.href = videoUrl;
-      // a.download = 'output.webm';
-      // a.click();
-    });
+    removeEvent?.();
+    capturer.stop();
+
+    window.open(capturer.save());
+
+    capturer = undefined;
   };
 
   const replay = () => {};

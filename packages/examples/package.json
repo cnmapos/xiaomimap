@@ -10,16 +10,25 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ffmpeg/core": "^0.12.10",
+    "@ffmpeg/ffmpeg": "^0.12.15",
     "@hztx/core": "workspace:^",
-    "antd": "^5.23.0",
     "animejs": "3.2.2",
+    "antd": "^5.23.0",
+    "ccapture.js": "^1.1.0",
     "cesium": "^1.125.0",
+    "gif.js": "^0.2.0",
+    "html2canvas": "^1.4.1",
+    "libgif": "^0.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.1.1"
+    "react-router-dom": "^7.1.1",
+    "recordrtc": "5.5.1",
+    "whammy": "^0.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@types/gif.js": "^0.2.5",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react-swc": "^3.5.0",

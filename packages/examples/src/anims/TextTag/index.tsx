@@ -23,12 +23,12 @@ const Tags = () => {
   const [title, setTitle] = useState<string | undefined>('我是大航母');
   const [offestX, setOffestX] = useState<number>(50);
   const [offestY, setOffestY] = useState<number>(-50);
-  const [imageUrl, setImageUrl] = useState<string>('assets/hangmu.png');
   const [color, setColor] = useState<string>('#ffffff');
+  let viewer: any;
 
   useEffect(() => {
     const hz = new HZViewer('map');
-    const { viewer }: { viewer: Viewer } = hz;
+    viewer = hz.viewer;
 
     const coordinate = [104.167869626642999, 30.758956896017201];
 
@@ -41,23 +41,39 @@ const Tags = () => {
 
     setTimeout(() => {
       player = new TagsPlayer(viewer, coordinate, {
-        imageUrl,
+        imageUrl: '',
         offset: { x: offestX, y: offestY },
         align: align,
         title: title,
         color: color,
         fontColor: color,
       });
-    }, 3000);
+    }, 5000);
 
     return () => {
       viewer.destroy();
     };
   }, [align, title, offestX, offestY, color]);
 
-  const play = () => {};
+  let capturer, removeEvent;
+  const play = async () => {
+    capturer = new CCapture({ format: 'webm', framerate: 30 });
 
-  const pause = () => {};
+    capturer.start();
+
+    removeEvent = viewer.scene.postRender.addEventListener(function () {
+      capturer.capture(viewer.scene.canvas);
+    });
+  };
+
+  const pause = () => {
+    removeEvent?.();
+    capturer.stop();
+
+    window.open(capturer.save());
+
+    capturer = undefined;
+  };
 
   const replay = () => {};
 
@@ -86,13 +102,6 @@ const Tags = () => {
               <Radio value={'top'}>TOP</Radio>
               <Radio value={'bottom'}>BOTTOM</Radio>
             </Radio.Group>
-          </div>
-          <div className="hz-style-item">
-            <Input
-              addonBefore="图片地址"
-              defaultValue={imageUrl}
-              onChange={(e) => setImageUrl(e)}
-            />
           </div>
           <div className="hz-style-item">
             <Input

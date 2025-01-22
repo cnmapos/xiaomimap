@@ -99,26 +99,21 @@ export const createCanvasText = (
     width?: number;
   }
 ) => {
-  const {
-    color = '#FFF',
-    position = 'top',
-    width = 100,
-    height = 30,
-  } = options || {};
+  const { color = '#FFF', position = 'top', height = 30 } = options || {};
 
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d')!;
   const fontSize = 18;
   canvas.height = height;
-  canvas.width = 18 * text.length;
+  canvas.width = fontSize * text.length;
   context.fillStyle = color; // 设置文字颜色
   context.font = `${fontSize}px Sans-Serif`; // 设置字体和大小
   context.textBaseline = 'middle';
   context.fillText(text, 0, height / 2);
 
   context.beginPath(); // 开始路径
-  context.moveTo(0, height); // 移动到文字底部
-  context.lineTo(canvas.width, height); // 绘制到画布宽度
+  context.moveTo(0, position === 'top' ? height : 0); // 移动到文字底部
+  context.lineTo(canvas.width, position === 'top' ? height : 0); // 绘制到画布宽度
   context.strokeStyle = color; // 设置线条颜色
   context.lineWidth = 5; // 设置线条宽度
   context.stroke(); // 绘制线条

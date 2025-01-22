@@ -17,8 +17,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #000;
   flex: 1;
+  background: #fff;
 
   .hz-title {
     font-size: 1.5em;
