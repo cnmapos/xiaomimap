@@ -88,7 +88,27 @@ function TextAnim() {
     ctx.fillStyle = '#FFFFFF'; // 白色文字
     ctx.fillText('矩形中心', 40, 128); // 文本位置
 
-    // 简单的 GLSL 着色器代码
+    const fadeInShader = `
+      uniform sampler2D image;
+      uniform float time;
+
+      czm_material czm_getMaterial(czm_materialInput materialInput) {
+          vec2 st = materialInput.st;
+          st.x = fract(st.x + time * 0.1); // 保持原有的滚动效果
+          vec4 color = texture(image, st);
+
+          // 控制透明度：随时间从 0 到 1 逐渐显示
+          float fadeIn = clamp(time, 0.0, 1.0); // 限制时间范围在 0 到 1 秒
+          color.a *= fadeIn; // 调整透明度
+
+          czm_material material;
+          material.diffuse = color.rgb;
+          material.alpha = color.a;
+          return material;
+      }
+    `;
+
+    // 简单的 GLSL 着色器代码，文字从右到左移动的 shader
     const shaderSource = `
       uniform sampler2D image;
       uniform float time;
@@ -112,7 +132,7 @@ function TextAnim() {
               image: canvas, // 替换为实际的纹理图片路径
               time: 0.0 // 动画时间，初始为 0
           },
-          source: shaderSource,
+          source: fadeInShader,
       },
     });
 
@@ -145,6 +165,16 @@ function TextAnim() {
   useEffect(() => {
     const hz = new HZViewer('map');
     viewer = hz.viewer;
+
+    // 定义光晕的中心点坐标
+    const center = Cartesian3.fromDegrees(
+      -75.0, 40.0,
+      1000000
+    );
+
+    viewer.camera.setView({
+      destination: center,
+    });
 
     cesiumTextAni(viewer);
 
