@@ -15,8 +15,12 @@ export class HZViewer implements IViewer {
   static HZViewerKey =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI";
 
-  constructor(containerId: string, options?: { key?: string }) {
+  constructor(
+    containerId: string,
+    options?: { key?: string; sceneMode?: string }
+  ) {
     Ion.defaultAccessToken = options?.key || HZViewer.HZViewerKey;
+    const sceneMode = options?.sceneMode || SceneMode.SCENE3D;
 
     this.viewer = new Viewer(containerId, {
       baseLayerPicker: false,
@@ -26,6 +30,7 @@ export class HZViewer implements IViewer {
       navigationHelpButton: false,
       animation: false,
       timeline: false,
+      sceneMode: sceneMode,
       fullscreenButton: false,
       infoBox: false,
       selectionIndicator: false,

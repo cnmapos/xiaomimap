@@ -12,6 +12,7 @@ import WelcomeToChina from '../anims/WelcomeToChina';
 import Bomb from '../anims/Bomb';
 import Gif from '../anims/Gif';
 import CircleHaloV2 from '../anims/CircleHaloV2';
+import Map2D from '../anims/ChinaFull';
 
 export default [
   {
@@ -105,6 +106,12 @@ export default [
         path: '/gif-anim',
         thumbnail: 'XXXXXXX',
         element: Gif,
+      },
+      {
+        name: '2D地图',
+        path: '/map2d',
+        thumbnail: 'XXXXXXX',
+        element: Map2D,
       },
     ],
   },
