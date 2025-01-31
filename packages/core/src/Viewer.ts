@@ -2,7 +2,7 @@ import {
   Cartesian3,
   ImageryProvider,
   Viewer,
-  Math,
+  Math as CMath,
   ImageryLayer,
   Ion,
   SceneMode,
@@ -38,6 +38,26 @@ export class HZViewer implements IViewer {
     });
 
     this.viewer.clock.shouldAnimate = true;
+
+    this.viewer.camera.changed.addEventListener(() => {
+      const cartographic = this.viewer.camera.positionCartographic;
+      console.log(
+        "camera position",
+        CMath.toDegrees(cartographic.longitude),
+        ",",
+        CMath.toDegrees(cartographic.latitude),
+        ",",
+        cartographic.height
+      );
+      console.log(
+        "camera direction",
+        CMath.toDegrees(this.viewer.camera.heading),
+        ",",
+        CMath.toDegrees(this.viewer.camera.pitch),
+        ",",
+        CMath.toDegrees(this.viewer.camera.roll)
+      );
+    });
   }
 
   // 封装添加图层的方法

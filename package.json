@@ -1,5 +1,6 @@
 {
 	"dependencies": {
+		"@hztx/animations": "workspace:^",
 		"@hztx/core": "workspace:^"
 	}
 }

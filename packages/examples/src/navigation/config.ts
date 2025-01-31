@@ -13,6 +13,7 @@ import Bomb from '../anims/Bomb';
 import Gif from '../anims/Gif';
 import CircleHaloV2 from '../anims/CircleHaloV2';
 import Map2D from '../anims/ChinaFull';
+import KeyFrame from '../anims/Keyframes';
 
 export default [
   {
@@ -112,6 +113,12 @@ export default [
         path: '/map2d',
         thumbnail: 'XXXXXXX',
         element: Map2D,
+      },
+      {
+        name: '关键帧动画',
+        path: '/keyframe-anim',
+        thumbnail: 'XXXXXXX',
+        element: KeyFrame,
       },
     ],
   },
