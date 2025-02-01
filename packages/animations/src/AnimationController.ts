@@ -27,7 +27,7 @@ export class AnimationController {
     this.tracks.forEach((track) => {
       if (track.isInKeyframes(this.currentTime)) {
         const value = track.getValue(this.currentTime);
-        track.target.applyValue(value); // 使用 AnimationTarget 来应用值
+        track.applyValue(value);
       }
     });
   }
@@ -66,6 +66,7 @@ export class AnimationController {
     }
     this.currentTime = 0;
     this.isPlaying = false;
-    this.tracks.length = 0;
+    this.tracks.forEach((track) => track.reset());
+    // this.tracks.length = 0;
   }
 }

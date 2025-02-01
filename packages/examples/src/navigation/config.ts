@@ -14,6 +14,9 @@ import Gif from '../anims/Gif';
 import CircleHaloV2 from '../anims/CircleHaloV2';
 import Map2D from '../anims/ChinaFull';
 import KeyFrame from '../anims/Keyframes';
+import PointRoamingKeyFrame from '../anims/Keyframes/trace';
+import Flight from '../anims/Keyframes/flight';
+import PolygonKeyframe from '../anims/Keyframes/polygon';
 
 export default [
   {
@@ -114,11 +117,34 @@ export default [
         thumbnail: 'XXXXXXX',
         element: Map2D,
       },
+    ],
+  },
+  {
+    name: '关键帧',
+    children: [
       {
         name: '关键帧动画',
         path: '/keyframe-anim',
         thumbnail: 'XXXXXXX',
         element: KeyFrame,
+      },
+      {
+        name: '轨迹动画',
+        path: '/keyframe-roaming',
+        thumbnail: 'XXXXXXX',
+        element: PointRoamingKeyFrame,
+      },
+      {
+        name: '航空轨迹',
+        path: '/keyframe-flight',
+        thumbnail: 'XXXXXXX',
+        element: Flight,
+      },
+      {
+        name: '多边形关键帧',
+        path: '/keyframe-polygon',
+        thumbnail: 'XXXXXXX',
+        element: PolygonKeyframe,
       },
     ],
   },

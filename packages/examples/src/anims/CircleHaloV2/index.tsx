@@ -221,6 +221,91 @@ class CircleHaloPlayer implements IPlayer {
   }
 }
 
+function createCircleHalo(viewer, coordinate, radius, color) {
+  const center = Cartesian3.fromDegrees(...coordinate);
+  // 创建圆形几何
+  const circleGeometry = new CircleGeometry({
+    center: center,
+    radius: radius,
+    height: 1,
+  });
+
+  // 创建几何实例
+  const circleInstance = new GeometryInstance({
+    geometry: circleGeometry,
+  });
+
+  // 定义材质（光晕效果）
+  const haloMaterial = new Material({
+    fabric: {
+      type: 'Glow',
+      uniforms: {
+        color: color,
+        glowPower: 0.8,
+        radius1: 0.3, // 第一个圆环的半径
+        radius2: 0.5, // 第二个圆环的半径
+      },
+      source: `
+        uniform vec4 color;
+        uniform float glowPower;
+        uniform float radius1; // 第一个圆环的半径
+        uniform float radius2; // 第二个圆环的半径
+        
+        czm_material czm_getMaterial(czm_materialInput materialInput) {
+            czm_material material = czm_getDefaultMaterial(materialInput);
+            vec2 st = materialInput.st;
+            float dist = distance(st, vec2(0.5)); // 计算当前点到中心的距离
+            
+            // 计算第一个圆环的发光效果
+            float glow1 = smoothstep(radius1, radius1 + 0.1, dist);
+            float glow2 = smoothstep(radius1 + 0.1, radius1 + 0.2, dist);
+            float glowRing1 = (glow1 - glow2); // 第一个圆环的淡入效果
+            
+            // 计算第二个圆环的发光效果
+            float glow3 = smoothstep(radius2, radius2 + 0.1, dist);
+            float glow4 = smoothstep(radius2 + 0.1, radius2 + 0.2, dist);
+            float glowRing2 = (glow3 - glow4); // 第二个圆环的淡入效果
+            
+            // 将两个圆环的发光效果叠加
+            float glow = glowRing1 + glowRing2;
+            
+            material.diffuse = color.rgb; // 根据距离调整颜色
+            material.alpha = glow * glowPower; // 根据距离调整透明度
+            return material;
+        }
+        `,
+    },
+  });
+
+  // 创建外观
+  const appearance = new MaterialAppearance({
+    material: haloMaterial,
+    aboveGround: true,
+    flat: true,
+  });
+
+  // 创建Primitive并添加到场景中
+  const circlePrimitive = new Primitive({
+    geometryInstances: circleInstance,
+    appearance: appearance,
+    asynchronous: false,
+  });
+
+  viewer.scene.primitives.add(circlePrimitive);
+
+  let time = 0.0;
+  viewer.scene.preUpdate.addEventListener(() => {
+    time += 0.01; // 控制淡入淡出的速度
+    if (time > 1.0) {
+      time = 0.0; // 重置时间
+    }
+    circlePrimitive.appearance.material.uniforms.radius1 = time;
+    circlePrimitive.appearance.material.uniforms.radius2 = time + 0.2;
+  });
+
+  return circlePrimitive;
+}
+
 function CircleHalo() {
   let player: IPlayer;
 
@@ -236,77 +321,38 @@ function CircleHalo() {
     const hz = new HZViewer('map');
     const { viewer } = hz;
 
-    // 定义光晕的中心点坐标
-    const center = Cartesian3.fromDegrees(
-      104.167869626642999,
-      30.758956896017201,
-      100
-    );
-
     viewer.camera.setView({
-      destination: center,
+      destination: Cartesian3.fromDegrees(
+        104.167869626642999,
+        30.758956896017201,
+        10000
+      ),
     });
 
-    const radius = 1000.0;
-
-    // 创建圆形几何
-    const circleGeometry = new CircleGeometry({
-      center: center,
-      radius: radius,
-    });
-
-    // 创建几何实例
-    const circleInstance = new GeometryInstance({
-      geometry: circleGeometry,
-      attributes: {
-        color: ColorGeometryInstanceAttribute.fromColor(
-          Color.WHITE.withAlpha(0.5)
-        ),
-      },
-    });
-
-    // 定义材质（光晕效果）
-    const haloMaterial = new Material({
-      fabric: {
-        type: 'Glow',
-        uniforms: {
-          color: Color.YELLOW.withAlpha(0.5),
-          glowPower: 0.2,
-          taperPower: 0.1,
-        },
-        source: `
-        uniform vec4 color;
-        uniform float glowPower;
-        uniform float taperPower;
-        
-        czm_material czm_getMaterial(czm_materialInput materialInput) {
-            czm_material material = czm_getDefaultMaterial(materialInput);
-            vec2 st = materialInput.st;
-            float glow = glowPower / distance(st, vec2(0.5));
-            float taper = taperPower / distance(st, vec2(0.5));
-            material.diffuse = color.rgb;
-            material.alpha = color.a * glow * taper;
-            return material;
-        }
-      `,
-      },
-    });
-
-    // 创建外观
-    const appearance = new EllipsoidSurfaceAppearance({
-      material: haloMaterial,
-      aboveGround: true,
-      flat: true,
-    });
-
-    // 创建Primitive并添加到场景中
-    const circlePrimitive = new Primitive({
-      geometryInstances: circleInstance,
-      appearance: appearance,
-      asynchronous: false,
-    });
-
-    viewer.scene.primitives.add(circlePrimitive);
+    createCircleHalo(
+      viewer,
+      [104.167869626642999, 30.7580568960172],
+      50,
+      Color.RED
+    );
+    createCircleHalo(
+      viewer,
+      [104.167569626642999, 30.7584568960172],
+      50,
+      Color.YELLOW
+    );
+    createCircleHalo(
+      viewer,
+      [104.167869626642999, 30.7539568960172],
+      50,
+      Color.BROWN
+    );
+    createCircleHalo(
+      viewer,
+      [104.164869626642999, 30.7529568960172],
+      50,
+      Color.GREEN
+    );
 
     return () => {
       viewer.destroy();

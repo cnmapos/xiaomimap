@@ -5,13 +5,18 @@ type AniTrackOptions = {
   interpolationFn?: (start: any, end: any, t: number) => any;
 };
 
+const TIME_ERROR = 50; // 时间误差，防止时间精度问题导致的误差
+
 export class AnimationTrack {
   private keyframes: Keyframe[];
-  target: AnimationTarget;
+  targets: AnimationTarget[];
 
   interpolationFn: (start: any, end: any, t: any) => any;
-  constructor(target: AnimationTarget, options?: AniTrackOptions) {
-    this.target = target;
+  constructor(
+    target: AnimationTarget | AnimationTarget[],
+    options?: AniTrackOptions
+  ) {
+    this.targets = Array.isArray(target) ? target : [target];
     this.keyframes = []; // 关键帧列表
     this.interpolationFn = options?.interpolationFn || AnimationTrack.lerp; // 插值函数
   }
@@ -22,8 +27,8 @@ export class AnimationTrack {
     }
     const start = this.keyframes[0],
       end = this.keyframes[this.keyframes.length - 1];
-
-    return time >= start.time && time <= end.time;
+    // 这里加了50毫秒的误差，是为了防止时间精度问题导致的误差
+    return time >= start.time && time <= end.time + TIME_ERROR;
   }
 
   // 添加关键帧
@@ -31,6 +36,10 @@ export class AnimationTrack {
     const keyframe = new Keyframe(time, value);
     this.keyframes.push(keyframe);
     this.keyframes.sort((a, b) => a.time - b.time); // 按时间排序
+  }
+
+  applyValue(value: any) {
+    this.targets.forEach((t) => t.applyValue(value));
   }
 
   // 获取当前时间的属性值
@@ -45,10 +54,14 @@ export class AnimationTrack {
       const start = this.keyframes[i];
       const end = this.keyframes[i + 1];
       if (time >= start.time && time <= end.time) {
-        const t = (time - start.time) / (end.time - start.time); // 归一化时间
+        const t = Math.min((time - start.time) / (end.time - start.time), 1); // 归一化时间
         return this.interpolationFn(start.value, end.value, t); // 插值计算
       }
     }
+  }
+
+  reset() {
+    this.targets.forEach((t) => t.reset());
   }
 
   // 线性插值函数

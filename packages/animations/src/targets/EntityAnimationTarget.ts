@@ -1,4 +1,4 @@
-import { AnimationTarget } from '../types';
+import { AnimationTarget } from './types';
 
 // 新增 AnimationTarget 类
 export class EntityAnimationTarget implements AnimationTarget {

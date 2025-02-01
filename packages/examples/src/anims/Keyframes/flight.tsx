@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import MapContainer from '../../components/map-container';
-import { Button, Radio } from 'antd';
+import { Button } from 'antd';
 import {
   AnimationController,
   AnimationTrack,
-  CameraAnimationTarget,
   createPointRoamingSlerp,
+  parabolaInterpolate,
   PointRoamingAnimationTarget,
 } from '@hztx/animations';
 import {
@@ -31,12 +31,9 @@ function Trace() {
     const { viewer }: { viewer: Viewer } = hz;
     context.current.viewer = viewer;
 
-    const start = PathGeoJSONData.features[0].geometry.coordinates[0];
-    const end = PathGeoJSONData.features[0].geometry.coordinates.at(-1);
-    const wayPoints = PathGeoJSONData.features[0].geometry.coordinates.slice(
-      1,
-      -1
-    ) as [number, number, number][];
+    const start = [116.405285, 39.904989];
+    const end = [104.065735, 30.659462];
+    const wayPoints = [[108.405285, 35.904989, 100000]];
     const imageEntity = viewer.entities.add({
       name: 'Moving Image',
       position: Cartesian3.fromDegrees(...start, 0),
@@ -58,15 +55,16 @@ function Trace() {
         }),
         //箭头
         // material: new PolylineArrowMaterialProperty(Color.ORANGE),
-        clampToGround: true,
+        // clampToGround: true,
       },
     });
+    viewer.trackedEntity = imageEntity;
     const target = new PointRoamingAnimationTarget(imageEntity, lineEntity);
     const track = new AnimationTrack(target, {
-      interpolationFn: createPointRoamingSlerp(wayPoints),
+      interpolationFn: parabolaInterpolate({ height: 300000 }),
     });
     track.addKeyframe(0, start);
-    track.addKeyframe(3000, end);
+    track.addKeyframe(10000, end);
 
     aniCtr.addTrack(track);
     return () => {
@@ -84,7 +82,7 @@ function Trace() {
   }
 
   function replay() {
-    aniCtr.seek(0);
+    aniCtr.reset();
     play();
   }
 

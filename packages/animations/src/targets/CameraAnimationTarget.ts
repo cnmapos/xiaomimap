@@ -27,4 +27,6 @@ export class CameraAnimationTarget implements AnimationTarget {
       },
     });
   }
+
+  reset() {}
 }

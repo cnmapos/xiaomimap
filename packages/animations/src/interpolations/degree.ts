@@ -17,34 +17,9 @@ export function coordinateSlerp(
   const [startLon, startLat, startHeight = 0] = start;
   const [endLon, endLat, endHeight = 0] = end;
 
-  const startCartesian = Cartesian3.fromDegrees(
-    startLon,
-    startLat,
-    startHeight
-  );
-  // 计算经度差异并调整以确保最短路径
-  const deltaLon = endLon - startLon;
-  const adjustedEndLon = startLon + (((deltaLon + 180) % 360) - 180); // 确保最短路径
-  const deltaLat = endLat - startLat;
-  const adjustedEndLat = startLat + (((deltaLat + 90) % 180) - 90); // 确保最短路径
-  const endCartesian = Cartesian3.fromDegrees(
-    adjustedEndLon,
-    adjustedEndLat,
-    endHeight
-  );
-
-  // 使用球面线性插值（Slerp）计算中间点
-  const interpolatedCartesian = Cartesian3.lerp(
-    startCartesian,
-    endCartesian,
-    t,
-    new Cartesian3()
-  );
-  // 将笛卡尔坐标转换回经纬度
-  const cartographic = Cartographic.fromCartesian(interpolatedCartesian);
-  const lon = CMath.toDegrees(cartographic.longitude);
-  const lat = CMath.toDegrees(cartographic.latitude);
-  const height = Cartesian3.magnitude(interpolatedCartesian) - 6378137.0; // 假设地球半径为 6378137.0
+  const lon = CMath.lerp(startLon, endLon, t);
+  const lat = CMath.lerp(startLat, endLat, t);
+  const height = linearInterpolate(startHeight, endHeight, t);
 
   return [lon, lat, height];
 }
