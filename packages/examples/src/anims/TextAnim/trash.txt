@@ -1,0 +1,318 @@
+// 该方法会导致文字图片持续闪烁、因为一直在更新图片
+const canvasTextAni = (viewer) => {
+  // 创建动态 Canvas
+  const canvas = document.createElement('canvas');
+  canvas.width = 400;
+  canvas.height = 100;
+  const ctx = canvas.getContext('2d');
+
+  // 实时更新 Canvas 内容（旋转文字）
+  let rotation = 0;
+  function updateCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(rotation);
+    ctx.fillStyle = 'white';
+    ctx.font = '40px sans-serif';
+    ctx.fillText('Rotating Text', -70, 5);
+    ctx.restore();
+    rotation += 0.05;
+    requestAnimationFrame(updateCanvas);
+  }
+  updateCanvas();
+
+  // 创建 Billboard 实体
+  const billboard = viewer.entities.add({
+    position: Cartesian3.fromDegrees(-75.1641667, 39.9522222),
+    billboard: {
+      image: new CallbackProperty(() => canvas.toDataURL(), false), // 动态更新纹理
+      scale: 0.5,
+      width: canvas.width,
+      height: canvas.height,
+    },
+  });
+};
+
+const cesiumTextAni = (viewer) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256; // 设置图片宽度
+  canvas.height = 256; // 设置图片高度
+  const ctx = canvas.getContext('2d');
+
+  // 绘制矩形
+  ctx.fillStyle = '#FF0000'; // 红色
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // 绘制文本
+  ctx.font = '30px Arial';
+  ctx.fillStyle = '#FFFFFF'; // 白色文字
+  ctx.fillText('矩形中心', 40, 128); // 文本位置
+
+  const fadeInShader = `
+      uniform sampler2D image;
+      uniform float time;
+
+      czm_material czm_getMaterial(czm_materialInput materialInput) {
+          vec2 st = materialInput.st;
+          st.x = fract(st.x + time * 0.1); // 保持原有的滚动效果
+          vec4 color = texture(image, st);
+
+          // 控制透明度：随时间从 0 到 1 逐渐显示
+          float fadeIn = clamp(time, 0.0, 1.0); // 限制时间范围在 0 到 1 秒
+          color.a *= fadeIn; // 调整透明度
+
+          czm_material material;
+          material.diffuse = color.rgb;
+          material.alpha = color.a;
+          return material;
+      }
+    `;
+
+  // 简单的 GLSL 着色器代码，文字从右到左移动的 shader
+  const shaderSource = `
+      uniform sampler2D image;
+      uniform float time;
+
+      czm_material czm_getMaterial(czm_materialInput materialInput) {
+          vec2 st = materialInput.st;
+          st.x = fract(st.x + time * 0.1);
+          vec4 color = texture(image, st);
+
+          czm_material material;
+          material.diffuse = color.rgb;
+          material.alpha = color.a;
+          return material;
+      }
+    `;
+
+  // 创建材质
+  const material = new Material({
+    fabric: {
+      uniforms: {
+        image: canvas, // 替换为实际的纹理图片路径
+        time: 0.0, // 动画时间，初始为 0
+      },
+      source: fadeInShader,
+    },
+  });
+
+  // 创建矩形几何体和 Primitive
+  const rectangle = Rectangle.fromDegrees(-75.0, 40.0, -74.0, 41.0);
+  const rectanglePrimitive = new Primitive({
+    geometryInstances: new GeometryInstance({
+      geometry: new RectangleGeometry({
+        rectangle: rectangle,
+        vertexFormat: MaterialAppearance.VERTEX_FORMAT,
+      }),
+    }),
+    appearance: new MaterialAppearance({
+      material: material,
+      translucent: true, // 允许透明
+    }),
+  });
+
+  // 添加到 Cesium 场景
+  viewer.scene.primitives.add(rectanglePrimitive);
+
+  let startTime = Date.now();
+  viewer.scene.preRender.addEventListener(function () {
+    const elapsed = (Date.now() - startTime) / 1000.0; // 计算动画经过的时间（秒）
+    material.uniforms.time = elapsed; // 更新材质时间
+  });
+};
+
+// 根据文字计算矩形大小、对矩形进行贴图的方式
+// 缺点：放大缩小地图、文字看不见了
+const createTextAnimation = (viewer, position, text, style = {}) => {
+  // 默认样式配置
+  const defaultStyle = {
+    fontSize: 30,
+    color: '#FFFFFF',
+    backgroundColor: '#FF0000',
+  };
+  const mergedStyle = { ...defaultStyle, ...style };
+
+  // 1. 创建 Canvas 并动态计算尺寸
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  // 测量文本尺寸
+  ctx.font = `${mergedStyle.fontSize}px Arial`;
+  const textMetrics = ctx.measureText(text);
+  const textWidth = textMetrics.width;
+  const textHeight = mergedStyle.fontSize * 1.2; // 估算高度
+
+  // 设置 Canvas 尺寸（增加边距）
+  const padding = 20;
+  canvas.width = textWidth + padding * 2;
+  canvas.height = textHeight + padding * 2;
+
+  // 2. 绘制背景和文字
+  ctx.fillStyle = mergedStyle.backgroundColor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.font = `${mergedStyle.fontSize}px Arial`;
+  ctx.fillStyle = mergedStyle.color;
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, padding, canvas.height / 2);
+
+  // 3. 创建 GLSL 材质
+  const shaderSource = `
+      uniform sampler2D image;
+      uniform float time;
+  
+      czm_material czm_getMaterial(czm_materialInput materialInput) {
+        vec2 st = materialInput.st;
+        st.x = fract(st.x + time * 0.1);
+        vec4 color = texture(image, st);
+        czm_material material;
+        material.diffuse = color.rgb;
+        material.alpha = color.a;
+        return material;
+      }
+    `;
+
+  const material = new Material({
+    fabric: {
+      uniforms: {
+        image: canvas,
+        time: 0.0,
+      },
+      source: shaderSource,
+    },
+  });
+
+  // 4. 创建定位矩形（基于地理坐标）
+  const rectangle = Rectangle.fromDegrees(
+    position.longitude - 0.0001, // 调整跨度控制显示大小
+    position.latitude - 0.00005,
+    position.longitude + 0.0001,
+    position.latitude + 0.00005
+  );
+
+  // 5. 创建 Primitive
+  const primitive = new Primitive({
+    geometryInstances: new GeometryInstance({
+      geometry: new RectangleGeometry({
+        rectangle: rectangle,
+        vertexFormat: MaterialAppearance.VERTEX_FORMAT,
+      }),
+    }),
+    appearance: new MaterialAppearance({
+      material: material,
+      translucent: true,
+    }),
+  });
+
+  // 6. 添加到场景并启动动画
+  viewer.scene.primitives.add(primitive);
+
+  // 动画更新逻辑
+  let startTime = Date.now();
+  viewer.scene.preRender.addEventListener(() => {
+    const elapsed = (Date.now() - startTime) / 1000;
+    material.uniforms.time = elapsed;
+  });
+
+  return primitive; // 返回 primitive 便于后续操作
+};
+
+/**
+ * 创建固定大小文字动画 (Cesium 1.125.0)
+ * @param {Viewer} viewer
+ * @param {Cartesian3} position 世界坐标
+ * @param {string} text
+ * @param {Object} style { fontSize, color, backgroundColor }
+ */
+function createFixedTextAnimation(viewer, position, text, style = {}) {
+  // 合并默认样式
+  const mergedStyle = {
+    fontSize: 30,
+    color: '#FFFFFF',
+    backgroundColor: '#FF0000',
+    padding: 20,
+    ...style,
+  };
+
+  // 1. 创建动态Canvas
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  // 测量文字尺寸
+  ctx.font = `${mergedStyle.fontSize}px Arial`;
+  const metrics = ctx.measureText(text);
+
+  // 设置Canvas尺寸
+  canvas.width = metrics.width + mergedStyle.padding * 2;
+  canvas.height = mergedStyle.fontSize * 1.5 + mergedStyle.padding * 2;
+
+  // 绘制背景和文字
+  ctx.fillStyle = mergedStyle.backgroundColor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = mergedStyle.color;
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, mergedStyle.padding, canvas.height / 2);
+
+  // 2. 创建材质
+  const material = new Material({
+    fabric: {
+      type: 'AnimatedText',
+      uniforms: {
+        image: canvas.toDataURL(), // 转换为DataURL
+        time: 0.0,
+        screenSize: new Cartesian2(canvas.width, canvas.height),
+      },
+      source: `
+              uniform sampler2D image;
+              uniform float time;
+              uniform vec2 screenSize;
+              
+              czm_material czm_getMaterial(czm_materialInput materialInput) {
+                  czm_material material = czm_getDefaultMaterial(materialInput);
+                  
+                  // 转换为屏幕空间坐标
+                  vec2 st = gl_FragCoord.xy / screenSize;
+                  
+                  // 横向滚动动画
+                  st.x = fract(st.x + time * 0.1);
+                  vec4 color = texture(image, st);
+                  
+                  material.diffuse = color.rgb;
+                  material.alpha = color.a;
+                  return material;
+              }
+          `,
+    },
+    translucent: true,
+  });
+
+  // 3. 创建固定位置的平面几何体
+  const plane = new PlaneGeometry({
+    vertexFormat: VertexFormat.POSITION_AND_ST,
+  });
+
+  // 4. 创建Primitive
+  const primitive = new Primitive({
+    geometryInstances: new GeometryInstance({
+      geometry: plane,
+      modelMatrix: Transforms.eastNorthUpToFixedFrame(position),
+    }),
+    appearance: new MaterialAppearance({
+      material: material,
+      translucent: true,
+    }),
+  });
+
+  // 5. 添加至场景并启动动画
+  viewer.scene.primitives.add(primitive);
+
+  // 动画更新
+  let startTime = Date.now();
+  viewer.scene.preRender.addEventListener(() => {
+    const elapsed = (Date.now() - startTime) / 1000;
+    material.uniforms.time = elapsed;
+  });
+
+  return primitive;
+}

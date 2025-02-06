@@ -1,194 +1,74 @@
 import { HZViewer } from '@hztx/core';
 import { useEffect, useState } from 'react';
 import MapContainer from '../../components/map-container';
-import { TextAnimPlayer } from './Player';
-import { TextAnimation } from './Player2';
-import { Button, ColorPicker, Input, InputNumber, Select } from 'antd';
+import { Button, ColorPicker, Input, InputNumber, Select, Slider, Switch } from 'antd';
 import { IPlayer } from '../../types';
+import { TextAnimPlayer } from './Player3';
 
-import { CallbackProperty, Math as CesiumMath, Cartesian3, Color, GeometryInstance, ImageMaterialProperty, JulianDate, LabelStyle, Material, MaterialAppearance, Primitive, Rectangle, RectangleGeometry, Texture, Cartesian2, ClockRange, CustomShader, UniformType, getTimestamp, Model, Cesium3DTileset, ColorGeometryInstanceAttribute, VertexFormat, Appearance, PerInstanceColorAppearance, EllipsoidSurfaceAppearance } from 'cesium';
+import {
+  Cartesian3,
+} from 'cesium';
 
 // 文本的特效、最终还是用 billboard 实现吧，因为我们想要做文本的 旋转、但是 label 自身是没法旋转的，cesium并不支持。所以我们可以用动态创建文本图片的方式去模拟文本，还能借用billboard的旋转实现旋转效果。
 function TextAnim() {
   let player: IPlayer;
 
-  const [color, setColor] = useState('yellow');
+  const [color, setColor] = useState('#4A90E2');
+  const [backgroundColor, setBackgroundColor] = useState('rgba(0, 0, 0, 0)');
+  const [borderColor, setBorderColor] = useState('rgba(0, 0, 0, 0)');
+  const [borderWidth, setborderWidth] = useState(1);
   const [text, setText] = useState('慧泽图行');
+  const [fontSize, setFontSize] = useState(40);
+  const [fontWeight, setFontWeight] = useState(900);
+  const [fontStyle, setFontStyle] = useState('normal');
+  const [underline, setUnderline] = useState(false);
+  const [shadow, setShadow] = useState({ color: 'rgba(249, 58, 15, 0.4)', offsetX: 4, offsetY: 4, blur: 2 });
+
   const [inType, setInType] = useState('fadeIn');
   const [outType, setOutType] = useState('fadeOut');
   let viewer: any;
-
-  // useEffect(() => {
-  //   const hz = new HZViewer('map')
-  //   const { viewer } = hz
-
-  //   // 创建文字动画对象
-  //   player = new TextAnimation(viewer, [39.9522222, -75.1641667], {
-  //     text: text,
-  //     color: color,
-  //     animationIn: inType, // 入场动画
-  //     animationOut: outType, // 出场动画
-  //   });
-
-  //   return () => {
-  //     viewer.destroy();
-  //     player.destroy();
-  //   }
-  // }, [text, color, inType, outType])
-
-  const canvasTextAni = (viewer) => {
-
-    // 创建动态 Canvas
-    const canvas = document.createElement("canvas");
-    canvas.width = 400;
-    canvas.height = 100;
-    const ctx = canvas.getContext("2d");
-
-    // 实时更新 Canvas 内容（旋转文字）
-    let rotation = 0;
-    function updateCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.save();
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.rotate(rotation);
-      ctx.fillStyle = "white";
-      ctx.font = "40px sans-serif";
-      ctx.fillText("Rotating Text", -70, 5);
-      ctx.restore();
-      rotation += 0.05;
-      requestAnimationFrame(updateCanvas);
-    }
-    updateCanvas();
-
-    // 创建 Billboard 实体
-    const billboard = viewer.entities.add({
-      position: Cartesian3.fromDegrees(-75.1641667, 39.9522222),
-      billboard: {
-        image: new CallbackProperty(() => canvas.toDataURL(), false), // 动态更新纹理
-        scale: 0.5,
-        width: canvas.width,
-        height: canvas.height,
-      },
-    });
-  }
-
-  const cesiumTextAni = (viewer) => {
-
-    const canvas = document.createElement('canvas');
-    canvas.width = 256; // 设置图片宽度
-    canvas.height = 256; // 设置图片高度
-    const ctx = canvas.getContext('2d');
-
-    // 绘制矩形
-    ctx.fillStyle = '#FF0000'; // 红色
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // 绘制文本
-    ctx.font = '30px Arial';
-    ctx.fillStyle = '#FFFFFF'; // 白色文字
-    ctx.fillText('矩形中心', 40, 128); // 文本位置
-
-    const fadeInShader = `
-      uniform sampler2D image;
-      uniform float time;
-
-      czm_material czm_getMaterial(czm_materialInput materialInput) {
-          vec2 st = materialInput.st;
-          st.x = fract(st.x + time * 0.1); // 保持原有的滚动效果
-          vec4 color = texture(image, st);
-
-          // 控制透明度：随时间从 0 到 1 逐渐显示
-          float fadeIn = clamp(time, 0.0, 1.0); // 限制时间范围在 0 到 1 秒
-          color.a *= fadeIn; // 调整透明度
-
-          czm_material material;
-          material.diffuse = color.rgb;
-          material.alpha = color.a;
-          return material;
-      }
-    `;
-
-    // 简单的 GLSL 着色器代码，文字从右到左移动的 shader
-    const shaderSource = `
-      uniform sampler2D image;
-      uniform float time;
-
-      czm_material czm_getMaterial(czm_materialInput materialInput) {
-          vec2 st = materialInput.st;
-          st.x = fract(st.x + time * 0.1);
-          vec4 color = texture(image, st);
-
-          czm_material material;
-          material.diffuse = color.rgb;
-          material.alpha = color.a;
-          return material;
-      }
-    `;
-
-    // 创建材质
-    const material = new Material({
-      fabric: {
-          uniforms: {
-              image: canvas, // 替换为实际的纹理图片路径
-              time: 0.0 // 动画时间，初始为 0
-          },
-          source: fadeInShader,
-      },
-    });
-
-    // 创建矩形几何体和 Primitive
-    const rectangle = Rectangle.fromDegrees(-75.0, 40.0, -74.0, 41.0);
-    const rectanglePrimitive = new Primitive({
-      geometryInstances: new GeometryInstance({
-          geometry: new RectangleGeometry({
-              rectangle: rectangle,
-              vertexFormat: MaterialAppearance.VERTEX_FORMAT,
-          }),
-      }),
-      appearance: new MaterialAppearance({
-          material: material,
-          translucent: true, // 允许透明
-      }),
-    });
-
-    // 添加到 Cesium 场景
-    viewer.scene.primitives.add(rectanglePrimitive);
-
-    let startTime = Date.now();
-    viewer.scene.preRender.addEventListener(function () {
-        const elapsed = (Date.now() - startTime) / 1000.0; // 计算动画经过的时间（秒）
-        material.uniforms.time = elapsed; // 更新材质时间
-    });
-
-  }
 
   useEffect(() => {
     const hz = new HZViewer('map');
     viewer = hz.viewer;
 
     // 定义光晕的中心点坐标
-    const center = Cartesian3.fromDegrees(
-      -75.0, 40.0,
-      1000000
-    );
-
+    const center = Cartesian3.fromDegrees(-75.0, 40.0, 100);
     viewer.camera.setView({
       destination: center,
     });
 
-    cesiumTextAni(viewer);
-
+    // 示例用法
+    const styleOptions = {
+      fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif', // 使用现代感的字体
+      fontSize, // 设置较大的字体大小
+      color: color, // 设置优雅的蓝色
+      textAlign: 'center', // 文字居中对齐
+      fontWeight, // 设置粗体
+      fontStyle, // 设置斜体
+      backgroundColor, 
+      borderColor,
+      borderWidth,
+      lineHeight: 1.5, // 设置合理的行高
+      underline, // 添加下划线效果
+      shadow// 设置轻微的阴影效果
+    };
+    player = new TextAnimPlayer(viewer, [-75.0, 40.0], {
+      text,
+      textStyle: styleOptions,
+    })
     return () => {
+      player.destroy();
       viewer.destroy();
-    }
-  }, [text, color, inType, outType])
+    };
+  }, [text, color, backgroundColor, fontSize, fontWeight, fontStyle, underline, shadow, borderColor, borderWidth, inType, outType]);
 
   const playIn = () => {
-    player.playIn();
+    // player.playIn();
   };
 
   const playOut = () => {
-    player.playOut();
+    // player.playOut();
   };
 
   const handleChangeIn = (v) => {
@@ -230,7 +110,7 @@ function TextAnim() {
         }}
         id="map"
       ></div>
-      <div style={{ color: '#fff' }}>
+      <div>
         <div className="hz-player">
           <Button className="hz-btn" onClick={playIn}>
             入场
@@ -251,6 +131,16 @@ function TextAnim() {
             <Input value={text} onChange={(e) => setText(e.target.value)} />
           </div>
           <div className="hz-style-item">
+            <label>背景颜色</label>
+            <ColorPicker
+              showText
+              defaultFormat={'rgb'}
+              format={'rgb'}
+              defaultValue={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.toRgbString())}
+            />
+          </div>
+          <div className="hz-style-item">
             <label>字体颜色</label>
             <ColorPicker
               showText
@@ -258,6 +148,72 @@ function TextAnim() {
               onChange={(e) => setColor(`#${e.toHex()}`)}
             />
           </div>
+          <div className="hz-style-item">
+            <label>文字大小</label>
+            <InputNumber value={fontSize} onChange={(v) => v && setFontSize(v)} />
+          </div>
+          <div className="hz-style-item">
+            <label>文字粗细</label>
+            <InputNumber value={fontWeight} onChange={(v) => v && setFontWeight(v)} />
+          </div>
+          <div className="hz-style-item">
+            <label>字体样式</label>
+            <Select
+              value={fontStyle}
+              style={{ width: 120 }}
+              onChange={(v) => setFontStyle(v)}
+              options={[
+                { value: 'normal', label: '正常' },
+                { value: 'italic', label: '斜体' },
+              ]}
+            />
+          </div>
+          <div className="hz-style-item">
+            <label>下划线</label>
+            <Switch checked={underline} onChange={(v) => setUnderline(v)} />
+          </div>
+          <div className="hz-style-item">
+            <label>阴影颜色</label>
+            <ColorPicker
+              defaultFormat={'rgb'}
+              format={'rgb'}
+              showText
+              defaultValue={shadow.color}
+              onChange={(v) => setShadow({ ...shadow, color: v.toRgbString() })}
+            />
+          </div>
+          <div className="hz-style-item">
+            <label>阴影模糊程度</label>
+            <InputNumber value={shadow.blur} onChange={(v) => v && setShadow({ ...shadow, blur: v })} />
+            {/* <Slider defaultValue={shadow.blur} onChange={(v) => setShadow({ ...shadow, blur: v })} /> */}
+          </div>
+          <div className="hz-style-item">
+            <label>阴影水平偏移</label>
+            <InputNumber value={shadow.offsetX} onChange={(v) => v && setShadow({ ...shadow, offsetX: v })} />
+            {/* <Slider defaultValue={shadow.offsetX} onChange={(v) => setShadow({ ...shadow, offsetX: v })} /> */}
+          </div>
+          <div className="hz-style-item">
+            <label>阴影垂直偏移</label>
+            <InputNumber value={shadow.offsetY} onChange={(v) => v && setShadow({ ...shadow, offsetY: v })} />
+            {/* <Slider defaultValue={shadow.offsetY} onChange={(v) => setShadow({ ...shadow, offsetY: v })} /> */}
+          </div>
+
+          <div className="hz-style-item">
+            <label>边框颜色</label>
+            <ColorPicker
+              showText
+              defaultFormat={'rgb'}
+              format={'rgb'}
+              defaultValue={borderColor}
+              onChange={(e) => setBorderColor(e.toRgbString())}
+            />
+          </div>
+          <div className="hz-style-item">
+            <label>边框大小</label>
+            <InputNumber value={borderWidth} onChange={(v) => v !== null && setborderWidth(v)} />
+          </div>
+
+
           <div className="hz-style-item">
             <label>入场动画</label>
             <Select
