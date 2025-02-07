@@ -1,4 +1,4 @@
-import { Keyframe } from '../Keyframe';
+import { Keyframe, KeyframeOptions } from '../Keyframe';
 import { AnimationTarget } from '../types';
 
 type AniTrackOptions = {
@@ -32,8 +32,8 @@ export class AnimationTrack {
   }
 
   // 添加关键帧
-  addKeyframe(time: number, value: any) {
-    const keyframe = new Keyframe(time, value);
+  addKeyframe(time: number, value: any, options?: KeyframeOptions) {
+    const keyframe = new Keyframe(time, value, options);
     this.keyframes.push(keyframe);
     this.keyframes.sort((a, b) => a.time - b.time); // 按时间排序
   }
@@ -54,7 +54,13 @@ export class AnimationTrack {
       const start = this.keyframes[i];
       const end = this.keyframes[i + 1];
       if (time >= start.time && time <= end.time) {
-        const t = Math.min((time - start.time) / (end.time - start.time), 1); // 归一化时间
+        let t = Math.min((time - start.time) / (end.time - start.time), 1); // 非重复性执行动画
+        if (start.repeat) {
+          t = Math.min(
+            ((time - start.time) % start.duration) / start.duration,
+            1
+          ); // 重复执行动画
+        }
         return this.interpolationFn(start.value, end.value, t); // 插值计算
       }
     }

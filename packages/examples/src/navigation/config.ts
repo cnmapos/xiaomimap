@@ -17,6 +17,7 @@ import KeyFrame from '../anims/Keyframes';
 import PointRoamingKeyFrame from '../anims/Keyframes/trace';
 import Flight from '../anims/Keyframes/flight';
 import PolygonKeyframe from '../anims/Keyframes/polygon';
+import HaloKeyframe from '../anims/Keyframes/Halo';
 
 export default [
   {
@@ -145,6 +146,12 @@ export default [
         path: '/keyframe-polygon',
         thumbnail: 'XXXXXXX',
         element: PolygonKeyframe,
+      },
+      {
+        name: '光晕关键帧',
+        path: '/keyframe-halo',
+        thumbnail: 'XXXXXXX',
+        element: HaloKeyframe,
       },
     ],
   },

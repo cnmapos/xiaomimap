@@ -1,4 +1,4 @@
-import { AnimationTrack } from './t racks/AnimationTrack';
+import { AnimationTrack } from './tracks/AnimationTrack';
 
 export class AnimationController {
   private animationFrameId?: number;
