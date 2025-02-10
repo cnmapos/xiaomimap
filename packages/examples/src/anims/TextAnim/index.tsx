@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import MapContainer from '../../components/map-container';
 import { Button, ColorPicker, Input, InputNumber, Select, Slider, Switch } from 'antd';
 import { IPlayer } from '../../types';
-import { TextAnimPlayer } from './Player3';
+import { TextAnimation, TextAnimPlayer } from './Player3';
 
 import {
   Cartesian3,
@@ -24,8 +24,10 @@ function TextAnim() {
   const [underline, setUnderline] = useState(false);
   const [shadow, setShadow] = useState({ color: 'rgba(249, 58, 15, 0.4)', offsetX: 4, offsetY: 4, blur: 2 });
 
-  const [inType, setInType] = useState('fadeIn');
-  const [outType, setOutType] = useState('fadeOut');
+  const [inType, setInType] = useState(TextAnimation.FADEIN);
+  const [outType, setOutType] = useState(TextAnimation.FADEOUT);
+  const [duration, setDuration] = useState(1000);
+
   let viewer: any;
 
   useEffect(() => {
@@ -56,19 +58,31 @@ function TextAnim() {
     player = new TextAnimPlayer(viewer, [-75.0, 40.0], {
       text,
       textStyle: styleOptions,
+      inType: {
+        animationType: inType,
+        from: 0,
+        to: 1,
+        duration: duration,
+      },
+      outType: {
+        animationType: outType,
+        from: 1,
+        to: 0,
+        duration: duration,
+      },
     })
     return () => {
       player.destroy();
       viewer.destroy();
     };
-  }, [text, color, backgroundColor, fontSize, fontWeight, fontStyle, underline, shadow, borderColor, borderWidth, inType, outType]);
+  }, [text, color, backgroundColor, fontSize, fontWeight, fontStyle, underline, shadow, borderColor, borderWidth, inType, outType, duration]);
 
   const playIn = () => {
-    // player.playIn();
+    player?.playIn && player.playIn();
   };
 
   const playOut = () => {
-    // player.playOut();
+    player?.playOut && player.playOut();
   };
 
   const handleChangeIn = (v) => {
@@ -215,18 +229,22 @@ function TextAnim() {
 
 
           <div className="hz-style-item">
+            <label>动画时长</label>
+            <InputNumber value={duration} onChange={(v) => v && setDuration(v)} />
+          </div>
+          <div className="hz-style-item">
             <label>入场动画</label>
             <Select
               defaultValue="fadeIn"
               style={{ width: 120 }}
               onChange={handleChangeIn}
               options={[
-                { value: 'fadeIn', label: 'fadeIn' },
-                { value: 'flyIn', label: 'flyIn' },
-                { value: 'rotateIn', label: 'rotateIn' },
+                { value: TextAnimation.FADEIN, label: TextAnimation.FADEIN },
+                // { value: 'rotateIn', label: 'rotateIn' },
               ]}
             />
           </div>
+
           <div className="hz-style-item">
             <label>出场动画</label>
             <Select
@@ -234,9 +252,8 @@ function TextAnim() {
               style={{ width: 120 }}
               onChange={handleChangeOut}
               options={[
-                { value: 'fadeOut', label: 'fadeOut' },
-                { value: 'flyOut', label: 'flyOut' },
-                { value: 'rotateOut', label: 'rotateOut' },
+                { value: TextAnimation.FADEOUT, label: TextAnimation.FADEOUT },
+                // { value: 'rotateOut', label: 'rotateOut' },
               ]}
             />
           </div>

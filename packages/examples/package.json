@@ -14,6 +14,7 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@hztx/animations": "workspace:^",
     "@hztx/core": "workspace:^",
+    "@tweenjs/tween.js": "^25.0.0",
     "animejs": "3.2.2",
     "antd": "^5.23.0",
     "ccapture.js": "^1.1.0",
