@@ -131,6 +131,9 @@ importers:
       '@hztx/core':
         specifier: workspace:^
         version: link:../core
+      '@tweenjs/tween.js':
+        specifier: ^25.0.0
+        version: 25.0.0
       animejs:
         specifier: 3.2.2
         version: 3.2.2
