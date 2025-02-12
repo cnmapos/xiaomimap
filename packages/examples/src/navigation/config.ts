@@ -18,6 +18,7 @@ import PointRoamingKeyFrame from '../anims/Keyframes/trace';
 import Flight from '../anims/Keyframes/flight';
 import PolygonKeyframe from '../anims/Keyframes/polygon';
 import HaloKeyframe from '../anims/Keyframes/Halo';
+import TopTravel from '../anims/Keyframes/travelTop';
 
 export default [
   {
@@ -152,6 +153,12 @@ export default [
         path: '/keyframe-halo',
         thumbnail: 'XXXXXXX',
         element: HaloKeyframe,
+      },
+      {
+        name: '热门旅游城市',
+        path: '/keyframe-toptravel',
+        thumbnail: 'XXXXXXX',
+        element: TopTravel,
       },
     ],
   },

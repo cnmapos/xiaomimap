@@ -59,6 +59,9 @@ export class TagsPlayer implements IPlayer {
 
     this.createImageTag();
   }
+  destroy: () => void;
+  playIn?: (() => void) | undefined;
+  playOut?: (() => void) | undefined;
 
   play() {}
   pause() {
@@ -110,7 +113,7 @@ export class TagsPlayer implements IPlayer {
         verticalOrigin:
           this.align === 'top' ? VerticalOrigin.BOTTOM : VerticalOrigin.TOP,
         horizontalOrigin:
-          this.offset.x >= 0 ? HorizontalOrigin.LEFT : HorizontalOrigin.RIGHT,
+          this.offset.x <= 0 ? HorizontalOrigin.LEFT : HorizontalOrigin.RIGHT,
         // pixelOffset: new Cartesian2(0, -40),
       },
     });
