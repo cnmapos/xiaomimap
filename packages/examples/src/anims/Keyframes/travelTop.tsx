@@ -178,7 +178,7 @@ function TravelTop() {
         viewer.entities.add(tagTarget.billboardEntity);
         const tagTrack = new AnimationTrack(tagTarget);
         tagTrack.addKeyframe(cStart, 0);
-        tagTrack.addKeyframe(cStart + 1000, 1);
+        tagTrack.addKeyframe(cStart + 10000, 1);
         aniCtr.addTrack(tagTrack);
       });
     }

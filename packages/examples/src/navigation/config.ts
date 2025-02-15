@@ -19,6 +19,7 @@ import Flight from '../anims/Keyframes/flight';
 import PolygonKeyframe from '../anims/Keyframes/polygon';
 import HaloKeyframe from '../anims/Keyframes/Halo';
 import TopTravel from '../anims/Keyframes/travelTop';
+import TextKeyframe from '../anims/Keyframes/text';
 
 export default [
   {
@@ -135,6 +136,12 @@ export default [
         path: '/keyframe-roaming',
         thumbnail: 'XXXXXXX',
         element: PointRoamingKeyFrame,
+      },
+      {
+        name: '文字关键帧【北京各区】',
+        path: 'keyframe-text',
+        thumbnail: 'XXXXXX',
+        element: TextKeyframe,
       },
       {
         name: '航空轨迹',
