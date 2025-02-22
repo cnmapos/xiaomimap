@@ -1,8 +1,16 @@
 #root {
-  /* margin: 0;
+  margin: 0;
   padding: 0;
   flex: 1;
   height: 100%;
-  overflow: hidden; */
+  width: 100%;
   /* min-width:1280px; */
+}
+
+@import "tailwindcss";
+
+@theme {
+  --color-editor-bg: #000;
+  --color-editor-card: #262626;
+  --color-editor-fg: #ffffff;
 }

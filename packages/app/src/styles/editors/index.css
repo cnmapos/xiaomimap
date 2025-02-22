@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+.hz-editor-bg {
+  background-color: var(--color-editor-900);
+}
+
+.hz-editor-card {
+  background-color: var(--color-editor-700);
+}
