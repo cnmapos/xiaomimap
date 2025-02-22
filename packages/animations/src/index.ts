@@ -6,6 +6,7 @@ export { PointRoamingAnimationTarget } from './targets/PointRoamingAnimationTarg
 export { UniformAnimationTarget } from './targets/UniformAnimationTarget';
 export { PointHaloAnimationTarget } from './targets/PointHaloAnimationTarget';
 export { TextTagAnimationTarget } from './targets/TextTagAnimationTarget';
+export { TextAnimationTarget } from './targets/TextAnimationTarget';
 export {
   cameraFlyInterpolate,
   createPointRoamingSlerp,
