@@ -13,6 +13,7 @@ type TextTagAnimationTargetOptions = {
   align?: 'top' | 'bottom';
   color?: string;
   title: string;
+  height?: number;
 };
 
 // 新增 AnimationTarget 类
@@ -29,6 +30,7 @@ export class TextTagAnimationTarget implements AnimationTarget {
       align = 'top',
       color = '#FFF',
       title,
+      height = 30,
     } = options;
     this.entity = entity;
     this.color = color;
@@ -73,12 +75,15 @@ export class TextTagAnimationTarget implements AnimationTarget {
 
   // 更新实体的属性值
   applyValue(value: any) {
-    this.entity.point?.color?.setValue(
-      Color.fromCssColorString(this.color).withAlpha(value)
-    );
-    this.lineEntity.polyline?.material?.color?.setValue(
-      Color.fromCssColorString(this.color).withAlpha(value)
-    );
-    this.billboardEntity.billboard.scale = value;
+    if (value < 0.5) {
+      this.entity.point?.color?.setValue(
+        Color.fromCssColorString(this.color).withAlpha(value * 2)
+      );
+      this.lineEntity.polyline?.material?.color?.setValue(
+        Color.fromCssColorString(this.color).withAlpha(value * 2)
+      );
+    } else {
+      this.billboardEntity.billboard.scale = (value - 0.5) * 2;
+    }
   }
 }

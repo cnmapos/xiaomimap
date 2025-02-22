@@ -38,8 +38,9 @@ export class HZViewer implements IViewer {
     });
 
     this.viewer.clock.shouldAnimate = true;
+    this.viewer.resolutionScale = 1.5;
 
-    this.viewer.camera.changed.addEventListener(() => {
+    const cameraChange = () => {
       const cartographic = this.viewer.camera.positionCartographic;
       console.log(
         "camera position",
@@ -57,7 +58,13 @@ export class HZViewer implements IViewer {
         ",",
         CMath.toDegrees(this.viewer.camera.roll)
       );
+    };
+
+    this.viewer.camera.changed.addEventListener(() => {
+      cameraChange();
     });
+
+    window.camera = cameraChange;
   }
 
   // 封装添加图层的方法

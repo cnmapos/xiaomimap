@@ -22,7 +22,6 @@ import {
   Viewer,
 } from 'cesium';
 import { HZViewer } from '@hztx/core';
-import { TagsPlayer } from '../TextTag/Player';
 
 function createCirclePrimitive(
   position: [number, number, number?],
@@ -75,10 +74,20 @@ function TravelTop() {
     const { viewer }: { viewer: Viewer } = hz;
     context.current.viewer = viewer;
 
+    // const chinaTiles = new UrlTemplateImageryProvider({
+    //   url: 'https://tiles2.geovisearth.com/base/v1/img/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 替换为中国行政区级别瓦片的URL
+    // });
+    // viewer.imageryLayers.addImageryProvider(chinaTiles);
+    // const topoTiles = new UrlTemplateImageryProvider({
+    //   url: 'https://tiles1.geovisearth.com/base/v1/cia/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 替换为中国行政区级别瓦片的URL
+    // });
+    // viewer.imageryLayers.addImageryProvider(topoTiles);
+
     // 实现一个简单动画，从全球场景飞到成都市
     const cameraTarget = new CameraAnimationTarget(viewer.camera);
 
     const data = [
+      // 上海
       {
         cameraFly: {
           start: 0,
@@ -86,9 +95,9 @@ function TravelTop() {
           fly: {
             end: {
               position: [
-                121.74990508677502, 31.003442173942535, 26252.302494599673,
+                121.57341937938517, 30.769366775443462, 25861.224301018647,
               ],
-              direction: [0, -45.37356917309797],
+              direction: [0, -21],
             },
             start: {
               position: [
@@ -128,12 +137,283 @@ function TravelTop() {
               tagAlign: 'top',
             },
           ],
+          start: 1500,
+          end: 300000,
+        },
+      },
+      // 三亚
+      {
+        cameraFly: {
+          start: 0,
+          end: 1000,
+          fly: {
+            end: {
+              position: [
+                109.63600309661167, 17.939127404999923, 93950.61101582817,
+              ],
+              direction: [0, -66],
+            },
+            start: {
+              position: [
+                121.57341937938517, 30.769366775443462, 25861.224301018647,
+              ],
+              direction: [0, -21],
+            },
+          },
+        },
+        pois: {
+          positions: [
+            {
+              position: [109.647656, 18.234236],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '亚龙湾',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+            {
+              position: [109.348173, 18.294961],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '天涯海角',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+            {
+              position: [109.766409, 18.310365],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '蜈支洲岛',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+          ],
+          start: 1000,
+          end: 300000,
+        },
+      },
+      // 西安
+      {
+        cameraFly: {
+          start: 0,
+          end: 1000,
+          fly: {
+            end: {
+              position: [
+                109.03362824359297, 33.67653038642466, 44918.88003755327,
+              ],
+              direction: [7.450792886699177, -32.25210236120793],
+            },
+            start: {
+              position: [
+                109.63600309661167, 17.939127404999923, 93950.61101582817,
+              ],
+              direction: [0, -66],
+            },
+          },
+        },
+        pois: {
+          positions: [
+            {
+              position: [109.28196, 34.386214],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '秦始皇兵马俑',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+            {
+              position: [108.947207, 34.275848],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '古城墙',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+            {
+              position: [108.964162, 34.218285],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '大雁塔',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+          ],
+          start: 1000,
+          end: 300000,
+        },
+      },
+      {
+        cameraFly: {
+          start: 0,
+          end: 1000,
+          fly: {
+            end: {
+              position: [
+                103.799733622973, 29.927588834721412, 75539.87720785671,
+              ],
+              direction: [7.450792886699177, -32.25210236120793],
+            },
+            start: {
+              position: [
+                109.03362824359297, 33.67653038642466, 44918.88003755327,
+              ],
+              direction: [7.450959847442252, -32.254125485208],
+            },
+          },
+        },
+        pois: {
+          positions: [
+            {
+              position: [104.138176, 30.740573],
+              radius: haloRadius + 500,
+              color: '#FF0',
+              duration: 1500,
+              name: '熊猫基地',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+            {
+              position: [104.052331, 30.663189],
+              radius: haloRadius + 500,
+              color: '#FF0',
+              duration: 1500,
+              name: '宽窄巷子',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+            {
+              position: [103.609836, 31.004221],
+              radius: haloRadius + 500,
+              color: '#FF0',
+              duration: 1500,
+              name: '都江堰',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+          ],
+          start: 1000,
+          end: 300000,
+        },
+      },
+      {
+        cameraFly: {
+          start: 0,
+          end: 1000,
+          fly: {
+            end: {
+              position: [
+                120.12710688383741, 30.01907283885324, 13082.068737672449,
+              ],
+              direction: [1.508161315676096, -20.08021275602418],
+            },
+            start: {
+              position: [
+                103.799733622973, 29.927588834721412, 75539.87720785671,
+              ],
+              direction: [7.450792886699177, -32.25210236120793],
+            },
+          },
+        },
+        pois: {
+          positions: [
+            {
+              position: [120.142582, 30.24752],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '西湖',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ],
+            },
+            {
+              position: [120.102077, 30.240012],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '灵隐寺',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ],
+            },
+            {
+              position: [119.011533, 29.594371],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '千岛湖',
+              tagAlign: 'top',
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+          ],
+          start: 1000,
+          end: 300000,
+        },
+      },
+      {
+        cameraFly: {
+          start: 0,
+          end: 1000,
+          fly: {
+            end: {
+              position: [
+                118.07243621645493, 24.229609094166147, 28834.416318571817,
+              ],
+              direction: [6.383444766873809, -41.94654321271545],
+            },
+            start: {
+              position: [
+                120.12710688383741, 30.01907283885324, 13082.068737672449,
+              ],
+              direction: [1.508161315676096, -20.08021275602418],
+            },
+          },
+        },
+        pois: {
+          positions: [
+            {
+              position: [118.066347, 24.444104],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '鼓浪屿',
+              tagAlign: 'top',
+              height: 20,
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+            {
+              position: [118.126072, 24.547813],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '环岛路',
+              tagAlign: 'top',
+              height: 20,
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+            {
+              position: [118.124797, 24.425823],
+              radius: haloRadius,
+              color: '#FF0',
+              duration: 1500,
+              name: '曾厝垵',
+              tagAlign: 'top',
+              height: 20,
+              offset: [OFFSETX, OFFSETY, OFFSETZ * 2],
+            },
+          ],
           start: 1000,
           end: 300000,
         },
       },
     ];
 
+    let time = 0;
     for (let i = 0; i < data.length; i++) {
       const { cameraFly, pois } = data[i];
       const { start, end, fly } = cameraFly;
@@ -142,8 +422,8 @@ function TravelTop() {
       const flyTrack = new AnimationTrack(cameraTarget, {
         interpolationFn: cameraFlyInterpolate,
       });
-      flyTrack.addKeyframe(start, s);
-      flyTrack.addKeyframe(end, e);
+      flyTrack.addKeyframe(time, s);
+      flyTrack.addKeyframe(time + 1000, e);
       aniCtr.addTrack(flyTrack);
 
       const { positions, start: cStart, end: cEnd } = pois;
@@ -156,9 +436,11 @@ function TravelTop() {
         viewer.scene.primitives.add(circleTarget.innerPrimitive);
         viewer.scene.primitives.add(circleTarget.outPrimitive);
         const track = new AnimationTrack(circleTarget);
-        track.addKeyframe(cStart, 0, { repeat: true, duration: p.duration });
-        track.addKeyframe(cEnd, 1);
+        track.addKeyframe(time, 0, { repeat: true, duration: p.duration });
+        track.addKeyframe(time + 300000, 1);
         aniCtr.addTrack(track);
+
+        const poiTime = time + 1500;
 
         const poiEntity = new Entity({
           position: Cartesian3.fromDegrees(...p.position),
@@ -177,10 +459,12 @@ function TravelTop() {
         viewer.entities.add(tagTarget.lineEntity);
         viewer.entities.add(tagTarget.billboardEntity);
         const tagTrack = new AnimationTrack(tagTarget);
-        tagTrack.addKeyframe(cStart, 0);
-        tagTrack.addKeyframe(cStart + 1000, 1);
+        tagTrack.addKeyframe(poiTime, 0);
+        tagTrack.addKeyframe(poiTime + 1000, 1);
         aniCtr.addTrack(tagTrack);
       });
+
+      time += 13000;
     }
 
     return () => {

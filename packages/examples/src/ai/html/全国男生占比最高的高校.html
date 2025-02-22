@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>全国男生比例TOP10高校榜</title>
+    <style>
+      :root {
+        --primary-color: #2c3e50; /* 深蓝主色 */
+        --secondary-color: #3498db; /* 科技蓝 */
+      }
+
+      body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background: linear-gradient(135deg, #ecf0f1 0%, #dfe6e9 100%);
+        padding: 20px;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .uni-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 15px 0;
+        transition: transform 0.3s;
+        border-left: 4px solid var(--secondary-color);
+        position: relative;
+      }
+
+      .uni-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+      }
+
+      .ranking {
+        position: absolute;
+        left: -15px;
+        top: 20px;
+        background: var(--primary-color);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .percentage {
+        color: var(--secondary-color);
+        font-size: 1.2em;
+        margin-left: 10px;
+        font-weight: 600;
+      }
+
+      h1 {
+        color: var(--primary-color);
+        margin: 15px 0;
+        font-size: 2.2em;
+      }
+
+      .campus-tag {
+        background: #e74c3c;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        margin-left: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🏅 全国男生比例最高的10所</h1>
+        <h1>985高校</h1>
+        <p style="color: #7f8c8d">数据来源：2024本科新生招新数据</p>
+      </div>
+
+      <div class="uni-list">
+        <!-- 1. 国防科技大学 -->
+        <div class="uni-card">
+          <div class="ranking">1</div>
+          <h2>国防科技大学 <span class="percentage">93.90%</span></h2>
+          <p>📍 长沙 | 军事科技领域的顶尖学府，计算机科学与技术全国领先</p>
+        </div>
+
+        <!-- 2. 中国科学技术大学 -->
+        <div class="uni-card">
+          <div class="ranking">2</div>
+          <h2>中国科学技术大学 <span class="percentage">86.60%</span></h2>
+          <p>📍 合肥 | 量子信息与高温超导研究的世界级中心</p>
+        </div>
+
+        <!-- 3. 电子科技大学 -->
+        <div class="uni-card">
+          <div class="ranking">3</div>
+          <h2>电子科技大学 <span class="percentage">78.20%</span></h2>
+          <p>📍 成都 | 电子信息领域"两电一邮"领军高校</p>
+        </div>
+
+        <!-- 4. 西北工业大学 -->
+        <div class="uni-card">
+          <div class="ranking">4</div>
+          <h2>西北工业大学 <span class="percentage">76.30%</span></h2>
+          <p>📍 西安 | 航空宇航科学与技术学科评估A+</p>
+        </div>
+
+        <!-- 5. 哈工大（威海） -->
+        <div class="uni-card">
+          <div class="ranking">5</div>
+          <h2>
+            哈尔滨工业大学（威海）<span class="campus-tag">校区</span>
+            <span class="percentage">74.90%</span>
+          </h2>
+          <p>📍 威海 | 海洋工程与汽车工程特色校区</p>
+        </div>
+
+        <!-- 6. 北京航空航天大学 -->
+        <div class="uni-card">
+          <div class="ranking">6</div>
+          <h2>北京航空航天大学 <span class="percentage">73.80%</span></h2>
+          <p>📍 北京 | 航空航天与计算机科学双一流学科</p>
+        </div>
+
+        <!-- 7. 哈工大（三区） -->
+        <div class="uni-card">
+          <div class="ranking">7</div>
+          <h2>
+            哈尔滨工业大学（三区）<span class="campus-tag">校区</span>
+            <span class="percentage">72.60%</span>
+          </h2>
+          <p>📍 哈尔滨 | 航天学院与机电工程学院主校区</p>
+        </div>
+
+        <!-- 8. 东北大学 -->
+        <div class="uni-card">
+          <div class="ranking">8</div>
+          <h2>东北大学 <span class="percentage">71.70%</span></h2>
+          <p>📍 沈阳 | 自动化与冶金工程传统强校</p>
+        </div>
+
+        <!-- 9. 哈工大（深圳） -->
+        <div class="uni-card">
+          <div class="ranking">9</div>
+          <h2>
+            哈尔滨工业大学（深圳）<span class="campus-tag">校区</span>
+            <span class="percentage">71.30%</span>
+          </h2>
+          <p>📍 深圳 | 计算机与人工智能前沿研究基地</p>
+        </div>
+
+        <!-- 10. 清华大学 -->
+        <div class="uni-card">
+          <div class="ranking">10</div>
+          <h2>清华大学 <span class="percentage">70.80%</span></h2>
+          <p>📍 北京 | 工程物理与精密仪器领域的全球标杆</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
