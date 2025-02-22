@@ -26,5 +26,13 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
-  }
+  },
+  css: {
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true, // 如果需要支持 Less 中的 JavaScript 表达式
+        
+      },
+    },
+  },
 })
