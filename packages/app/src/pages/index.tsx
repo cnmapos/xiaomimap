@@ -9,7 +9,7 @@ const Home: React.FC = () => {
     const userInfos= location.state?.userInfo as UserInfoType;
 
     return (
-        <div>
+        <div style={{height:3000}}>
             我是home 页面
         </div>
     )
