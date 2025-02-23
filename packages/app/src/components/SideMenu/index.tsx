@@ -17,7 +17,7 @@ const items: MenuItem[] = [
       { key: "6", label: "草稿" },
       { key: "7", label: "成品" },
     ],
-  },
+  }
 ];
 
 const App: React.FC = () => {

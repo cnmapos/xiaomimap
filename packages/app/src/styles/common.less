@@ -107,6 +107,9 @@
   justify-content: space-between;
   align-items: center;
 }
+.cursor-pointer {
+  cursor: pointer;
+}
 
 .generate-utility(@property, @prefix, @total, @gap: 1, @unit: px) {
   .loop(@i: 0) when (@i <= @total) {

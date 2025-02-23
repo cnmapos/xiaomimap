@@ -8,7 +8,7 @@ const Layout = () => {
       <Header/>
       <SideMenu />
       <main className={Styles.main}>
-        <Outlet />
+       <div className={Styles.content}> <Outlet /></div>
       </main>
     </>
   );
