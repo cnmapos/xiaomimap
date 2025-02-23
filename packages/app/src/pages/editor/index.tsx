@@ -2,8 +2,18 @@
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import Header from "./Header";
 import "../../styles/editors/index.css";
+import { useEffect } from "react";
+import { useEditorStore } from "@/stores/useEditorStore";
+import { StateService } from "@/core/services/StateService";
+import { ServiceRegistry } from "@/core/services/ServiceRegistry";
 
 export default function MainLayout() {
+  const store = useEditorStore();
+  useEffect(() => {
+    const stateService = new StateService(store);
+    ServiceRegistry.register(stateService);
+  }, []);
+
   return (
     <div className="h-full w-full flex flex-col bg-editor-bg text-white">
       <Header></Header>
