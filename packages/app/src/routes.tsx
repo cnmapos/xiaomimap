@@ -3,6 +3,9 @@ import SignInAndUp from "./pages/user/login";
 import Home from "./pages";
 import Editor from "./pages/editor";
 import Layout from "./components/Layout";
+import Draft from './pages/workspace/draft';
+import Material from './pages/workspace/material';
+import Product from './pages/workspace/product';
 
 const routes: RouteObject[] = [
   {
@@ -24,6 +27,18 @@ const routes: RouteObject[] = [
       {
         path: "home",
         element: <Home />,
+      },
+      {
+        path: "/workspace/material",
+        element: <Draft />,
+      },
+      {
+        path: "/workspace/draft",
+        element: <Material />,
+      },
+      {
+        path: "/workspace/product",
+        element: <Product />,
       },
     ],
   },

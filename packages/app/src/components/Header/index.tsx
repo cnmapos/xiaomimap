@@ -5,15 +5,15 @@ import Styles from "./styles.module.less";
 const Header: React.FC = () => {
   const items = [
     {
-      key: "4",
+      key: "1",
       label: "绘个球",
     },
     {
-      key: "4",
+      key: "2",
       label: "个人信息",
     },
     {
-      key: "4",
+      key: "3",
       label: "退出登录",
     },
   ];
