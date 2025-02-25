@@ -20,6 +20,8 @@ import PolygonKeyframe from '../anims/Keyframes/polygon';
 import HaloKeyframe from '../anims/Keyframes/Halo';
 import TopTravel from '../anims/Keyframes/travelTop';
 import TextKeyframe from '../anims/Keyframes/text';
+import Terrain from '../anims/Keyframes/terrian';
+import Editor from '../editors/editor';
 
 export default [
   {
@@ -166,6 +168,23 @@ export default [
         path: '/keyframe-toptravel',
         thumbnail: 'XXXXXXX',
         element: TopTravel,
+      },
+      {
+        name: '地形图',
+        path: '/keyframe-terrain',
+        thumbnail: 'XXXXXXX',
+        element: Terrain,
+      },
+    ],
+  },
+  {
+    name: '编辑',
+    children: [
+      {
+        name: '矢量编辑',
+        path: '/vector-edit',
+        thumbnail: 'XXXXXXX',
+        element: Editor,
       },
     ],
   },

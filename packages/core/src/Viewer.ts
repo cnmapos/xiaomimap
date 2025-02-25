@@ -35,6 +35,13 @@ export class HZViewer implements IViewer {
       infoBox: false,
       selectionIndicator: false,
       creditContainer: document.createElement("div"),
+      contextOptions: {
+        webgl: {
+          preserveDrawingBuffer: true,
+          powerPreference: "high-performance",
+        },
+        allowTextureFilterAnisotropic: true,
+      },
     });
 
     this.viewer.clock.shouldAnimate = true;
