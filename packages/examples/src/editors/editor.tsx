@@ -80,6 +80,20 @@ function Editor() {
       }
     }, ScreenSpaceEventType.LEFT_CLICK);
 
+    // 监听左键双击结束绘制
+    handler.setInputAction(() => {
+      if (activeShapePoints.length > 0) {
+        // 移除浮动点
+        if (floatingPoint) {
+          viewer.entities.remove(floatingPoint);
+          floatingPoint = null;
+        }
+        // 重置绘制状态
+        activeShapePoints = [];
+        activeShape = null;
+      }
+    }, ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
     // 监听鼠标移动更新浮动点
     handler.setInputAction((event) => {
       if (activeShapePoints.length > 0) {

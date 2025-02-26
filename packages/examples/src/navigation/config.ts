@@ -22,6 +22,7 @@ import TopTravel from '../anims/Keyframes/travelTop';
 import TextKeyframe from '../anims/Keyframes/text';
 import Terrain from '../anims/Keyframes/terrian';
 import Editor from '../editors/editor';
+import Model3D from '../editors/model';
 
 export default [
   {
@@ -185,6 +186,12 @@ export default [
         path: '/vector-edit',
         thumbnail: 'XXXXXXX',
         element: Editor,
+      },
+      {
+        name: '3D模型',
+        path: '/model-edit',
+        thumbnail: 'XXXXXXX',
+        element: Model3D,
       },
     ],
   },
