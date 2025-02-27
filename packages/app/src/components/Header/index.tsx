@@ -2,21 +2,22 @@ import React from "react";
 import { BellOutlined, DownOutlined } from "@ant-design/icons";
 import { Dropdown, Avatar, Badge } from "antd";
 import Styles from "./styles.module.less";
+
+const items = [
+  {
+    key: "1",
+    label: "绘个球",
+  },
+  {
+    key: "2",
+    label: "个人信息",
+  },
+  {
+    key: "3",
+    label: "退出登录",
+  },
+];
 const Header: React.FC = () => {
-  const items = [
-    {
-      key: "1",
-      label: "绘个球",
-    },
-    {
-      key: "2",
-      label: "个人信息",
-    },
-    {
-      key: "3",
-      label: "退出登录",
-    },
-  ];
   return (
     <div className={Styles.header}>
       <div className={Styles.logo}></div>

@@ -8,11 +8,16 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 const Main: React.FC = () => {
   const [form] = Form.useForm();
-
+  
+  const handleValuesChange = (changedValues: any, allValues: any) => {
+    console.log(changedValues, allValues);
+  };
   return (
     <div className="material">
       <div className="flex-between mb-4">
-        <Form layout="inline" form={form} initialValues={{}}>
+        <Form layout="inline" form={form}
+        onValuesChange={handleValuesChange}
+        initialValues={{}}>
           <Form.Item label="素材名称">
             <Input placeholder="请输入关键字" />
           </Form.Item>
@@ -21,7 +26,7 @@ const Main: React.FC = () => {
               <Option value="1">全部</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Field B2">
+          <Form.Item label="上传时间">
             <RangePicker placeholder={["开始时间", "结束时间"]} />
           </Form.Item>
         </Form>
