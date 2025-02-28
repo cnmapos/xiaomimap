@@ -30,7 +30,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const keys = location.pathname.split("/").filter(Boolean);
     setSelectedKeys(keys);
-    setOpenKeys([keys?.[0]]);
+    // setOpenKeys([keys?.[0]]);
   }, [location]);
 
   const onClick: MenuProps["onClick"] = (e) => {

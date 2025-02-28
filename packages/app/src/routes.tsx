@@ -30,11 +30,11 @@ const routes: RouteObject[] = [
       },
       {
         path: "/workspace/material",
-        element: <Draft />,
+        element: <Material />,
       },
       {
         path: "/workspace/draft",
-        element: <Material />,
+        element: <Draft />,
       },
       {
         path: "/workspace/product",
