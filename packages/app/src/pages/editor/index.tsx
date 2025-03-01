@@ -1,6 +1,7 @@
 // layouts/MainLayout.tsx
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import Header from "./Header";
+import Header from "./components//Header/index";
+import Material from "./components/Material/index";
 import "../../styles/editors/index.css";
 
 export default function MainLayout() {
@@ -16,7 +17,7 @@ export default function MainLayout() {
               minSize={20}
               className="bg-editor-700 bg-editor-card rounded-md"
             >
-              <div>素材编辑区域</div>
+              <Material />
             </Panel>
 
             <PanelResizeHandle className="w-2" />
