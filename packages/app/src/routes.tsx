@@ -1,6 +1,6 @@
 import { RouteObject } from "react-router-dom";
 import SignInAndUp from "./pages/user/login";
-import Home from "./pages";
+import Home from "./pages/home";
 import Editor from "./pages/editor";
 import Layout from "./components/Layout";
 import Draft from './pages/workspace/draft';
