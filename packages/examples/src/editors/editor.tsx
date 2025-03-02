@@ -14,6 +14,9 @@ import {
   ScreenSpaceEventType,
   Viewer,
   CatmullRomSpline,
+  Cartographic,
+  Math as CMath,
+  UrlTemplateImageryProvider,
 } from 'cesium';
 import React, { useEffect, useRef } from 'react';
 import MapContainer from '../components/map-container';
@@ -37,6 +40,17 @@ function Editor() {
       viewer.terrainProvider = provider;
     });
     context.current.viewer = viewer;
+
+    viewer.resolutionScale = 2;
+
+    const chinaTiles = new UrlTemplateImageryProvider({
+      url: 'https://tiles2.geovisearth.com/base/v1/img/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 替换为中国行政区级别瓦片的URL
+    });
+    viewer.imageryLayers.addImageryProvider(chinaTiles);
+    const topoTiles = new UrlTemplateImageryProvider({
+      url: 'https://tiles1.geovisearth.com/base/v1/cia/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 替换为中国行政区级别瓦片的URL
+    });
+    viewer.imageryLayers.addImageryProvider(topoTiles);
 
     const cameraTarget = new CameraAnimationTarget(viewer.camera);
     const track1 = new AnimationTrack(cameraTarget, {
@@ -126,6 +140,13 @@ function Editor() {
 
     // 创建点实体
     function createPoint(position) {
+      const cartographic = Cartographic.fromCartesian(position);
+      console.log(
+        'lng, lat, height',
+        CMath.toDegrees(cartographic.longitude),
+        CMath.toDegrees(cartographic.latitude),
+        cartographic.height
+      );
       return viewer.entities.add({
         position: position,
         point: { pixelSize: 8, color: Color.YELLOW },
@@ -180,15 +201,21 @@ function Editor() {
       <div style={{ width: '100%', height: '100%' }} id="map"></div>
       <div>
         <div className="hz-player">
-          <Button className="hz-btn" onClick={play}>
-            播放
-          </Button>
-          <Button className="hz-btn" onClick={pause}>
-            暂停
-          </Button>
-          <Button className="hz-btn" onClick={replay}>
-            重新播放
-          </Button>
+          <div>
+            <Button className="hz-btn" onClick={play}>
+              播放
+            </Button>
+            <Button className="hz-btn" onClick={pause}>
+              暂停
+            </Button>
+            <Button className="hz-btn" onClick={replay}>
+              重新播放
+            </Button>
+          </div>
+          <div>
+            <Button className="hz-btn">添加点</Button>
+            <Button className="hz-btn">添加线</Button>
+          </div>
         </div>
         <div className="hz-style"></div>
       </div>

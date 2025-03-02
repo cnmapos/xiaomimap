@@ -23,6 +23,8 @@ import TextKeyframe from '../anims/Keyframes/text';
 import Terrain from '../anims/Keyframes/terrian';
 import Editor from '../editors/editor';
 import Model3D from '../editors/model';
+import TheLongMarch from '../anims/Keyframes/theLongMarch';
+import BalllisticMissiles from '../anims/Keyframes/ballisticMissiles';
 
 export default [
   {
@@ -175,6 +177,18 @@ export default [
         path: '/keyframe-terrain',
         thumbnail: 'XXXXXXX',
         element: Terrain,
+      },
+      {
+        name: '长征系列',
+        path: '/keyframe-longmarch',
+        thumbnail: 'XXXXXXX',
+        element: TheLongMarch,
+      },
+      {
+        name: '弹道导弹',
+        path: '/keyframe-ballisticmissiles',
+        thumbnail: 'XXXXXXX',
+        element: BalllisticMissiles,
       },
     ],
   },

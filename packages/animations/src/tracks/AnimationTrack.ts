@@ -1,5 +1,5 @@
 import { Keyframe, KeyframeOptions } from '../Keyframe';
-import { AnimationTarget } from '../types';
+import { AnimationStatus, AnimationTarget } from '../types';
 
 type AniTrackOptions = {
   interpolationFn?: (start: any, end: any, t: number) => any;
@@ -39,7 +39,9 @@ export class AnimationTrack {
   }
 
   applyValue(value: any) {
-    this.targets.forEach((t) => t.applyValue(value));
+    this.targets.forEach((t) => {
+      t.applyValue(value);
+    });
   }
 
   // 获取当前时间的属性值
