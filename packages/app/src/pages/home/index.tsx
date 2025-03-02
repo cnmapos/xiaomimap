@@ -17,6 +17,7 @@ const Home: React.FC = () => {
   return (
     <div className="home">
       <Carousel
+        autoplay
         dots={{
           className: "carousel-dots",
         }}
