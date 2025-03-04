@@ -1,0 +1,50 @@
+import React, { useState } from "react";
+import { Empty, Input, Button, Upload } from "antd";
+import { SearchOutlined, UploadOutlined } from "@ant-design/icons";
+import Styles from "./styles.module.less";
+
+const MaterialList: React.FC = () => {
+  const [searchValue, setSearchValue] = useState('');
+  const mockData = [
+    { id: 1, title: '峨眉山.mp4', cover: 'https://static.yximgs.com/udata/pkg/admin-center/311250d4d5d3e7a935460a6f55c9faccbb44303b.png' },
+    { id: 2, title: '乐山大佛.mp4', cover: 'https://static.yximgs.com/udata/pkg/admin-center/51d3c1da0ef4b628d7ec185264afedf55d1661b7.png' },
+  ];
+
+  return (
+    <div className={Styles.container}>
+      <div className={Styles.header}>
+        <div className={Styles.left}>
+          <Input
+            placeholder="搜索文件名称、图画元素、台词"
+            prefix={<SearchOutlined />}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className={Styles.searchInput}
+          />
+        </div>
+        <div className={Styles.right}>
+          <Upload>
+            <Button type="primary" icon={<UploadOutlined />}>导入</Button>
+          </Upload>
+        </div>
+      </div>
+      <div className={Styles.content}>
+        {mockData.length > 0 ? (
+          <div className={Styles.list}>
+            {mockData.map(item => (
+              <div key={item.id} className={Styles.item}>
+                <div className={Styles.cover}>
+                  <img src={item.cover} alt={item.title} />
+                </div>
+                <div className={Styles.title} title={item.title}>{item.title}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <Empty description="暂无素材" />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default MaterialList;
