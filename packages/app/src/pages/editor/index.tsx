@@ -2,7 +2,10 @@
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import Header from "./components//Header/index";
 import Material from "./components/Material/index";
+import Property from "./components/Property/index";
 import "../../styles/editors/index.css";
+import Player from "./components/Player/index";
+import Timeline from "./components/Timeline/index";
 
 export default function MainLayout() {
   return (
@@ -27,7 +30,7 @@ export default function MainLayout() {
               minSize={20}
               className="bg-editor-card  rounded-md"
             >
-              <div>动画预览区域</div>
+              <Player />
             </Panel>
 
             <PanelResizeHandle className="w-2" />
@@ -35,9 +38,9 @@ export default function MainLayout() {
             <Panel
               defaultSize={33}
               minSize={20}
-              className="bg-editor-card  rounded-md"
+              className="bg-editor-card rounded-md"
             >
-              <div>属性面板</div>
+              <Property />
             </Panel>
           </PanelGroup>
         </Panel>
@@ -46,7 +49,7 @@ export default function MainLayout() {
 
         {/* 底部关键帧编辑区域 */}
         <Panel defaultSize={40} className="bg-editor-card">
-          <div>动画关键帧区域</div>
+          <Timeline />
         </Panel>
       </PanelGroup>
     </div>

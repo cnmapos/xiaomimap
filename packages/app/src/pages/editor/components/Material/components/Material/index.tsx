@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { Input, Menu } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Styles from "./styles.module.less";
+import MaterialList from "./components/List";
+import DraftList from "./components/DraftList";
+import CollectionList from "./components/CollectionList";
+import HistoryList from "./components/HistoryList";
 
 const Material: React.FC = () => {
   const [activeKey, setActiveKey] = useState('material');
@@ -35,32 +39,32 @@ const Material: React.FC = () => {
         }
       ]
     },
-    {
-      key: 'ai',
-      label: 'AI生成',
-    },
-    {
-      key: 'cloud',
-      label: '云素材',
-    },
-    {
-      key: 'official',
-      label: '官方素材',
-    }
+    // {
+    //   key: 'ai',
+    //   label: 'AI生成',
+    // },
+    // {
+    //   key: 'cloud',
+    //   label: '云素材',
+    // },
+    // {
+    //   key: 'official',
+    //   label: '官方素材',
+    // }
   ];
 
   const renderContent = () => {
     switch (activeKey) {
       case 'material':
-        return <div>素材内容</div>;
+        return <MaterialList />;
       case 'draft':
-        return <div>草稿箱内容</div>;
+        return <DraftList />;
       case 'collection':
-        return <div>收藏内容</div>;
+        return <CollectionList />;
       case 'history':
-        return <div>历史记录内容</div>;
+        return <HistoryList />;
       default:
-        return <div>默认内容</div>;
+        return <MaterialList />;
     }
   };
 
