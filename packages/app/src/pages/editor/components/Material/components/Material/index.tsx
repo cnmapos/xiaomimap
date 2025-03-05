@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Input, Menu } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import ImportMaterial from '../Import/Material';
+import ImportMaterial from '../Import';
 import Styles from "./styles.module.less";
 import MaterialList from "./components/List";
 import DraftList from "./components/DraftList";
@@ -82,7 +82,7 @@ const Material: React.FC = () => {
         />
       </div>
       <div className='w-full'>
-        <div className={Styles.list}>
+        <div className={`${Styles.list} h-full`}>
           {renderContent()}
         </div>
       </div>
