@@ -1,6 +1,7 @@
 import { Model } from './model';
+import { Position } from './geojson';
 
-enum AnimationCategory {
+export enum AnimationCategory {
     ENTER = 'enter',
     EXIT = 'exit',
     REPEAT = 'repeat',
@@ -88,11 +89,4 @@ export type PathAnimation = {
             onAfter?: () => void;
         }
     ]
-}
-
-
-
-// 轨迹生成场景、需要的 props
-{
-
 }

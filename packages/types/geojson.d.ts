@@ -9,7 +9,7 @@ export enum GeometryType {
 }
 
 // 几何图形基础类型
-type Geomtory = {
+export type Geomtory = {
     id: string; // 每个元素必须有一个id
     type: GeometryType;
     style: any;
@@ -19,7 +19,7 @@ type Geomtory = {
     }
 }
 
-type Point = Geomtory & {
+export type Point = Geomtory & {
     type: GeometryType.Point;
     position: Position;
     style: {
@@ -30,7 +30,7 @@ type Point = Geomtory & {
     }
 }
 
-type LineString = Geomtory & {
+export type LineString = Geomtory & {
     type: GeometryType.LineString;
     position: Position[];
     style: {
@@ -48,7 +48,7 @@ type LineString = Geomtory & {
     }
 }
 
-type Polygon = Geomtory & {
+export type Polygon = Geomtory & {
     type: GeometryType.Polygon;
     position: Position[][];
     style: {

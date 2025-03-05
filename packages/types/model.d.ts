@@ -1,9 +1,7 @@
 import { Position } from "./geojson";
 
-
 export type Model = {
     id: string;
-    show: boolean;
     /** 模型位置 **/
     position: Position;
     /** heading, pitch, roll **/
