@@ -67,7 +67,7 @@ function Editor() {
     });
     aniCtr.addTrack(track1);
 
-    const activeShapePoints = []; // 存储线段顶点
+    let activeShapePoints = []; // 存储线段顶点
     let activeShape; // 线段实体
     let floatingPoint; // 鼠标移动时的临时点
 
