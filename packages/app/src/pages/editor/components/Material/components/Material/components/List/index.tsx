@@ -3,7 +3,7 @@ import { Empty, Input, Button, Upload } from "antd";
 import { SearchOutlined, UploadOutlined } from "@ant-design/icons";
 import Styles from "./styles.module.less";
 import ImportBar from '../../../Import'
-
+import ImportMap from '../../../Import/Map';
 
 const MaterialList: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -18,6 +18,7 @@ const MaterialList: React.FC = () => {
         <ImportBar></ImportBar>
       </div>
       <div className={Styles.content}>
+        <ImportMap></ImportMap>
         {mockData.length > 0 ? (
           <div className={Styles.list}>
             {mockData.map(item => (
