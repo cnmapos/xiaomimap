@@ -23,7 +23,6 @@ const items = [
 ];
 
 const Main: React.FC = () => {
-  
   return (
     <div className="material-list">
       <Row>
@@ -39,28 +38,28 @@ const Main: React.FC = () => {
                       <span className="flex items-center">
                         <HeartFilled className="!text-gray-300 mr-1.5 hover:!text-red-500" />
                         <Dropdown placement="bottomRight" menu={{ items }}>
-                        <svg
-                          width="28"
-                          height="16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="ant-dropdown-trigger"
-                        >
-                          <rect
+                          <svg
                             width="28"
                             height="16"
-                            rx="4"
-                            fill="#fff"
-                            fill-opacity="0.65"
-                          ></rect>
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M8 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm6 2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"
-                            fill="#000"
-                            fill-opacity="0.9"
-                          ></path>
-                        </svg>
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="ant-dropdown-trigger"
+                          >
+                            <rect
+                              width="28"
+                              height="16"
+                              rx="4"
+                              fill="#fff"
+                              fill-opacity="0.65"
+                            ></rect>
+                            <path
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M8 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm6 2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"
+                              fill="#000"
+                              fill-opacity="0.9"
+                            ></path>
+                          </svg>
                         </Dropdown>
                       </span>
                     </div>

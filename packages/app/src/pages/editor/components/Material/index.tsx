@@ -124,7 +124,7 @@ const Material: React.FC = () => {
       <Tabs
         defaultActiveKey="video"
         items={items}
-        className={Styles.tabs}
+        className={`${Styles.tabs} !h-full`}
       />
     </div>
   );

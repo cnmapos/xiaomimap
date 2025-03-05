@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Empty, Input, Button, Upload } from "antd";
 import { SearchOutlined, UploadOutlined } from "@ant-design/icons";
 import Styles from "./styles.module.less";
+import Material from '../../../Import/Material'
+
 
 const MaterialList: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -13,7 +15,8 @@ const MaterialList: React.FC = () => {
   return (
     <div className={Styles.container}>
       <div className={Styles.header}>
-        <div className={Styles.left}>
+        <Material></Material>
+        {/* <div className={Styles.left}>
           <Input
             placeholder="搜索文件名称、图画元素、台词"
             prefix={<SearchOutlined />}
@@ -25,7 +28,7 @@ const MaterialList: React.FC = () => {
           <Upload>
             <Button type="primary" icon={<UploadOutlined />}>导入</Button>
           </Upload>
-        </div>
+        </div> */}
       </div>
       <div className={Styles.content}>
         {mockData.length > 0 ? (

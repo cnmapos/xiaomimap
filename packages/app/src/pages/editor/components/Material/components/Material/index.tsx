@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Input, Menu } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import ImportMaterial from '../Import/Material';
 import Styles from "./styles.module.less";
 import MaterialList from "./components/List";
 import DraftList from "./components/DraftList";
@@ -80,7 +81,7 @@ const Material: React.FC = () => {
           onSelect={({ key }) => setActiveKey(key)}
         />
       </div>
-      <div className={Styles.content}>
+      <div className='w-full'>
         <div className={Styles.list}>
           {renderContent()}
         </div>
