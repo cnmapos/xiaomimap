@@ -25,6 +25,7 @@ import Editor from '../editors/editor';
 import Model3D from '../editors/model';
 import TheLongMarch from '../anims/Keyframes/theLongMarch';
 import BalllisticMissiles from '../anims/Keyframes/ballisticMissiles';
+import {PathAnimationPanel} from '../components/path-animation-panel';
 
 export default [
   {
@@ -206,6 +207,12 @@ export default [
         path: '/model-edit',
         thumbnail: 'XXXXXXX',
         element: Model3D,
+      },
+      {
+        name: '轨迹动画配置面板',
+        path: '/path-config-panel',
+        thumbnail: 'XXXXXXX',
+        element: PathAnimationPanel,
       },
     ],
   },
