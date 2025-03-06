@@ -62,12 +62,12 @@ function Editor() {
       direction: [5.088887, -89.9190563526215],
     });
     track1.addKeyframe(500, {
-      position: [103.96546, 30.634155, 1000.025086346157],
-      direction: [0, -45.000137765029564],
+      position: [104.297364, 30.549396, 1000.025086346157],
+      direction: [0, -90],
     });
     aniCtr.addTrack(track1);
 
-    const activeShapePoints = []; // 存储线段顶点
+    let activeShapePoints = []; // 存储线段顶点
     let activeShape; // 线段实体
     let floatingPoint; // 鼠标移动时的临时点
 
@@ -91,6 +91,21 @@ function Editor() {
         // 添加固定点
         activeShapePoints.push(position);
         createPoint(position);
+
+        console.log(
+          'line points: ',
+          JSON.stringify(
+            activeShapePoints?.map((p) => {
+              const cartographic = Cartographic.fromCartesian(p);
+
+              return [
+                cartographic.longitude,
+                cartographic.latitude,
+                cartographic.height,
+              ];
+            })
+          )
+        );
       }
     }, ScreenSpaceEventType.LEFT_CLICK);
 
@@ -144,9 +159,14 @@ function Editor() {
       console.log(
         'lng, lat, height',
         CMath.toDegrees(cartographic.longitude),
+        ',',
         CMath.toDegrees(cartographic.latitude),
+        ',',
+        CMath.toDegrees(cartographic.height),
+        ',',
         cartographic.height
       );
+
       return viewer.entities.add({
         position: position,
         point: { pixelSize: 8, color: Color.YELLOW },

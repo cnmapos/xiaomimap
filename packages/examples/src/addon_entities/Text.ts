@@ -4,6 +4,7 @@ import {
   Cartesian3,
   Color,
   Entity,
+  HeightReference,
   Viewer,
 } from 'cesium';
 import { FabricText, Shadow, StaticCanvas } from 'fabric';

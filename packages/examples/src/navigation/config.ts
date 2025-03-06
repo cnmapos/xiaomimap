@@ -25,6 +25,7 @@ import Editor from '../editors/editor';
 import Model3D from '../editors/model';
 import TheLongMarch from '../anims/Keyframes/theLongMarch';
 import BalllisticMissiles from '../anims/Keyframes/ballisticMissiles';
+import Cycling from '../anims/Keyframes/cycling';
 
 export default [
   {
@@ -189,6 +190,12 @@ export default [
         path: '/keyframe-ballisticmissiles',
         thumbnail: 'XXXXXXX',
         element: BalllisticMissiles,
+      },
+      {
+        name: '骑行轨迹',
+        path: '/keyframe-cycling',
+        thumbnail: 'XXXXXXX',
+        element: Cycling,
       },
     ],
   },
