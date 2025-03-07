@@ -27,6 +27,7 @@ import TheLongMarch from '../anims/Keyframes/theLongMarch';
 import BalllisticMissiles from '../anims/Keyframes/ballisticMissiles';
 import Cycling from '../anims/Keyframes/cycling';
 import { PathAnimationPanel } from '../components/path-animation-panel';
+import Draw from '../editors/draw';
 
 export default [
   {
@@ -220,6 +221,12 @@ export default [
         path: '/path-config-panel',
         thumbnail: 'XXXXXXX',
         element: PathAnimationPanel,
+      },
+      {
+        name: '编辑点、线、面',
+        path: '/vector-draw',
+        thumbnail: 'XXXXXXX',
+        element: Draw,
       },
     ],
   },

@@ -1,20 +1,60 @@
-import { ImageryLayer, ImageryProvider } from "cesium";
+import { ImageryLayer, ImageryProvider, SceneMode as Mode } from "cesium";
 
-export type Coordinate = {
-    lat: number;
-    lng: number;
-    height: number;
-}
+export type Coordinate = [number, number, number?];
 
 export type HeadingPitchRoll = {
-    heading: number;
-    pitch: number;
-    roll: number;
+  heading: number;
+  pitch: number;
+  roll: number;
+};
+
+export enum SceneMode {
+  SCENE3D = Mode.SCENE3D,
+  COLUMBUS_VIEW = Mode.COLUMBUS_VIEW,
+  SCENE2D = Mode.SCENE2D,
+  MORPHING = Mode.MORPHING,
 }
 
+export interface Style {}
+
+export interface RasterProvider {
+  url: string;
+  alpha?: number;
+  brightness?: number;
+  contrast?: number;
+  maximumLevel?: number;
+  minimumLevel?: number;
+}
+
+export interface ILayer {}
+
+export interface IEntity {
+  id: string;
+
+  setStyle(style: Style): void;
+  getStyle(): Style;
+
+  setProperties(properties: any): void;
+  getProperty(key: string): any;
+  getProperties(): any;
+}
+
+export interface EntityLike {}
+
+export interface PointEntityLike extends EntityLike {}
+
+export interface LineEntityLike extends EntityLike {}
+
+export interface PolygonEntityLike extends EntityLike {}
+
 export interface IViewer {
-    addImageryLayer(layer: ImageryProvider): void;
-    setView(position: Coordinate, orientation: HeadingPitchRoll): void;
-    removeImageryLayer(layer: ImageryLayer): void;
-    destroy(): void;
-} 
+  addRasterLayer(layer: RasterProvider): void;
+  removeRasterLayer(layer: ILayer): void;
+
+  setView(position: Coordinate, orientation: HeadingPitchRoll): void;
+
+  addEntity(entity: IEntity | EntityLike): IEntity;
+  removeEntity(entity: IEntity): void;
+
+  destroy(): void;
+}

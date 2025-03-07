@@ -14,7 +14,7 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@hztx/animations": "workspace:^",
     "@hztx/core": "workspace:^",
-    "@tailwindcss/vite": "^4.0.10",
+    "@tailwindcss/vite": "^4.0.12",
     "@tweenjs/tween.js": "^25.0.0",
     "animejs": "3.2.2",
     "antd": "^5.23.0",

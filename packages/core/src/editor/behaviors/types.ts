@@ -11,3 +11,5 @@ export interface CoreEvent {
 export interface ClickEvent extends CoreEvent {}
 
 export type Dispatch = (type: string, data?: any) => void;
+
+export interface Behavior {}

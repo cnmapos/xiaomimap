@@ -1,13 +1,22 @@
-import { Position } from "../behaviors/types";
-import { Mode } from "./types";
+import { Behavior, Position } from "../behaviors/types";
+import { Mode, ModeContext } from "./types";
 
-export default () => {
-  return {
-    // 记录数据状态
-    state: {
-      position: null,
-    },
-    addPoint: (mode: Mode, position: Position) => {},
-    finish: (mode: Mode, payload: any) => {},
-  };
-};
+export abstract class Base<T extends any> implements Mode<T> {
+  state: T;
+  context: ModeContext;
+
+  constructor(params: {
+    state: T;
+    context: ModeContext;
+    behaviors: Behavior[];
+  }) {
+    this.state = params.state;
+    this.context = params.context;
+  }
+
+  async finish(payload: any) {
+    return payload;
+  }
+  async enter(payload: any) {}
+  async exit() {}
+}
