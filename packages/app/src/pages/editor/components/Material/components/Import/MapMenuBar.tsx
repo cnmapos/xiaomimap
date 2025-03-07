@@ -5,6 +5,7 @@ import {
   EyeOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  MoreOutlined,
   RollbackOutlined,
   StarFilled,
   StarOutlined,
@@ -40,15 +41,42 @@ const MapMenuBar: React.FC = (props: { onFullscreen: () => void }) => {
       star: false,
     },
   ]);
+
+  const items = [
+    {
+      key: "1",
+      label: "属性",
+      className: "!text-white",
+    },
+    {
+      key: "2",
+      label: "删除",
+      className: "text-main !font-bold",
+    },
+    {
+      key: "3",
+      label: "应用到动画",
+      className: "!text-white",
+
+    },
+    {
+      key: "4",
+      label: "生产轨迹动画",
+      className: "!text-white",
+    },
+  ];
   // w-50
   const onChange = (key: string) => {
     console.log(key);
   };
 
   return (
-    <div className="flex absolute bg-neutral-900 h-full">
+    <div className="flex absolute bg-neutral-800 h-full">
       <div className="icon w-12 flex flex-col items-center">
-        <span onClick={() => setCollapsed(!collapsed)} className="h-10 px-1.5 flex items-center border-b-neutral-800 border-b-1">
+        <span
+          onClick={() => setCollapsed(!collapsed)}
+          className="h-10 px-1.5 flex items-center border-b-neutral-800 border-b-1"
+        >
           {collapsed ? (
             <MenuFoldOutlined className="p-1.5 cursor-pointer bg-cyan-300" />
           ) : (
@@ -65,9 +93,14 @@ const MapMenuBar: React.FC = (props: { onFullscreen: () => void }) => {
           <BorderOuterOutlined className="p-1.5" />
         </span>
       </div>
-      <div className={classNames("w-0 overflow-hidden transition-all border-l-neutral-800 border-l-1", {
-        "w-50": collapsed,
-      })}>
+      <div
+        className={classNames(
+          "w-0 overflow-hidden transition-all border-l-neutral-800 border-l-1",
+          {
+            "w-50": collapsed,
+          }
+        )}
+      >
         <Tabs className={Styles.tabs} defaultActiveKey="1" onChange={onChange}>
           <TabPane className="text-white" tab="要素" key="1">
             {list.map((item, index) => {
@@ -91,11 +124,20 @@ const MapMenuBar: React.FC = (props: { onFullscreen: () => void }) => {
                     )}
                     <span className="text-sm">{item.name}</span>
                   </div>
-                  {item.star ? (
-                    <StarFilled className="!text-amber-500" />
-                  ) : (
-                    <StarOutlined />
-                  )}
+                  <Space>
+                    {item.star ? (
+                      <StarFilled className="!text-amber-500" />
+                    ) : (
+                      <StarOutlined />
+                    )}
+                    <Dropdown  placement="bottomLeft" menu={{ 
+                      items,
+                      className: "!bg-black/80  !ml-5 !-mt-4 !text-white",
+                      }}>
+                    <MoreOutlined className="cursor-pointer" />
+
+                    </Dropdown>
+                  </Space>
                 </div>
               );
             })}

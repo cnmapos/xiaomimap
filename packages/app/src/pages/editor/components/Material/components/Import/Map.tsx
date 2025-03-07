@@ -3,6 +3,7 @@ import { Dropdown, Space } from "antd";
 import classNames from "classnames";
 
 import MapMenuBar from "./MapMenuBar";
+import Search from "./MapSearch";
 import { useState } from "react";
 
 const Map: React.FC = () => {
@@ -13,6 +14,7 @@ const Map: React.FC = () => {
       "fixed top-0 left-0 right-0 bottom-0 z-10": fullscreen,
     })}>
       <MapMenuBar ></MapMenuBar>
+      <Search></Search>
      <div className="map bg-amber-200 h-full w-full"></div>
     </div>
   );
