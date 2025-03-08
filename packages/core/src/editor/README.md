@@ -5,6 +5,10 @@
 新增点、线、面方式
 
 ```
+    context.current.viewer = createViewer(container.current!, {
+      key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI',
+    });
+
   function addPoint() {
     const manager = new EditorManager(context.current.viewer);
     manager.startCreate('point', {}, (coordinates) => {

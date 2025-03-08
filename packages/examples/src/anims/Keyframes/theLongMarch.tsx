@@ -361,6 +361,17 @@ function Trace() {
     });
     aniCtr.addTrack(track2);
 
+    const track = new AnimationTrack();
+    const aniObject = new AnimationObject(target, {
+      start,
+      end,
+      style,
+      interpolate,
+    });
+    track.addObject(aniObject);
+    track.lock = true;
+    track.show = true;
+
     const lineEntity = viewer.entities.add({
       name: 'Path',
       polyline: {

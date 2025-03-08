@@ -1,4 +1,5 @@
 import NewMap from '../starts/NewMap';
+import Vector from '../starts/Vector';
 import AniPath from '../anims/Path';
 import CircleHalo from '../anims/CircleHalo';
 import TextAnim from '../anims/TextAnim';
@@ -38,6 +39,12 @@ export default [
         path: '/new-map',
         thumbnail: 'XXXXXXX',
         element: NewMap,
+      },
+      {
+        name: '适量数据',
+        path: '/vector',
+        thumbnail: 'XXXXXXX',
+        element: Vector,
       },
     ],
   },

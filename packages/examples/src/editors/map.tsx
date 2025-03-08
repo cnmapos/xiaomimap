@@ -2,7 +2,7 @@ import { createViewer, HZViewer } from '@hztx/core';
 import React, { useEffect, useRef } from 'react';
 import MapContainer from '../components/map-container';
 
-function NewMap() {
+function Editor() {
   const container = useRef<HTMLElement | null>();
   const context = useRef<{ viewer: HZViewer | null }>({ viewer: null });
 
@@ -31,4 +31,4 @@ function NewMap() {
   );
 }
 
-export default NewMap;
+export default Editor;

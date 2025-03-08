@@ -224,3 +224,10 @@ export class HZViewer implements IViewer {
     this._viewer.destroy();
   }
 }
+
+export function createViewer(
+  element: string | HTMLElement,
+  options: { key: string; sceneMode?: SceneMode }
+) {
+  return new HZViewer(element, options);
+}
