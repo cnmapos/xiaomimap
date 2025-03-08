@@ -15,7 +15,13 @@ export enum SceneMode {
   MORPHING = Mode.MORPHING,
 }
 
-export interface Style {}
+export interface Style {
+  color?: string;
+  pixelSize?: number;
+  width?: number;
+  outlineColor?: string;
+  outlineWidth?: number;
+}
 
 export interface RasterProvider {
   url: string;
@@ -51,6 +57,13 @@ export interface IViewer {
   addRasterLayer(layer: RasterProvider): void;
   removeRasterLayer(layer: ILayer): void;
 
+  flyTo(options: {
+    destination: Coordinate;
+    orientation?: any;
+    duration?: number;
+    complete?: () => void;
+    cancel?: () => void;
+  }): void;
   setView(position: Coordinate, orientation: HeadingPitchRoll): void;
 
   addEntity(entity: IEntity | EntityLike): IEntity;

@@ -157,6 +157,35 @@ export class HZViewer implements IViewer {
 
     this.entities = new EntityCollection(this._viewer.entities);
   }
+  flyTo(options: {
+    destination: Coordinate;
+    orientation?: HeadingPitchRoll;
+    duration?: number;
+    complete?: () => void;
+    cancel?: () => void;
+  }): void {
+    const destination = Cartesian3.fromDegrees(
+      options.destination[0],
+      options.destination[1],
+      options.destination[2] || 0
+    );
+
+    const orientation = options.orientation
+      ? {
+          heading: HzMath.toRadians(options.orientation.heading),
+          pitch: HzMath.toRadians(options.orientation.pitch),
+          roll: HzMath.toRadians(options.orientation.roll),
+        }
+      : undefined;
+
+    this._viewer.camera.flyTo({
+      destination,
+      orientation,
+      duration: options.duration,
+      complete: options.complete,
+      cancel: options.cancel,
+    });
+  }
 
   addRasterLayer(provider: RasterProvider): void {
     const layer = new RasterLayer(provider);
