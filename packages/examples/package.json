@@ -14,6 +14,7 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@hztx/animations": "workspace:^",
     "@hztx/core": "workspace:^",
+    "@tailwindcss/vite": "^4.0.12",
     "@tweenjs/tween.js": "^25.0.0",
     "animejs": "3.2.2",
     "antd": "^5.23.0",
@@ -27,6 +28,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.1",
     "recordrtc": "5.5.1",
+    "tailwindcss": "^4.0.10",
     "whammy": "^0.0.1"
   },
   "devDependencies": {

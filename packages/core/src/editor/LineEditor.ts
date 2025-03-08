@@ -1,0 +1,66 @@
+import {
+  CallbackProperty,
+  Cartesian3,
+  Color,
+  Entity,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
+} from "cesium";
+import { EditorBase } from "./EditorBase";
+
+export class LineEditor extends EditorBase {
+  private positions: Cartesian3[] = [];
+  private tempEntity: Entity | null = null;
+  private pointEntities: Entity[] = [];
+
+  startCreate(customStyle?: any): void {
+    const handler = new ScreenSpaceEventHandler(this.viewer.scene.canvas);
+    const style = this.mergeStyles(this.defaultStyle, customStyle);
+    const pointStyle = {
+      point: {
+        pixelSize: 8,
+        color: Color.YELLOW,
+        outlineColor: Color.BLACK,
+        outlineWidth: 2,
+      },
+    };
+
+    handler.setInputAction((movement: any) => {
+      const cartesian = this.viewer.camera.pickEllipsoid(movement.position);
+      if (cartesian) {
+        this.positions.push(cartesian);
+        const pointEntity = this.viewer.entities.add({
+          position: cartesian,
+          ...pointStyle,
+        });
+        this.pointEntities.push(pointEntity);
+
+        if (!this.tempEntity) {
+          this.tempEntity = this.viewer.entities.add({
+            polyline: {
+              positions: new CallbackProperty(() => this.positions, false),
+              ...style,
+            },
+          });
+        }
+      }
+    }, ScreenSpaceEventType.LEFT_CLICK);
+
+    handler.setInputAction(() => {
+      if (this.tempEntity) {
+        const coordinates = this.positions.map((pos) =>
+          this.cartesianToDegrees(pos)
+        );
+        this.onEndCreate(coordinates);
+        this.viewer.entities.remove(this.tempEntity);
+        this.pointEntities.forEach((entity) =>
+          this.viewer.entities.remove(entity)
+        );
+        this.pointEntities = [];
+        this.tempEntity = null;
+        this.positions = [];
+        handler.destroy();
+      }
+    }, ScreenSpaceEventType.RIGHT_CLICK);
+  }
+}

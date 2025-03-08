@@ -5,9 +5,15 @@ type SlerpFunc = (
 ) => [number, number, number];
 
 export function createPointRoamingSlerp(
-  wayPoints?: [number, number, number?][]
+  wayPoints?: [number, number, number?][],
+  options?: {
+    toEast?: boolean;
+    toNorth?: boolean;
+  }
 ): SlerpFunc {
   wayPoints = wayPoints || [];
+  const toEast = options?.toEast || false;
+  const toNorth = options?.toNorth || false;
 
   const slerp = (
     start: [number, number, number],
@@ -53,13 +59,25 @@ export function createPointRoamingSlerp(
     }
 
     const segmentStart = points[segmentIndex];
-    const segmentEnd = points[segmentIndex + 1];
+    let segmentEnd = points[segmentIndex + 1];
     const segmentLength = distances[segmentIndex + 1] - distances[segmentIndex];
     const segmentT = (targetLength - distances[segmentIndex]) / segmentLength;
 
+    const endLng =
+      segmentEnd[0] < segmentStart[0] && toEast
+        ? segmentEnd[0] + 360
+        : segmentEnd[0];
+    const endLat =
+      segmentEnd[1] < segmentStart[1] && toNorth
+        ? segmentEnd[1] + 180
+        : segmentEnd[1];
+
+    const destLng = segmentStart[0] + (endLng - segmentStart[0]) * segmentT;
+    const destLat = segmentStart[1] + (endLat - segmentStart[1]) * segmentT;
+
     return [
-      segmentStart[0] + (segmentEnd[0] - segmentStart[0]) * segmentT,
-      segmentStart[1] + (segmentEnd[1] - segmentStart[1]) * segmentT,
+      toEast ? (destLng > 180 ? destLng - 360 : destLng) : destLng,
+      toNorth ? (destLat > 90 ? destLat - 180 : destLat) : destLat,
       formatHeight(segmentStart[2]) +
         (formatHeight(segmentEnd[2]) - formatHeight(segmentStart[2])) *
           segmentT,
