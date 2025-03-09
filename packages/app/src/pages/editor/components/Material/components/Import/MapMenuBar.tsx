@@ -9,10 +9,13 @@ import { Tabs } from "antd";
 import List from "./List";
 import classNames from "classnames";
 import { useState } from "react";
+import { CreateType } from './Map';
 import Styles from "./styles.module.less";
 const { TabPane } = Tabs;
 
-const MapMenuBar: React.FC = () => {
+const MapMenuBar: React.FC<{
+  onStartCreate: (v: CreateType) => void;
+}> = () => {
   // 是否展开
   const [collapsed, setCollapsed] = useState(false);
   const [list, setList] = useState<any[]>([
@@ -43,7 +46,7 @@ const MapMenuBar: React.FC = () => {
   };
 
   return (
-    <div className="flex absolute bg-neutral-800 h-full">
+    <div className="flex absolute bg-neutral-800 h-full z-10">
       <div className="icon w-12 flex flex-col items-center">
         <span
           onClick={() => setCollapsed(!collapsed)}

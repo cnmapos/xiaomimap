@@ -8,6 +8,7 @@ export class EditorManager {
   private editors: Map<string, EditorBase> = new Map();
 
   constructor(viewer: Viewer) {
+    console.log(viewer);
     // 设置默认样式
     this.editors.set(
       "point",

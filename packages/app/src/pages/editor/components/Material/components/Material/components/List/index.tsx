@@ -28,7 +28,7 @@ const MaterialList: React.FC = () => {
         <ImportBar onSelectMode={(mode) => setMode(mode)}></ImportBar>
       </div>
       <div className={Styles.content}>
-        {mode === 2 ? <ImportMap></ImportMap> : null}
+        {mode === 2 ? <ImportMap onSelectMode={(mode) => setMode(mode)}></ImportMap> : null}
         {mockData.length > 0 ? (
           <div className={Styles.list}>
             {mockData.map((item) => (
