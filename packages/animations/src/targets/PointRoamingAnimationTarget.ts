@@ -7,6 +7,7 @@ import {
   Quaternion,
   Math as CMath,
   Transforms,
+  Matrix4,
 } from 'cesium';
 import {
   AnimationStatus,
@@ -37,28 +38,12 @@ export class PointRoamingAnimationTarget implements AnimationTarget {
       if (this.positions.length < 2) {
         return this.positions; // 如果位置不足，返回当前的位置
       }
-      // TODO: 通过billboard.alignedAxis来实时更新entity的朝向，让其始终沿着轨迹方向行驶。
-      const direction = Cartesian3.subtract(
-        this.positions.at(-1),
-        this.positions.at(-2),
-        new Cartesian3()
-      );
-      // console.log('direction', direction.x, direction.y, direction.z);
 
-      const prev = this.positions.at(-2);
-      const cur = this.positions.at(-1);
-      const preVC = Cartographic.fromCartesian(prev);
-      const curVC = Cartographic.fromCartesian(cur);
-      // console.log(
-      //   'preVC',
-      //   CMath.toDegrees(preVC.longitude),
-      //   CMath.toDegrees(preVC.latitude)
-      // );
-      // console.log(
-      //   'curVC',
-      //   CMath.toDegrees(curVC.longitude),
-      //   CMath.toDegrees(curVC.latitude)
-      // );
+      const prev = this.positions.at(-2)!;
+      const cur = this.positions.at(-1)!;
+
+      // TODO: 通过billboard.alignedAxis来实时更新entity的朝向，让其始终沿着轨迹方向行驶。
+      const direction = Cartesian3.subtract(cur, prev, new Cartesian3());
 
       if (this.entity.billboard) {
         this.entity.billboard.alignedAxis = Cartesian3.normalize(
@@ -66,25 +51,38 @@ export class PointRoamingAnimationTarget implements AnimationTarget {
           new Cartesian3()
         );
       } else if (this.entity.model) {
-        // console.log(
-        //   'heading ps',
-        //   -(Math.atan2(direction.y, direction.x) + CMath.PI)
-        // );
-        const heading =
-          -(Math.atan2(direction.y, direction.x) + CMath.PI_OVER_TWO) +
-          originHeading;
-        console.log('heading: ', CMath.toDegrees(heading));
+        const ndirection = Cartesian3.normalize(direction, new Cartesian3());
+        const enuMatrix = Transforms.eastNorthUpToFixedFrame(cur);
+        const inverseMatrix = Matrix4.inverse(enuMatrix, new Matrix4());
+        const directionENU = Matrix4.multiplyByPointAsVector(
+          inverseMatrix,
+          ndirection,
+          new Cartesian3()
+        );
 
-        const horizontalDistance = Math.sqrt(
-          direction.x * direction.x + direction.y * direction.y
+        // 3. 计算航向角和俯仰角
+        const x = directionENU.x; // 东分量
+        const y = directionENU.y; // 北分量
+        const z = directionENU.z; // 天分量
+
+        // 航向角：从正东方向顺时针旋转到投影方向的角度（弧度）
+        let heading = -Math.atan2(y, x);
+        if (heading < 0) heading += 2 * Math.PI; // 确保角度在 0~2π 范围内
+
+        // 俯仰角：方向向量与水平面的夹角（弧度）
+        const pitch = Math.asin(z);
+
+        // 4. 创建 HeadingPitchRoll 对象
+        const hpr = new HeadingPitchRoll(heading, pitch, 0);
+        console.log('heading', CMath.toDegrees(heading));
+
+        // 将方向转换为四元数（基于起点的 ENU 坐标系）
+        const orientation = Transforms.headingPitchRollQuaternion(cur, hpr);
+
+        this.entity.orientation = new CallbackProperty(
+          () => orientation,
+          false
         );
-        const pitch = Math.atan2(-direction.z, horizontalDistance);
-        const hpr = new HeadingPitchRoll(heading, 0, 0);
-        const orientation = Transforms.headingPitchRollQuaternion(
-          this.positions.at(-1),
-          hpr
-        );
-        this.entity.orientation = orientation;
       }
 
       return this.positions;

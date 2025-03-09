@@ -7,6 +7,7 @@ export { UniformAnimationTarget } from './targets/UniformAnimationTarget';
 export { PointHaloAnimationTarget } from './targets/PointHaloAnimationTarget';
 export { TextTagAnimationTarget } from './targets/TextTagAnimationTarget';
 export { TextAnimationTarget } from './targets/TextAnimationTarget';
+export { BillboardScaleTarget } from './targets/BillboardScaleTarget';
 export {
   cameraFlyInterpolate,
   createPointRoamingSlerp,

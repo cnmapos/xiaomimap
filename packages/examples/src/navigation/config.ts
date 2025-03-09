@@ -27,6 +27,7 @@ import TheLongMarch from '../anims/Keyframes/theLongMarch';
 import BalllisticMissiles from '../anims/Keyframes/ballisticMissiles';
 import Cycling from '../anims/Keyframes/cycling';
 import { PathAnimationPanel } from '../components/path-animation-panel';
+import TrainCDToHK from '../anims/Keyframes/trains/CDToHK';
 
 export default [
   {
@@ -197,6 +198,12 @@ export default [
         path: '/keyframe-cycling',
         thumbnail: 'XXXXXXX',
         element: Cycling,
+      },
+      {
+        name: '高铁轨迹:成都到香港',
+        path: '/keyframe-train',
+        thumbnail: 'XXXXXXX',
+        element: TrainCDToHK,
       },
     ],
   },
