@@ -29,7 +29,10 @@ const Map: React.FC = () => {
     >
       <MapMenuBar></MapMenuBar>
       <Search></Search>
-      <div ref={container} className="map h-full w-full"></div>
+      <div
+        ref={(e) => (container.current = e)}
+        className="map h-full w-full"
+      ></div>
     </div>
   );
 };
