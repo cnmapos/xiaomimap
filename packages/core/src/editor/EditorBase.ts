@@ -1,11 +1,12 @@
-import { Cartesian3, Cartographic, Entity, Viewer, Math } from "cesium";
+import { Cartesian3, Cartographic, Math } from "cesium";
+import { IViewer } from "../types";
 
 export abstract class EditorBase {
-  protected viewer: Viewer;
+  protected viewer: IViewer;
   protected defaultStyle: any;
   public onEndCreate: (coordinates: number[] | number[][]) => void = () => {};
 
-  constructor(viewer: Viewer, defaultStyle?: any) {
+  constructor(viewer: IViewer, defaultStyle?: any) {
     this.viewer = viewer;
     this.defaultStyle = defaultStyle || {};
   }

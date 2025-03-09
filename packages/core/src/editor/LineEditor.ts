@@ -14,7 +14,9 @@ export class LineEditor extends EditorBase {
   private pointEntities: Entity[] = [];
 
   startCreate(customStyle?: any): void {
-    const handler = new ScreenSpaceEventHandler(this.viewer.scene.canvas);
+    const handler = new ScreenSpaceEventHandler(
+      this.viewer._viewer.scene.canvas
+    );
     const style = this.mergeStyles(this.defaultStyle, customStyle);
     const pointStyle = {
       point: {
@@ -26,17 +28,19 @@ export class LineEditor extends EditorBase {
     };
 
     handler.setInputAction((movement: any) => {
-      const cartesian = this.viewer.camera.pickEllipsoid(movement.position);
+      const cartesian = this.viewer._viewer.camera.pickEllipsoid(
+        movement.position
+      );
       if (cartesian) {
         this.positions.push(cartesian);
-        const pointEntity = this.viewer.entities.add({
+        const pointEntity = this.viewer._viewer.entities.add({
           position: cartesian,
           ...pointStyle,
         });
         this.pointEntities.push(pointEntity);
 
         if (!this.tempEntity) {
-          this.tempEntity = this.viewer.entities.add({
+          this.tempEntity = this.viewer._viewer.entities.add({
             polyline: {
               positions: new CallbackProperty(() => this.positions, false),
               ...style,
@@ -52,9 +56,9 @@ export class LineEditor extends EditorBase {
           this.cartesianToDegrees(pos)
         );
         this.onEndCreate(coordinates);
-        this.viewer.entities.remove(this.tempEntity);
+        this.viewer._viewer.entities.remove(this.tempEntity);
         this.pointEntities.forEach((entity) =>
-          this.viewer.entities.remove(entity)
+          this.viewer._viewer.entities.remove(entity)
         );
         this.pointEntities = [];
         this.tempEntity = null;
