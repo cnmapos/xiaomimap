@@ -172,10 +172,10 @@ export class HZViewer implements IViewer {
 
     const orientation = options.orientation
       ? {
-          heading: HzMath.toRadians(options.orientation.heading),
-          pitch: HzMath.toRadians(options.orientation.pitch),
-          roll: HzMath.toRadians(options.orientation.roll),
-        }
+        heading: HzMath.toRadians(options.orientation.heading),
+        pitch: HzMath.toRadians(options.orientation.pitch),
+        roll: HzMath.toRadians(options.orientation.roll),
+      }
       : undefined;
 
     this._viewer.camera.flyTo({
@@ -200,6 +200,15 @@ export class HZViewer implements IViewer {
       this._viewer.scene.imageryLayers.remove(layer._layer);
     }
   }
+
+  zoomIn(amount?: number) {
+    this._viewer.camera.zoomIn(amount);
+  }
+
+  zoomOut(amount?: number) {
+    this._viewer.camera.zoomOut(amount);
+  }
+
   setView(position: Coordinate, orientation: HeadingPitchRoll): void {
     this._viewer.camera.setView({
       destination: Cartesian3.fromDegrees(

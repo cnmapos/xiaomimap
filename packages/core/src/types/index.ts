@@ -70,4 +70,7 @@ export interface IViewer {
   removeEntity(entity: IEntity): void;
 
   destroy(): void;
+
+  zoomIn: (amount?:number) => void;
+  zoomOut: (amount?:number) => void;
 }
