@@ -19,7 +19,11 @@ function Vector() {
     context.current.viewer = viewer;
 
     const point = new PointEntity({
-      positions: [105.890076212411, 30.996481923504543],
+      
+      positions: [
+        116.32821170576749,
+        42.66542575152765
+    ],
     });
     viewer.addEntity(point);
 

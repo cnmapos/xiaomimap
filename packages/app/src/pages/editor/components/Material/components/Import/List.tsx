@@ -10,11 +10,12 @@ import {
   StarFilled,
   StarOutlined,
 } from "@ant-design/icons";
+import { PreviewListType } from "./Map";
 import { Dropdown, Space } from "antd";
 import "./index.less";
 
 export interface ImportListProps {
-  data: any[];
+  data: PreviewListType[];
 }
 
 const Material: React.FC<ImportListProps> = (props) => {
@@ -43,21 +44,21 @@ const Material: React.FC<ImportListProps> = (props) => {
   ];
   return (
     <>
-      {data.map((item, index) => {
+      {data.map((item) => {
         return (
           <div
-            key={index}
-            className="flex  justify-between items-center px-2 h-10 border-b-neutral-800 border-b-1 "
+            key={item.uuid}
+            className="flex  justify-between items-center px-2 h-10 border-b-neutral-600 border-b-1 "
           >
             <div>
-              {item.show ? (
+              {item.showInMap ? (
                 <EyeOutlined className="p-1.5" />
               ) : (
                 <EyeInvisibleOutlined className="p-1.5 !text-neutral-600" />
               )}
-              {item.type === 1 ? (
+              {item.type === "point" ? (
                 <EnvironmentOutlined className="p-1.5" />
-              ) : item.type === 2 ? (
+              ) : item.type === "line" ? (
                 <RollbackOutlined className="p-1.5" />
               ) : (
                 <BorderOuterOutlined className="p-1.5" />
@@ -65,7 +66,7 @@ const Material: React.FC<ImportListProps> = (props) => {
               <span className="text-sm">{item.name}</span>
             </div>
             <Space>
-              {item.star ? (
+              {item.collect ? (
                 <StarFilled className="!text-amber-500" />
               ) : (
                 <StarOutlined />

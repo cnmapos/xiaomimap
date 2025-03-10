@@ -25,25 +25,25 @@ const Main: React.FC<{
       <div className="flex flex-col gap-2 text-xl text-center">
         <span
           onClick={onBack}
-          className="px-1.5 cursor-pointer py-1 bg-black mb-6 rounded-sm"
+          className="px-1 cursor-pointer bg-black/60 mb-6 rounded-sm"
         >
           <RollbackOutlined />
         </span>
         <span
           onClick={() => onFullscreen(!fullscreen)}
-          className="px-1.5 cursor-pointer py-1 bg-black rounded-sm"
+          className="px-1 cursor-pointer bg-black/60 rounded-sm"
         >
           {fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
         </span>
         <span
           onClick={() => props.onZoom("in")}
-          className="px-1.5 cursor-pointer py-1 bg-black rounded-sm"
+          className="px-1 cursor-pointer  bg-black/60 rounded-sm"
         >
           <PlusOutlined />
         </span>
         <span
           onClick={() => props.onZoom("out")}
-          className="px-1.5 cursor-pointer py-1 bg-black rounded-sm"
+          className="px-1 cursor-pointer  bg-black/60 rounded-sm"
         >
           <MinusOutlined />
         </span>
