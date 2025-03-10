@@ -68,6 +68,7 @@ export class PointRoamingAnimationTarget implements AnimationTarget {
         // 航向角：从正东方向顺时针旋转到投影方向的角度（弧度）
         let heading = -Math.atan2(y, x);
         if (heading < 0) heading += 2 * Math.PI; // 确保角度在 0~2π 范围内
+        heading += originHeading;
 
         // 俯仰角：方向向量与水平面的夹角（弧度）
         const pitch = Math.asin(z);

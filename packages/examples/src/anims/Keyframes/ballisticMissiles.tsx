@@ -21,7 +21,7 @@ import {
 import { HZViewer } from '@hztx/core';
 import PathGeoJSONData from '../assets/pathForBike.json';
 
-const HEIGHT = 10000;
+const HEIGHT = 1000 * 1000;
 
 function Trace() {
   const aniCtr = new AnimationController();
@@ -54,17 +54,17 @@ function Trace() {
       position: Cartesian3.fromDegrees(...start),
       show: true,
       model: {
-        uri: 'assets/models/ballistic1.glb', // 替换为实际模型路径
+        uri: 'assets/models/battleplane2.glb', // 替换为实际模型路径
         // minimumPixelSize: 256 * 16,
         // maximumScale: 1280,
-        scale: 1500000,
+        scale: 150000,
         imageBasedLightingFactor: new Cartesian3(1.0, 1.0, 1.0),
         lightColor: Color.WHITE,
       },
-      //   orientation: Transforms.headingPitchRollQuaternion(
-      //     Cartesian3.fromDegrees(...start),
-      //     new HeadingPitchRoll(Math.PI, 0, 0)
-      //   ),
+      orientation: Transforms.headingPitchRollQuaternion(
+        Cartesian3.fromDegrees(...start),
+        new HeadingPitchRoll(Math.PI, 0, 0)
+      ),
     });
     const lineEntity = viewer.entities.add({
       name: 'Path',
@@ -84,7 +84,7 @@ function Trace() {
     });
     viewer.trackedEntity = modelEntity;
     const target = new PointRoamingAnimationTarget(modelEntity, lineEntity, {
-      heading: -Math.PI / 2,
+      heading: Math.PI,
     });
     const track = new AnimationTrack(target, {
       interpolationFn: createPointRoamingSlerp([], { toEast: true }),
