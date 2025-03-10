@@ -5,7 +5,7 @@ import {
   MenuUnfoldOutlined,
   RollbackOutlined,
 } from "@ant-design/icons";
-import { Tabs } from "antd";
+import { Tabs, Tooltip } from "antd";
 import List from "./List";
 import classNames from "classnames";
 import { useState, forwardRef, useImperativeHandle } from "react";
@@ -48,48 +48,54 @@ const MapMenuBar = forwardRef<MapMenuBarRef, MapMenuBarProps>((props, ref) => {
             <MenuUnfoldOutlined className="p-1.5 cursor-pointer bg-cyan-300" />
           )}
         </span>
-        <span
-          onClick={() => {
-            onStartCreate("point");
-            setType(1);
-          }}
-          className={classNames(
-            '"cursor-pointer h-10 px-1.5 border-b-neutral-600 border-b-1 flex items-center"',
-            {
-              "!text-cyan-300": type === 1,
-            }
-          )}
-        >
-          <EnvironmentOutlined className="p-1.5" />
-        </span>
-        <span
-          onClick={() => {
-            onStartCreate("line");
-            setType(2);
-          }}
-          className={classNames(
-            "cursor-pointer h-10 px-1.5 border-b-neutral-600 border-b-1  flex items-center",
-            {
-              "!text-cyan-300": type === 2,
-            }
-          )}
-        >
-          <RollbackOutlined className="p-1.5" />
-        </span>
-        <span
-          onClick={() => {
-            onStartCreate("polygon");
-            setType(3);
-          }}
-          className={classNames(
-            "cursor-pointer h-10  px-1.5 border-b-neutral-600 border-b-1  flex items-center",
-            {
-              "!text-cyan-300": type === 3,
-            }
-          )}
-        >
-          <BorderOuterOutlined className="p-1.5" />
-        </span>
+        <Tooltip title="新增点" placement="top">
+          <span
+            onClick={() => {
+              onStartCreate("point");
+              setType(1);
+            }}
+            className={classNames(
+              '"cursor-pointer h-10 px-1.5 border-b-neutral-600 border-b-1 flex items-center"',
+              {
+                "!text-cyan-300": type === 1,
+              }
+            )}
+          >
+            <EnvironmentOutlined className="p-1.5" />
+          </span>
+        </Tooltip>
+        <Tooltip title="新增线" placement="top">
+          <span
+            onClick={() => {
+              onStartCreate("line");
+              setType(2);
+            }}
+            className={classNames(
+              "cursor-pointer h-10 px-1.5 border-b-neutral-600 border-b-1  flex items-center",
+              {
+                "!text-cyan-300": type === 2,
+              }
+            )}
+          >
+            <RollbackOutlined className="p-1.5" />
+          </span>
+        </Tooltip>
+        <Tooltip title="新增面" placement="top">
+          <span
+            onClick={() => {
+              onStartCreate("polygon");
+              setType(3);
+            }}
+            className={classNames(
+              "cursor-pointer h-10  px-1.5 border-b-neutral-600 border-b-1  flex items-center",
+              {
+                "!text-cyan-300": type === 3,
+              }
+            )}
+          >
+            <BorderOuterOutlined className="p-1.5" />
+          </span>
+        </Tooltip>
       </div>
       <div
         className={classNames(

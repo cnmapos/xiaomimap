@@ -22,28 +22,28 @@ const Main: React.FC<{
   const { onBack, onFullscreen, fullscreen } = props;
   return (
     <div className="absolute bottom-4 right-4 z-10">
-      <div className="flex flex-col gap-2 text-xl text-center">
+      <div className="flex flex-col gap-2 text-sm text-center">
         <span
           onClick={onBack}
-          className="px-1 cursor-pointer bg-black/60 mb-6 rounded-sm"
+          className="px-1.5 py-1 cursor-pointer bg-black/60 mb-6 rounded-sm"
         >
           <RollbackOutlined />
         </span>
         <span
           onClick={() => onFullscreen(!fullscreen)}
-          className="px-1 cursor-pointer bg-black/60 rounded-sm"
+          className="px-1.5 py-1 cursor-pointer bg-black/60 rounded-sm"
         >
           {fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
         </span>
         <span
           onClick={() => props.onZoom("in")}
-          className="px-1 cursor-pointer  bg-black/60 rounded-sm"
+          className="px-1.5 py-1 cursor-pointer  bg-black/60 rounded-sm"
         >
           <PlusOutlined />
         </span>
         <span
           onClick={() => props.onZoom("out")}
-          className="px-1 cursor-pointer  bg-black/60 rounded-sm"
+          className="px-1.5 py-1 cursor-pointer  bg-black/60 rounded-sm"
         >
           <MinusOutlined />
         </span>

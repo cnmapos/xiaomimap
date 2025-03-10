@@ -6,35 +6,42 @@ import {
   PolygonEntity,
   HZViewer,
   EditorManager,
+  Coordinate,
 } from "@hztx/core";
 import { useEffect, useRef } from "react";
 import classNames from "classnames";
 import MapMenuBar from "./MapMenuBar";
 import Search from "./MapSearch";
 import MapControlBar from "./MapControlBar";
-import { MapMenuBarRef } from './MapMenuBar';
+import { MapMenuBarRef } from "./MapMenuBar";
 import { useState } from "react";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 
 export type CreateType = "point" | "line" | "polygon";
+// export type GeometryType<T extends CreateType> = T extends "point"
+//   ? Coordinate
+//   : Coordinate[];
+
 export interface PreviewListType {
   name: string;
   type: CreateType;
-  uuid: number;
+  id: number;
   showInMap?: boolean;
   collect?: boolean;
+  coordinates: Coordinate | Coordinate[];
 }
 
 const Map: React.FC<{
   onSelectMode: (v: number) => void;
 }> = (props) => {
   const { onSelectMode } = props;
-  const [fullscreen, setFullscreen] = useState(true);
+  const [fullscreen, setFullscreen] = useState(false);
   const container = useRef<HTMLDivElement | null>(null);
   const context = useRef<{ viewer: IViewer }>({ viewer: null });
   const [list, setList] = useState<PreviewListType[]>([]);
-  const menuBarRef = useRef<MapMenuBarRef>(null);
+  const [loading, setLoading] = useState(true);
 
+  const menuBarRef = useRef<MapMenuBarRef>(null);
   useEffect(() => {
     const viewer = createViewer(container.current!, {
       key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI",
@@ -45,11 +52,42 @@ const Map: React.FC<{
       roll: 0,
     });
     context.current.viewer = viewer;
+    // 把默认的要素数据添加到地图
+    init();
     return () => {
       viewer?.destroy();
     };
   }, []);
 
+  const init = () => {
+    const data = [
+      {
+        name: "历史点1",
+        type: "point",
+        id: 2,
+        showInMap: true,
+        coordinates: [116.397477, 39.908692],
+      },
+      {
+        name: "历史线1",
+        type: "line",
+        id: 1,
+        showInMap: true,
+        coordinates: [
+          [116.76283528817973, 42.40737146196385],
+          [117.03069047221693, 41.39360834053855],
+          [118.99044918425696, 41.4253323858586],
+        ],
+      },
+    ] as PreviewListType[];
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    setList(data);
+    data.forEach((item) => {
+      addEntity(item.type, item.coordinates);
+    });
+  };
   const setViewWithZoom = (posi) => {
     context.current.viewer?.setView([posi.lng, posi.lat, 10000], {
       heading: 0,
@@ -78,45 +116,46 @@ const Map: React.FC<{
       context.current.viewer?.zoomIn(amount);
     }
   };
-  const addEntity = (type: CreateType, coordinates) => {
+  const addEntity = (
+    type: CreateType,
+    coordinates: Coordinate | Coordinate[]
+  ) => {
     let entity = null;
     if (type === "point") {
       entity = new PointEntity({
-        positions: coordinates,
+        positions: coordinates as Coordinate,
       });
     }
     if (type === "line") {
       entity = new LineEntity({
-        positions: coordinates,
+        positions: coordinates as Coordinate[],
       });
     }
     if (type === "polygon") {
       entity = new PolygonEntity({
-        positions: coordinates,
+        positions: coordinates as Coordinate[],
       });
     }
-    if (!entity) return;
+    if (!entity || !context.current.viewer) return;
     context.current.viewer.addEntity(entity);
-    //
-    setList([
-      ...list,
-      {
-        uuid: Date.now(),
-        name: getNameIndex(type),
-        showInMap:true,
-        type: type,
-      },
-    ]);
-    // onSelectMode(-1);
     menuBarRef.current?.updateType(-1);
+    return {
+      id: Date.now(),
+      name: getNameIndex(type),
+      showInMap: true,
+      type: type,
+      coordinates,
+    };
   };
 
   const addPoint = () => {
     const manager = new EditorManager(context.current.viewer);
     manager.startCreate("point", {}, (coordinates) => {
       console.log("point", coordinates);
-
-      addEntity("point", coordinates);
+      const item = addEntity("point", coordinates);
+      if (item) {
+        setList([...list, item]);
+      }
     });
   };
 
@@ -124,14 +163,20 @@ const Map: React.FC<{
     const manager = new EditorManager(context.current.viewer);
     manager.startCreate("line", {}, (coordinates) => {
       console.log("draw line", coordinates);
-      addEntity("line", coordinates);
+      const item = addEntity("line", coordinates);
+      if (item) {
+        setList([...list, item]);
+      }
     });
   };
   const addPolygon = () => {
     const manager = new EditorManager(context.current.viewer);
     manager.startCreate("polygon", {}, (coordinates) => {
       console.log("draw polygon", coordinates);
-      addEntity("polygon", coordinates);
+      const item = addEntity("polygon", coordinates);
+      if (item) {
+        setList([...list, item]);
+      }
     });
   };
   const handleStartCreate = (type: CreateType) => {

@@ -11,7 +11,7 @@ import {
   StarOutlined,
 } from "@ant-design/icons";
 import { PreviewListType } from "./Map";
-import { Dropdown, Space } from "antd";
+import { Dropdown, Space, Tooltip } from "antd";
 import "./index.less";
 
 export interface ImportListProps {
@@ -47,15 +47,18 @@ const Material: React.FC<ImportListProps> = (props) => {
       {data.map((item) => {
         return (
           <div
-            key={item.uuid}
+            key={item.id}
             className="flex  justify-between items-center px-2 h-10 border-b-neutral-600 border-b-1 "
           >
             <div>
-              {item.showInMap ? (
-                <EyeOutlined className="p-1.5" />
-              ) : (
-                <EyeInvisibleOutlined className="p-1.5 !text-neutral-600" />
-              )}
+              <Tooltip title={item.showInMap ? "隐藏" : "显示"}>
+                {item.showInMap ? (
+                  <EyeOutlined className="p-1.5" />
+                ) : (
+                  <EyeInvisibleOutlined className="p-1.5 !text-neutral-600" />
+                )}
+              </Tooltip>
+
               {item.type === "point" ? (
                 <EnvironmentOutlined className="p-1.5" />
               ) : item.type === "line" ? (
@@ -66,11 +69,14 @@ const Material: React.FC<ImportListProps> = (props) => {
               <span className="text-sm">{item.name}</span>
             </div>
             <Space>
-              {item.collect ? (
-                <StarFilled className="!text-amber-500" />
-              ) : (
-                <StarOutlined />
-              )}
+              <Tooltip title={item.collect ? "取消收藏" : "收藏"}>
+                {item.collect ? (
+                  <StarFilled className="!text-amber-500" />
+                ) : (
+                  <StarOutlined />
+                )}
+              </Tooltip>
+
               <Dropdown
                 placement="bottomLeft"
                 menu={{
