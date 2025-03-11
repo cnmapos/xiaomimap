@@ -1,6 +1,27 @@
-import { ImageryLayer, ImageryProvider, SceneMode as Mode } from "cesium";
+import {
+  ImageryLayer,
+  ImageryProvider,
+  SceneMode as Mode,
+  PolylineGraphics as CesiumPolylineGraphics,
+  BillboardGraphics as CesiumBillboardGraphics,
+  ModelGraphics as CesiumModelGraphics,
+  Cartesian3 as CesiumCartesian3,
+  Cartographic as CesiumCartographic,
+  Color as CesiumColor,
+  Transforms as CesiumCTransforms,
+} from "cesium";
 
 export type Coordinate = [number, number, number?];
+
+export type PolylineGraphics = CesiumPolylineGraphics;
+export type BillboardGraphics = CesiumBillboardGraphics;
+export type ModelGraphics = CesiumModelGraphics;
+
+export type Transforms = CesiumCTransforms;
+export type Cartesian3 = CesiumCartesian3;
+export type Cartographic = CesiumCartographic;
+
+export type Color = CesiumColor;
 
 export type HeadingPitchRoll = {
   heading: number;
@@ -16,11 +37,12 @@ export enum SceneMode {
 }
 
 export interface Style {
-  color?: string;
+  color?: string; // 点、线、面填充颜色
   pixelSize?: number;
   width?: number;
-  outlineColor?: string;
-  outlineWidth?: number;
+  radius?: number;
+  outlineColor?: string; // 描边颜色
+  outlineWidth?: number; // 描边宽度
 }
 
 export interface RasterProvider {
@@ -36,6 +58,11 @@ export interface ILayer {}
 
 export interface IEntity {
   id: string;
+
+  polyline?: PolylineGraphics | undefined;
+  billboard: BillboardGraphics | undefined;
+  model: ModelGraphics | undefined;
+  show?: boolean;
 
   setStyle(style: Style): void;
   getStyle(): Style;
@@ -71,6 +98,6 @@ export interface IViewer {
 
   destroy(): void;
 
-  zoomIn: (amount?:number) => void;
-  zoomOut: (amount?:number) => void;
+  zoomIn: (amount?: number) => void;
+  zoomOut: (amount?: number) => void;
 }
