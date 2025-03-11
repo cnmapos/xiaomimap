@@ -4,71 +4,23 @@ import {
   CameraAnimationTarget,
   cameraFlyInterpolate,
 } from '@hztx/animations';
-import { HZViewer, EditorManager } from '@hztx/core';
-import {
-  CallbackProperty,
-  CesiumTerrainProvider,
-  Color,
-  SceneMode,
-  ScreenSpaceEventHandler,
-  ScreenSpaceEventType,
-  Viewer,
-  CatmullRomSpline,
-  Cartographic,
-  Math as CMath,
-  UrlTemplateImageryProvider,
-} from 'cesium';
+import { EditorManager, createViewer, IViewer } from '@hztx/core';
 import React, { useEffect, useRef } from 'react';
 import MapContainer from '../components/map-container';
 import { Button } from 'antd';
 
 function Editor() {
   const aniCtr = new AnimationController();
-  const context = useRef<{ viewer: Viewer }>({
+  const context = useRef<{ viewer: IViewer }>({
     viewer: null,
   });
   useEffect(() => {
-    const hz = new HZViewer('map', { sceneMode: SceneMode.SCENE3D });
-    const { viewer }: { viewer: Viewer } = hz;
-    const terrianProvider = CesiumTerrainProvider.fromUrl(
-      // 星云图
-      'https://tiles1.geovisearth.com/base/v1/terrain?token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b'
-      // 水经注
-      //   'https://assets.ion.cesium.com/us-east-1/asset_depot/1/CesiumWorldTerrain/v1.2/{z}/{x}/{y}.terrain?extensions=octvertexnormals-metadata&v=1.2.0'
-    );
-    terrianProvider.then((provider) => {
-      viewer.terrainProvider = provider;
+    context.current.viewer = createViewer('map', {
+      key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI',
     });
-    context.current.viewer = viewer;
-
-    viewer.resolutionScale = 2;
-
-    const chinaTiles = new UrlTemplateImageryProvider({
-      url: 'https://tiles2.geovisearth.com/base/v1/img/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 替换为中国行政区级别瓦片的URL
-    });
-    viewer.imageryLayers.addImageryProvider(chinaTiles);
-    const topoTiles = new UrlTemplateImageryProvider({
-      url: 'https://tiles1.geovisearth.com/base/v1/cia/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 替换为中国行政区级别瓦片的URL
-    });
-    viewer.imageryLayers.addImageryProvider(topoTiles);
-
-    const cameraTarget = new CameraAnimationTarget(viewer.camera);
-    const track1 = new AnimationTrack(cameraTarget, {
-      interpolationFn: cameraFlyInterpolate,
-    });
-
-    track1.addKeyframe(0, {
-      position: [-75.4204237390705, 33.85698238168112, 8567977.849840268],
-      direction: [5.088887, -89.9190563526215],
-    });
-    track1.addKeyframe(500, {
-      position: [104.297364, 30.549396, 1000.025086346157],
-      direction: [0, -90],
-    });
-    aniCtr.addTrack(track1);
 
     return () => {
-      viewer?.destroy();
+      context.current.viewer?.destroy();
     };
   }, []);
 
@@ -111,17 +63,6 @@ function Editor() {
       <div style={{ width: '100%', height: '100%' }} id="map"></div>
       <div>
         <div className="hz-player">
-          <div>
-            <Button className="hz-btn" onClick={play}>
-              播放
-            </Button>
-            <Button className="hz-btn" onClick={pause}>
-              暂停
-            </Button>
-            <Button className="hz-btn" onClick={replay}>
-              重新播放
-            </Button>
-          </div>
           <div>
             <Button className="hz-btn" onClick={addPoint}>
               添加点

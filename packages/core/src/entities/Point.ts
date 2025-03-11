@@ -1,5 +1,6 @@
-import { IEntity, Style } from "../types";
+import { Coordinate, IEntity, Style } from "../types";
 import { Entity, Cartesian3, Color } from "cesium";
+import { v4 as uuidv4 } from "uuid";
 
 export class PointEntity implements IEntity {
   id: string;
@@ -7,11 +8,15 @@ export class PointEntity implements IEntity {
   private _style: Style = {};
   private _properties: Record<string, any> = {};
 
-  constructor(position: Cartesian3, id: string) {
-    this.id = id;
+  positions: Coordinate;
+
+  constructor(options: { positions: Coordinate }) {
+    const { positions } = options;
+    this.positions = positions;
+    this.id = uuidv4();
     this._entity = new Entity({
-      id,
-      position,
+      id: this.id,
+      position: Cartesian3.fromDegrees(...positions),
       point: {
         pixelSize: 10,
         color: Color.WHITE,

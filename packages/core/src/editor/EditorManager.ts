@@ -1,13 +1,15 @@
 import { PointEditor } from "./PointEditor";
 import { LineEditor } from "./LineEditor";
 import { PolygonEditor } from "./PolygonEditor";
-import { Color, Entity, Viewer } from "cesium";
+import { Color } from "cesium";
 import { EditorBase } from "./EditorBase";
+import { IViewer } from "../types";
 
 export class EditorManager {
   private editors: Map<string, EditorBase> = new Map();
 
-  constructor(viewer: Viewer) {
+  constructor(viewer: IViewer) {
+    console.log(viewer);
     // 设置默认样式
     this.editors.set(
       "point",

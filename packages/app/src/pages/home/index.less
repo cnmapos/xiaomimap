@@ -1,0 +1,40 @@
+.home {
+  padding: 16px;
+  .carousel-item {
+    cursor: pointer;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    width: 100%;
+  }
+  .carousel-dots{
+    justify-content:end;
+    padding-right: 16px;
+    li{
+      height: 6px  !important;
+      width: 6px !important;
+      &::after{
+        height: 6px  !important;
+        border-radius: 3px !important;
+        background:#327dff !important;
+      }
+      button{
+        height: 6px;
+        opacity: 1;
+      }
+      
+      &.slick-active{
+        background: none;
+        &:hover{
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    // button{
+    //   height: 10px  !important;
+    //   width: 10px !important;
+    // }
+  }
+}
