@@ -1,16 +1,20 @@
 import { Coordinate, IEntity, Style } from "../types";
-import { Entity, Cartesian3, Color } from "cesium";
+import {
+  Entity,
+  Cartesian3,
+  Color,
+  BillboardGraphics,
+  ModelGraphics,
+  PolylineGraphics,
+} from "cesium";
 import { v4 as uuidv4 } from "uuid";
+import { BaseEntity } from "./Base";
 
-export class LineEntity implements IEntity {
-  id: string;
-  private _entity: Entity;
-  private _style: Style = {};
-  private _properties: Record<string, any> = {};
-
+export class LineEntity extends BaseEntity implements IEntity {
   positions: Coordinate[];
 
   constructor(options: { positions: Coordinate[] }) {
+    super();
     const { positions } = options;
     this.positions = positions;
     this.id = uuidv4();
