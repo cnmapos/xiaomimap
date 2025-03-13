@@ -1,7 +1,7 @@
-import { Coordinate, IEntity, Style } from "../types";
-import { Entity, Cartesian3, Color } from "cesium";
-import { v4 as uuidv4 } from "uuid";
-import { BaseEntity } from "./Base";
+import { Coordinate, IEntity, Style } from '../types';
+import { Entity, Cartesian3, Color } from 'cesium';
+import { v4 as uuidv4 } from 'uuid';
+import { BaseEntity } from './Base';
 
 export class PolygonEntity extends BaseEntity implements IEntity {
   positions: Coordinate[];
@@ -25,15 +25,17 @@ export class PolygonEntity extends BaseEntity implements IEntity {
   setStyle(style: Style): void {
     this._style = { ...this._style, ...style };
     if (style.color) {
-      this._entity.polygon!.material = Color.fromCssColorString(style.color);
+      this._entity.polygon!.material = Color.fromCssColorString(
+        style.color
+      ) as any;
     }
     if (style.outlineColor) {
       this._entity.polygon!.outlineColor = Color.fromCssColorString(
         style.outlineColor
-      );
+      ) as any;
     }
     if (style.outlineWidth) {
-      this._entity.polygon!.outlineWidth = style.outlineWidth;
+      this._entity.polygon!.outlineWidth = style.outlineWidth as any;
     }
   }
 

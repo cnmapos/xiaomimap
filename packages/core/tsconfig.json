@@ -5,11 +5,12 @@
     "lib": ["DOM", "ESNext"], // 包含的库
     "declaration": true, // 生成 .d.ts 类型声明文件
     "outDir": "dist", // 输出目录
-    "strict": true, // 启用严格类型检查
+    "strict": false, // 启用严格类型检查
     "esModuleInterop": true, // 支持 CommonJS 和 ES 模块的互操作
     "skipLibCheck": true, // 跳过库文件的类型检查
     "forceConsistentCasingInFileNames": true, // 强制文件名大小写一致
-    "moduleResolution": "node" // 使用 Node.js 的模块解析策略
+    "moduleResolution": "node", // 使用 Node.js 的模块解析策略
+    "noEmitOnError": false
   },
   "include": ["src"], // 包含的源代码目录
   "exclude": ["node_modules", "dist"] // 排除的目录

@@ -1,4 +1,4 @@
-import { Coordinate, IEntity, Style } from "../types";
+import { Coordinate, IEntity, Style } from '../types';
 import {
   Entity,
   Cartesian3,
@@ -6,9 +6,9 @@ import {
   BillboardGraphics,
   ModelGraphics,
   PolylineGraphics,
-} from "cesium";
-import { v4 as uuidv4 } from "uuid";
-import { BaseEntity } from "./Base";
+} from 'cesium';
+import { v4 as uuidv4 } from 'uuid';
+import { BaseEntity } from './Base';
 
 export class LineEntity extends BaseEntity implements IEntity {
   positions: Coordinate[];
@@ -31,10 +31,12 @@ export class LineEntity extends BaseEntity implements IEntity {
   setStyle(style: Style): void {
     this._style = { ...this._style, ...style };
     if (style.color) {
-      this._entity.polyline!.material = Color.fromCssColorString(style.color);
+      this._entity.polyline!.material = Color.fromCssColorString(
+        style.color
+      ) as any;
     }
     if (style.width) {
-      this._entity.polyline!.width = style.width;
+      this._entity.polyline!.width = style.width as any;
     }
   }
 

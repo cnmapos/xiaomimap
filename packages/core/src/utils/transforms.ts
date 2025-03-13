@@ -1,6 +1,6 @@
-export { Transforms as CesiumTransforms } from "cesium";
+import { Transforms as CesiumTransforms } from 'cesium';
 
-export class Transforms {
+export class HzTransforms {
   static headingPitchRollQuaternion =
     CesiumTransforms.headingPitchRollQuaternion;
 }

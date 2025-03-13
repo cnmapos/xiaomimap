@@ -9,7 +9,7 @@ import {
   Cartographic as CesiumCartographic,
   Color as CesiumColor,
   Transforms as CesiumCTransforms,
-} from "cesium";
+} from 'cesium';
 
 export type Coordinate = [number, number, number?];
 
@@ -17,7 +17,7 @@ export type PolylineGraphics = CesiumPolylineGraphics;
 export type BillboardGraphics = CesiumBillboardGraphics;
 export type ModelGraphics = CesiumModelGraphics;
 
-export type Transforms = CesiumCTransforms;
+export const Transforms = CesiumCTransforms;
 export type Cartesian3 = CesiumCartesian3;
 export type Cartographic = CesiumCartographic;
 

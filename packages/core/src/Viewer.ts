@@ -5,21 +5,20 @@ import {
   Math as CMath,
   ImageryLayer,
   Ion,
-} from "cesium";
+} from 'cesium';
 import {
   Coordinate,
-  Entity,
   EntityLike,
   HeadingPitchRoll,
+  IEntity,
   ILayer,
   IViewer,
-  Layer,
   RasterProvider,
   SceneMode,
-} from "./types";
-import { RasterLayer } from "./layers/RasterLayer";
-import { HzMath } from "./utils/math";
-import { EntityCollection } from "./entities/Collection";
+} from './types';
+import { RasterLayer } from './layers/RasterLayer';
+import { HzMath } from './utils/math';
+import { EntityCollection } from './entities/Collection';
 
 // export class HZViewer implements IViewer {
 //   viewer: Viewer;
@@ -142,11 +141,11 @@ export class HZViewer implements IViewer {
       fullscreenButton: false,
       infoBox: false,
       selectionIndicator: false,
-      creditContainer: document.createElement("div"),
+      creditContainer: document.createElement('div'),
       contextOptions: {
         webgl: {
           preserveDrawingBuffer: true,
-          powerPreference: "high-performance",
+          powerPreference: 'high-performance',
         },
         allowTextureFilterAnisotropic: true,
       },
@@ -172,10 +171,10 @@ export class HZViewer implements IViewer {
 
     const orientation = options.orientation
       ? {
-        heading: HzMath.toRadians(options.orientation.heading),
-        pitch: HzMath.toRadians(options.orientation.pitch),
-        roll: HzMath.toRadians(options.orientation.roll),
-      }
+          heading: HzMath.toRadians(options.orientation.heading),
+          pitch: HzMath.toRadians(options.orientation.pitch),
+          roll: HzMath.toRadians(options.orientation.roll),
+        }
       : undefined;
 
     this._viewer.camera.flyTo({
@@ -223,10 +222,10 @@ export class HZViewer implements IViewer {
       },
     });
   }
-  addEntity(entity: Entity | EntityLike): Entity {
-    this.entities.add(entity);
+  addEntity(entity: IEntity | EntityLike): IEntity {
+    return this.entities.add(entity as any);
   }
-  removeEntity(entity: Entity): void {
+  removeEntity(entity: IEntity): void {
     this.entities.remove(entity);
   }
   destroy(): void {

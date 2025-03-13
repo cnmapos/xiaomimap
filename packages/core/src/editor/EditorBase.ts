@@ -1,8 +1,8 @@
-import { Cartesian3, Cartographic, Math } from "cesium";
-import { IViewer } from "../types";
+import { Cartesian3, Cartographic, Math } from 'cesium';
+import { IViewer } from '../types';
 
 export abstract class EditorBase {
-  protected viewer: IViewer;
+  protected viewer: IViewer & { _viewer?: any };
   protected defaultStyle: any;
   public onEndCreate: (coordinates: number[] | number[][]) => void = () => {};
 
