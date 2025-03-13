@@ -1,5 +1,7 @@
 import React, { forwardRef, Ref, useState, useImperativeHandle } from "react";
-import { Button, Modal, Row, Col } from "antd";
+import { Button, Modal, Row, Col, message } from "antd";
+import { createProject } from "@/service/api/project";
+
 import classNames from "classnames";
 
 import "./index.less";
@@ -13,11 +15,19 @@ const VideoRatio = forwardRef(
   ) => {
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
-    const [ratio, setRatio] = useState(null);
+    const [ratio, setRatio] = useState("");
 
-    const handleCreate = () => {
-      setOpen(false);
-      console.log(ratio);
+    const handleCreate = async () => {
+      const data = await createProject({
+        screenRatio: ratio,
+        projectName: "未命名草稿",
+      });
+      if (data.code === 0) {
+        setOpen(false);
+      } else {
+        message.error(data.msg || "创建失败");
+      }
+      console.log(data);
     };
 
     const handleCancel = () => {
@@ -54,12 +64,12 @@ const VideoRatio = forwardRef(
             <Col
               span={6}
               className={classNames("hover:text-blue-500", {
-                "video-ratio-active": ratio === 0,
+                "video-ratio-active": ratio === "9:16",
               })}
             >
               <div
                 className="video-ratio-item relative border border-transparent hover:border-blue-600"
-                onClick={() => setRatio(0)}
+                onClick={() => setRatio("9:16")}
               >
                 <img
                   className="absolute top-0 object-contain h-full w-full"
@@ -73,12 +83,12 @@ const VideoRatio = forwardRef(
             <Col
               span={6}
               className={classNames("hover:text-blue-500", {
-                "video-ratio-active": ratio === 1,
+                "video-ratio-active": ratio === "16:9",
               })}
             >
               <div
                 className="video-ratio-item relative border border-transparent hover:border-blue-600"
-                onClick={() => setRatio(1)}
+                onClick={() => setRatio("16:9")}
               >
                 <img
                   className="absolute top-0 object-contain h-full w-full"
@@ -92,12 +102,12 @@ const VideoRatio = forwardRef(
             <Col
               span={6}
               className={classNames("hover:text-blue-500", {
-                "video-ratio-active": ratio === 2,
+                "video-ratio-active": ratio === "4:3",
               })}
             >
               <div
                 className="video-ratio-item relative border border-transparent hover:border-blue-600"
-                onClick={() => setRatio(2)}
+                onClick={() => setRatio("4:3")}
               >
                 <img
                   className="absolute top-0 object-contain h-full w-full"
@@ -111,12 +121,12 @@ const VideoRatio = forwardRef(
             <Col
               span={6}
               className={classNames("hover:text-blue-500", {
-                "video-ratio-active": ratio === 3,
+                "video-ratio-active": ratio === "1:1",
               })}
             >
               <div
                 className="video-ratio-item relative border border-transparent hover:border-blue-600"
-                onClick={() => setRatio(3)}
+                onClick={() => setRatio("1:1")}
               >
                 <img
                   className="absolute top-0 object-contain w-25 h-25 left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2"

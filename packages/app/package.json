@@ -11,9 +11,10 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
+    "@hztx/core": "workspace:^",
     "@tailwindcss/vite": "^4.0.8",
     "@types/react-beautiful-dnd": "^13.1.8",
-    "@hztx/core": "workspace:^",
+    "ahooks": "^3.8.4",
     "antd": "^5.23.0",
     "axios": "^1.7.9",
     "classnames": "^2.5.1",
