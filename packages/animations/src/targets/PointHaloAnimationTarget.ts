@@ -6,18 +6,33 @@ import {
   MaterialAppearance,
   Primitive,
 } from 'cesium';
-import { AnimationTarget } from '../types';
+import {
+  AnimationStatus,
+  AnimationTarget,
+  AnimationTargetConstructorOptions,
+} from '../types';
 
 export class PointHaloAnimationTarget implements AnimationTarget {
   innerPrimitive: Primitive;
   outPrimitive: Primitive;
+  private onBefore?: () => void;
 
-  constructor(primitive: Primitive) {
+  constructor(
+    primitive: Primitive,
+    options?: AnimationTargetConstructorOptions
+  ) {
+    this.status = AnimationStatus.PENDING;
+    this.onBefore = options?.onBefore;
     const [innerPrimitive, outPrimitive] = this.createHaloEffect(primitive);
     this.innerPrimitive = innerPrimitive;
     this.outPrimitive = outPrimitive;
   }
+  status: AnimationStatus;
   applyValue(value: any): void {
+    if (this.status === AnimationStatus.PENDING) {
+      this.onBefore?.();
+      this.status = AnimationStatus.RUNNING;
+    }
     this.innerPrimitive.appearance.material.uniforms.radius = value;
     this.outPrimitive.appearance.material.uniforms.radius = (value + 0.4) % 1;
   }

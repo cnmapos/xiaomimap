@@ -99,9 +99,9 @@ function Editor() {
               const cartographic = Cartographic.fromCartesian(p);
 
               return [
-                cartographic.longitude,
-                cartographic.latitude,
-                cartographic.height,
+                CMath.toDegrees(cartographic.longitude),
+                CMath.toDegrees(cartographic.latitude),
+                CMath.toDegrees(cartographic.height),
               ];
             })
           )

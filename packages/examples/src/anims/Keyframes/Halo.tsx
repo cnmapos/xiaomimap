@@ -82,7 +82,7 @@ function Polygon() {
     });
 
     const primitive = createCirclePrimitive(
-      [104.167869626642999, 30.758956896017201, 10000],
+      [104.16786962664, 30.758956891, 10000],
       { radius: 10000, color: '#0F0' }
     );
     const circleTarget = new PointHaloAnimationTarget(primitive);

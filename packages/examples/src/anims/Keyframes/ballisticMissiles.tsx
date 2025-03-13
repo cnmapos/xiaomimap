@@ -6,6 +6,7 @@ import {
   AnimationTrack,
   createPointRoamingSlerp,
   parabolaInterpolate,
+  PointHaloAnimationTarget,
   PointRoamingAnimationTarget,
 } from '@hztx/animations';
 import {
@@ -20,10 +21,11 @@ import {
   UrlTemplateImageryProvider,
   Viewer,
 } from 'cesium';
-import { HZViewer } from '@hztx/core';
+import { createCirclePrimitive, HZViewer } from '@hztx/core';
 import PathGeoJSONData from '../assets/pathForBike.json';
+import { smoothPoints } from '../../utils';
 
-const HEIGHT = 9000;
+const HEIGHT = 900000;
 
 function Trace() {
   const aniCtr = new AnimationController();
@@ -59,9 +61,6 @@ function Trace() {
     viewer.scene.postProcessStages.fxaa.enabled = true;
     viewer.scene.postProcessStages.ambientOcclusion.enabled = true;
 
-    const start = [145.6, 15.0, 0];
-    const end = [129.9, 32.8, HEIGHT];
-    const wayPoints = [[130.8, 33.9, HEIGHT]];
     //[130.43837494772174 , 33.57647134472288] 小仓市
     // [129.75774189303715 , 32.592941189034256] 长崎市
     // 途径位置
@@ -111,7 +110,58 @@ function Trace() {
         [2.2666799815440184, 0.5707946724846669, -77.83833538882318],
       ].map((p) => [Math.toDegrees(p[0]), Math.toDegrees(p[1])])
     );
-
+    const points = [
+      [130.8135478417313, 33.20052975176603, 32170.22533348005],
+      [130.67987736361252, 33.43495751891457, 9320.947425960609],
+      [130.6029356214408, 33.585781262209785, 15309.057059954363],
+      [130.55352806200335, 33.68321446762636, 23937.26870703247],
+      [130.43656397311153, 33.72910569418493, -411.2774906304669],
+      [130.32223601164898, 33.72505635322353, -1592.5013419044935],
+      [130.2293379984599, 33.658608342445994, -232.1825237666705],
+      [130.2215521440263, 33.56549129308717, 823.9634367971864],
+      [130.26808741066634, 33.491881710527146, 32138.100151848455],
+      [130.3888821257156, 33.47061600962125, 23909.13314403784],
+      [130.46078552817315, 33.47194758698993, 13514.451395660219],
+      [130.53684057119182, 33.548800681833995, 7291.839674913327],
+      [130.5303809737017, 33.62535979091186, 7029.418301092995],
+      [130.52081195757606, 33.66811662700433, 6065.08659129618],
+      [130.4909052121885, 33.740680797515125, 1237.7014846219515],
+      [130.445877077487, 33.765924335042335, -535.433252863605],
+      [130.39017095225623, 33.76827835159619, -1697.0197118576186],
+      [130.2885209790717, 33.73700543810051, -1956.70666185106],
+      [130.2003916669964, 33.678721166521335, -1418.7220814678444],
+      [130.1741121552507, 33.60875789699173, 6475.449692748351],
+      [130.15690596739577, 33.53572082333239, 1293.043704349697],
+      [130.152923354461, 33.48578652447052, 22693.288021953318],
+      [130.05402472954538, 32.88899212310058, 9960.170621356765],
+      [130.02600392170388, 32.73081466982091, 4734.967704841674],
+      [129.87830924132976, 32.581112727258095, -2229.296249413881],
+      [129.69240023608455, 32.53749996778599, -7474.131521394396],
+      [129.5886265360641, 32.71470502926885, -9065.152114751534],
+      [129.60275353186663, 32.834703531840766, -6258.442636184966],
+      [129.61962183197898, 32.95091677582941, -2362.5120394392043],
+      [129.75123201732896, 33.03560768685354, 4517.075223281446],
+      [129.87891915162658, 33.06600783819007, 1866.8784506382785],
+      [129.97051774580123, 33.032628146540624, 15292.225318906114],
+      [130.03116867392453, 32.98349667277258, 28828.002284458227],
+      [130.15408016151028, 32.8313591496204, 1186.661070050469],
+      [130.10469982974615, 32.672251355273886, -1848.125874279151],
+      [129.89202114485812, 32.50989019007662, -4436.737718074537],
+      [129.6312555367825, 32.50547287416594, -9211.238422686522],
+      [129.4916390878864, 32.660269589240755, -12483.526662287422],
+      [129.49618582139084, 32.87353422943014, -8298.034938773293],
+      [129.52974108233184, 33.06010123305364, -1107.5840439907822],
+      [129.63123254199243, 33.13720882465157, 1368.7269479257327],
+      [129.76780494328574, 33.191683731770404, 13319.926498902401],
+      [129.86239208421114, 33.19567056925972, 5756.341283108776],
+      [129.96369624078727, 33.13129558948928, 4362.826506188097],
+      [129.92008053059556, 32.93752982560214, 2833.870244769716],
+    ].map((p) => [p[0], p[1], HEIGHT]);
+    points.unshift([145.6, 15.0, 0]);
+    const smoothedPoints = smoothPoints(viewer, points);
+    const start = smoothedPoints[0];
+    const end = smoothedPoints.at(-1);
+    const wayPoints = smoothedPoints.slice(1, -1);
     const modelEntity = context.current.viewer.entities.add({
       position: Cartesian3.fromDegrees(...start),
       show: true,
@@ -119,7 +169,7 @@ function Trace() {
         uri: 'assets/models/battleplane3.glb', // 替换为实际模型路径
         // minimumPixelSize: 256 * 16,
         // maximumScale: 1280,
-        scale: 50000,
+        scale: 50000 / 2,
         imageBasedLightingFactor: new Cartesian3(1.0, 1.0, 1.0),
         lightColor: Color.WHITE,
       },
@@ -147,48 +197,7 @@ function Trace() {
     });
     viewer.trackedEntity = modelEntity;
 
-    const wayPointsFromXCToCQ = [
-      [130.67316603209196, 33.39432382294892],
-      [130.6066666721701, 33.437059762073496],
-      [130.55163332035096, 33.492564130389454],
-      [130.50761395050705, 33.559173049740686],
-      [130.4840628679102, 33.62853728102777],
-      [130.4318386487422, 33.669234911283624],
-      [130.38585186580033, 33.64102190736547],
-      [130.33962631778638, 33.597010589359336],
-      [130.31898205054486, 33.54466764787699],
-      [130.31726407439024, 33.502937791243575],
-      [130.34893259878478, 33.48467614974695],
-      [130.39020743562557, 33.48918853345367],
-      [130.4290853617266, 33.50536170996516],
-      [130.4595995461448, 33.544855556250745],
-      [130.462882538066, 33.601845084372286],
-      [130.42805960052698, 33.64078513930233],
-      [130.37250405783888, 33.67136490606002],
-      [130.3165011169015, 33.62439990225258],
-      [130.27499075661095, 33.541725286709415],
-      [130.28250380798093, 33.45917915761621],
-      [130.27456911140396, 33.36249849961814],
-      [130.15640560401565, 33.20190803173242],
-      [130.09920667600267, 33.09563681654946],
-      [130.0429710665315, 32.98965112923126],
-      [129.93114313647325, 32.811036609619876],
-      [129.8525088922127, 32.758853413152664],
-      [129.79170800428622, 32.731212243226906],
-      [129.72277143144393, 32.69019420567883],
-      [129.69259065031557, 32.64108345024444],
-      [129.69446952346073, 32.58309042522376],
-      [129.73717794199854, 32.528835632532996],
-      [129.79417834662212, 32.530488089961985],
-      [129.84544061857648, 32.577861332035724],
-      [129.86669508090702, 32.63373969777054],
-      [129.87119644926358, 32.70412570192351],
-      [129.87119644926358, 32.70412570192351],
-      [129.87119644926358, 32.70412570192351],
-    ];
-
     // ----------------------阶段1:从琉球群岛到小仓市
-
     const target = new PointRoamingAnimationTarget(modelEntity, lineEntity, {
       heading: -Math.PI / 2,
       onBefore: () => {
@@ -209,14 +218,79 @@ function Trace() {
       interpolationFn: createPointRoamingSlerp(wayPoints),
     });
     track.addKeyframe(0, start);
-    track.addKeyframe(30000, end);
+    track.addKeyframe(20000, end);
 
     aniCtr.addTrack(track);
     // ----------------------阶段2:小仓市盘旋一圈，继续往长崎市出发
-
     // ----------------------阶段3:到达长崎市后投掷原子弹
+    const start2 = smoothedPoints.at(-1);
+    const end2 = [129.846270998901, 32.73767996332364, -100];
+    const modelEntity2 = context.current.viewer.entities.add({
+      position: Cartesian3.fromDegrees(...start2),
+      show: false,
+      model: {
+        uri: 'assets/models/ballistic1.glb', // 替换为实际模型路径
+        // minimumPixelSize: 256 * 16,
+        // maximumScale: 1280,
+        scale: 10000,
+        imageBasedLightingFactor: new Cartesian3(1.0, 1.0, 1.0),
+        lightColor: Color.WHITE,
+      },
+      orientation: Transforms.headingPitchRollQuaternion(
+        Cartesian3.fromDegrees(...start),
+        new HeadingPitchRoll(0, Math.PI / 2, 0)
+      ),
+    });
+    const lineEntity2 = viewer.entities.add({
+      name: 'Path',
+      show: false,
+      polyline: {
+        // positions: Cartesian3.fromDegreesArrayHeights(coordinates.flat()),
+        positions: [],
+        width: 20,
+        material: new PolylineGlowMaterialProperty({
+          glowPower: 0.2,
+          taperPower: 0.25,
+          color: Color.fromCssColorString('#FF0000'),
+        }),
+        //箭头
+        // material: new PolylineArrowMaterialProperty(Color.ORANGE),
+        // clampToGround: true,
+      },
+    });
+    const target2 = new PointRoamingAnimationTarget(modelEntity2, lineEntity2, {
+      // heading: -Math.PI / 2,
+      onBefore: () => {
+        modelEntity2.show = true;
+      },
+    });
+    const track2 = new AnimationTrack(target2, {
+      interpolationFn: createPointRoamingSlerp([]),
+    });
+    track2.addKeyframe(20000, start2);
+    track2.addKeyframe(25000, end2);
 
+    aniCtr.addTrack(track2);
     // ----------------------阶段4:最后迫降冲绳岛
+    const primitive = createCirclePrimitive(
+      [129.846270998901, 32.73767996332364, 1],
+      { radius: 10000, color: '#FF0' }
+    );
+    const circleTarget = new PointHaloAnimationTarget(primitive, {
+      onBefore: () => {
+        circleTarget.innerPrimitive.show = true;
+        circleTarget.outPrimitive.show = true;
+        modelEntity2.show = false;
+      },
+    });
+    circleTarget.innerPrimitive.show = false;
+    circleTarget.outPrimitive.show = false;
+    viewer.scene.primitives.add(circleTarget.innerPrimitive);
+    viewer.scene.primitives.add(circleTarget.outPrimitive);
+    const track3 = new AnimationTrack(circleTarget);
+    track3.addKeyframe(25000, 0, { repeat: true, duration: 3000 });
+    track3.addKeyframe(25000 * 200, 1);
+    aniCtr.addTrack(track3);
 
     return () => {
       viewer?.destroy();
