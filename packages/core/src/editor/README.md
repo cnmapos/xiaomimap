@@ -11,23 +11,32 @@
 
   function addPoint() {
     const manager = new EditorManager(context.current.viewer);
-    manager.startCreate('point', {}, (coordinates) => {
+    const editor = manager.startCreate('point', {}, (coordinates) => {
       console.log('point', coordinates);
     });
+
+    // 取消绘制
+    editor.cancel();
   }
 
   function addLine() {
     const manager = new EditorManager(context.current.viewer);
-    manager.startCreate('line', {}, (coordinates) => {
+    const editor = manager.startCreate('line', {}, (coordinates) => {
       console.log('draw line', coordinates);
     });
+
+    // 取消绘制
+    editor.cancel();
   }
 
   function addPolygon() {
     const manager = new EditorManager(context.current.viewer);
-    manager.startCreate('polygon', {}, (coordinates) => {
+    const editor = manager.startCreate('polygon', {}, (coordinates) => {
       console.log('draw polygon', coordinates);
     });
+
+    // 取消绘制
+    editor.cancel();
   }
 ```
 
