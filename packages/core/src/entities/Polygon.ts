@@ -11,13 +11,18 @@ export class PolygonEntity extends BaseEntity implements IEntity {
     const { positions } = options;
     this.positions = positions;
     this.id = uuidv4();
+    this._style = {
+      pixelSize: 10,
+      color: '#FFF',
+      outlineColor: '#FFF',
+    };
     this._entity = new Entity({
       id: this.id,
       polygon: {
         hierarchy: positions.map((p) => Cartesian3.fromDegrees(...p)),
-        material: Color.WHITE.withAlpha(0.5),
-        outline: true,
-        outlineColor: Color.WHITE,
+        material: Color.fromCssColorString(this._style.color).withAlpha(0.5),
+        outline: !!this._style.outlineColor,
+        outlineColor: Color.fromCssColorString(this._style.outlineColor),
       },
     });
   }

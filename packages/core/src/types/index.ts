@@ -40,9 +40,12 @@ export interface Style {
   color?: string; // 点、线、面填充颜色
   pixelSize?: number;
   width?: number;
+  height?: number;
   radius?: number;
   outlineColor?: string; // 描边颜色
   outlineWidth?: number; // 描边宽度
+  scale?: number;
+  minimumPixelSize?: number;
 }
 
 export interface RasterProvider {
