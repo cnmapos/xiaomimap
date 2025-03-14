@@ -1,16 +1,13 @@
-import { Coordinate, IEntity, Style } from "../types";
-import { Entity, Cartesian3, Color } from "cesium";
-import { v4 as uuidv4 } from "uuid";
+import { Coordinate, IEntity, Style } from '../types';
+import { Entity, Cartesian3, Color } from 'cesium';
+import { v4 as uuidv4 } from 'uuid';
+import { BaseEntity } from './Base';
 
-export class PointEntity implements IEntity {
-  id: string;
-  private _entity: Entity;
-  private _style: Style = {};
-  private _properties: Record<string, any> = {};
-
+export class PointEntity extends BaseEntity implements IEntity {
   positions: Coordinate;
 
   constructor(options: { positions: Coordinate }) {
+    super();
     const { positions } = options;
     this.positions = positions;
     this.id = uuidv4();
@@ -27,10 +24,10 @@ export class PointEntity implements IEntity {
   setStyle(style: Style): void {
     this._style = { ...this._style, ...style };
     if (style.color) {
-      this._entity.point!.color = Color.fromCssColorString(style.color);
+      this._entity.point!.color = Color.fromCssColorString(style.color) as any;
     }
     if (style.pixelSize) {
-      this._entity.point!.pixelSize = style.pixelSize;
+      this._entity.point!.pixelSize = style.pixelSize as any;
     }
   }
 

@@ -1,5 +1,5 @@
-import { EntityCollection as Collection } from "cesium";
-import { IEntity } from "../types";
+import { EntityCollection as Collection } from 'cesium';
+import { IEntity } from '../types';
 
 export class EntityCollection {
   private _entities: Collection;
@@ -9,18 +9,20 @@ export class EntityCollection {
     this._entities = entities;
   }
 
-  add(entity: IEntity): void {
+  add(entity: IEntity): IEntity {
     if (!this.contains(entity)) {
       this.entities.push(entity);
-      this._entities.add(entity._entity);
+      this._entities.add((entity as any)._entity);
     }
+
+    return entity;
   }
 
   remove(entity: IEntity): boolean {
     const index = this.entities.indexOf(entity);
     if (index !== -1) {
       this.entities.splice(index, 1);
-      this._entities.remove(entity._entity);
+      this._entities.remove((entity as any)._entity);
       return true;
     }
     return false;
