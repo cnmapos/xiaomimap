@@ -80,10 +80,7 @@ export class PointRoamingAnimationTarget implements AnimationTarget {
         // 将方向转换为四元数（基于起点的 ENU 坐标系）
         const orientation = Transforms.headingPitchRollQuaternion(cur, hpr);
 
-        this.entity.orientation = new CallbackProperty(
-          () => orientation,
-          false
-        );
+        this.entity.orientation = orientation as any;
       }
 
       return this.positions;

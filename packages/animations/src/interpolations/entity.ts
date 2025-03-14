@@ -74,13 +74,14 @@ export function createPointRoamingSlerp(
 
     const destLng = segmentStart[0] + (endLng - segmentStart[0]) * segmentT;
     const destLat = segmentStart[1] + (endLat - segmentStart[1]) * segmentT;
-
+    const height =
+      formatHeight(segmentStart[2]) +
+      (formatHeight(segmentEnd[2]) - formatHeight(segmentStart[2])) * segmentT;
+    console.log('createPointRoamingSlerp', height);
     return [
       toEast ? (destLng > 180 ? destLng - 360 : destLng) : destLng,
       toNorth ? (destLat > 90 ? destLat - 180 : destLat) : destLat,
-      formatHeight(segmentStart[2]) +
-        (formatHeight(segmentEnd[2]) - formatHeight(segmentStart[2])) *
-          segmentT,
+      height,
     ] as [number, number, number];
   };
   return (

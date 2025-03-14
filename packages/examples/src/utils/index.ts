@@ -145,11 +145,10 @@ export function smoothPoints(
   }
   smoothPoints = smoothPoints.map((p) => {
     // 将Cartesian3对象转换为Degree经纬度
-    const cartographic =
-      viewer.scene.globe.ellipsoid.cartesianToCartographic(p);
+    const cartographic = Cartographic.fromCartesian(p);
     const longitude = CMath.toDegrees(cartographic.longitude);
     const latitude = CMath.toDegrees(cartographic.latitude);
-    return [longitude, latitude];
+    return [longitude, latitude, cartographic.height];
   });
 
   return smoothPoints;
