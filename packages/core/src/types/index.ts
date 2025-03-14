@@ -62,6 +62,7 @@ export interface IEntity {
   polyline?: PolylineGraphics | undefined;
   billboard: BillboardGraphics | undefined;
   model: ModelGraphics | undefined;
+
   show?: boolean;
 
   setStyle(style: Style): void;

@@ -13,6 +13,7 @@ export abstract class EditorBase {
 
   // 开始创建
   abstract startCreate(customStyle?: any): void;
+  abstract cancel(): void;
 
   // 合并样式
   protected mergeStyles(defaultStyle: any, customStyle: any): any {
