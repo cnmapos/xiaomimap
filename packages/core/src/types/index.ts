@@ -11,6 +11,8 @@ import {
   Transforms as CesiumCTransforms,
   CallbackProperty as CesiumCallbackProperty,
   Math as CesiumMath,
+  HeadingPitchRoll as CesiumHeadingPitchRoll,
+  Quaternion as CesiumQuaternion
 } from 'cesium';
 import { EntityCollection } from '../entities';
 
@@ -25,10 +27,14 @@ export const Cartesian3 = CesiumCartesian3;
 export const CallbackProperty = CesiumCallbackProperty;
 export const Cartographic = CesiumCartographic;
 export const Math = CesiumMath;
+export const HeadingPitchRoll = CesiumHeadingPitchRoll;
+export const Quaternion = CesiumQuaternion;
 
 export type Cartesian3 = CesiumCartesian3;
 
 export type Color = CesiumColor;
+
+export type Quaternion = CesiumQuaternion;
 
 export type HeadingPitchRoll = {
   heading: number;
