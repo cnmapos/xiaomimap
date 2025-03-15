@@ -9,6 +9,8 @@ import {
   Cartographic as CesiumCartographic,
   Color as CesiumColor,
   Transforms as CesiumCTransforms,
+  CallbackProperty as CesiumCallbackProperty,
+  Math as CesiumMath,
 } from 'cesium';
 
 export type Coordinate = [number, number, number?];
@@ -18,8 +20,12 @@ export type BillboardGraphics = CesiumBillboardGraphics;
 export type ModelGraphics = CesiumModelGraphics;
 
 export const Transforms = CesiumCTransforms;
+export const Cartesian3 = CesiumCartesian3;
+export const CallbackProperty = CesiumCallbackProperty;
+export const Cartographic = CesiumCartographic;
+export const Math = CesiumMath;
+
 export type Cartesian3 = CesiumCartesian3;
-export type Cartographic = CesiumCartographic;
 
 export type Color = CesiumColor;
 

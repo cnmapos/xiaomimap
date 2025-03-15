@@ -49,16 +49,6 @@ export class PointRoamingAnimationTarget implements AnimationTarget {
       const cur = this.positions.at(-1);
       const preVC = Cartographic.fromCartesian(prev);
       const curVC = Cartographic.fromCartesian(cur);
-      // console.log(
-      //   'preVC',
-      //   CMath.toDegrees(preVC.longitude),
-      //   CMath.toDegrees(preVC.latitude)
-      // );
-      // console.log(
-      //   'curVC',
-      //   CMath.toDegrees(curVC.longitude),
-      //   CMath.toDegrees(curVC.latitude)
-      // );
 
       if (this.entity.billboard) {
         this.entity.billboard.alignedAxis = Cartesian3.normalize(

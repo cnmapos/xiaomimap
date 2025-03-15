@@ -1,5 +1,5 @@
 
-import { IEntity } from '@hztx/core';
+import { Coordinate, IEntity } from '@hztx/core';
 
 export enum AnimationStatus {
   PENDING = 0,
@@ -21,9 +21,10 @@ export type AnimationTargetConstructorOptions = {
 
 
 // 管理所有图层、以及动画的播放暂停
-interface AnimationController {
-  tracks: AnimationTrack[];
-  addTrack(track: AnimationTrack): void;
+export interface IAnimationController {
+  tracks: IAnimationTrack[];
+  addTrack(track: IAnimationTrack): void;
+  removeTrack(track: IAnimationTrack): void;
   play(): void;
   pause(): void;
   seek(time: number): void;
@@ -31,27 +32,55 @@ interface AnimationController {
 }
 
 // 管理动画要素
-interface AnimationTrack {
+export interface IAnimationTrack {
   targets: AnimationTarget[];
   add(target: AnimationTarget): void;
+  remove(target: AnimationTarget): void;
   show(): void;
   hide(): void;
 }
 
-interface AnimationTarget {
-  baseEntity: IEntity;
 
+export type InterpolateFunction = (start: any, end: any, t: number) => any;
+
+export type AnimationTargetConfig = {
+  start: number;
+  end: number;
+  startDelay?: number;
+  endDelay?: number;
+  style?: {
+    [key: string]: any;
+  };
+  interpolate: InterpolateFunction
+}
+
+export type PathAnimationTargetConfig = AnimationTarget & {
+  model: {
+    uri: string;
+    scale: number;
+    position: Coordinate[]
+  }
+}
+
+export interface AnimationTarget {
+  baseEntity: IEntity;
   // interpolate function
-  interpolate(start: any, end: any, t: number): any;
+  interpolate: InterpolateFunction;
+  isInLifecycle: (time: number) => boolean; // 传入的时间节点、是否属于动画对象的生命周期内，用来控制要素什么时候要添加到场景中去，比如轨迹动画、可能他需要在动画开始前、在原地等个几秒钟
+  isInKeyframes: (time: number) => boolean; // 传入的时间节点、是否属于动画对象的动画周期内，用来控制要素真正执行动画，也就是真正开始动了
+
+  // 初始化函数、创建实体等都在这里做
+  init(): void;
 
   // animation
   status: AnimationStatus;
+  getValue(time: number): any; // 根据传入的时间、计算value值
   applyValue(value: any): void;
   reset(): void;
 
   // hooks
-  onBefore(instance: AnimationTarget): void;
-  onAfter(instance: AnimationTarget): void;
+  onBefore(): void;
+  onAfter(): void;
 
   // lifecycle
   start: number;
@@ -64,5 +93,10 @@ interface AnimationTarget {
   setEndDelay(start: number): void;
 
   // config, style是比较通用的、所以放在类型定义里，一些特殊的配置、则对应animationTarget自行定义修改方法
+  style: any;
   setStyle(style: any): void;
+
+  // common control
+  show(): void;
+  hide(): void;
 }
