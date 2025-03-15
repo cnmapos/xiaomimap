@@ -11,6 +11,7 @@ import Property from "./components/Property/index";
 import "../../styles/editors/index.less";
 import Player from "./components/Player/index";
 import Timeline from "./components/Timeline/index";
+import { ServiceIds } from "@/core/types";
 
 /**
  *  使用ConfigProvider 包裹，因为editor的样式其他主题色
@@ -21,6 +22,9 @@ export default function MainLayout() {
   useEffect(() => {
     const stateService = new StateService(store);
     ServiceRegistry.register(stateService);
+
+    // 如何使用StateService
+    // const stateService = ServiceRegistry.get<StateService>(ServiceIds.STATE);
   }, []);
 
   return (
