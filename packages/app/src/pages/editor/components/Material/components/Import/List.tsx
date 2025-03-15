@@ -77,7 +77,7 @@ const Material: React.FC<ImportListProps> = (props) => {
       .map((t) => t.geometryName)
       ?.join("，");
     Modal.confirm({
-      title: `确定删除${names}吗？`,
+      title: <>确定删除<span className="text-yellow-600 px-1">{names}</span>吗？</>,
       okText: "确定",
       cancelText: "取消",
       onOk: async () => {
@@ -140,6 +140,7 @@ const Material: React.FC<ImportListProps> = (props) => {
             assetType: 4,
             assetId: id,
           }));
+          // removeEntitys?.(checkedList);
           deleteAssets(dels);
         }
         break;
@@ -149,12 +150,20 @@ const Material: React.FC<ImportListProps> = (props) => {
         break;
     }
   };
-  const handleCommand = ({ key }, { geometryId }) => {
+  const removeEntitys = (ids:number[]) => {
+    data
+      .filter((t) => ids.includes(t.geometryId))
+      .forEach((t) => {
+        t._removeEntity?.();
+      });
+  };
+  const handleCommand = ({ key }, { _removeEntity, geometryId }: PreviewListType) => {
     switch (key) {
       case "1":
         break;
       case "2":
         console.log("删除");
+        removeEntitys?.([geometryId]);
         deleteAssets([
           {
             assetType: 4,

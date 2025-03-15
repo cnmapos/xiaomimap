@@ -30,6 +30,7 @@ import {
   CreateGeometryType,
 } from "@/typings/map";
 import * as WKT from "@/utils/parseWkt";
+import GeometryStylePanel from './GeometryStylePanel';
 
 export const GeometryCname = {
   [GeometryType.Point]: "点",
@@ -46,6 +47,7 @@ export interface PreviewListType extends IGeometryAssetType {
   projectId: number;
   collect?: boolean;
   coordinates: GeoCoordinate;
+  _removeEntity: () => void;
 }
 
 const Map: React.FC<{
@@ -53,7 +55,7 @@ const Map: React.FC<{
 }> = (props) => {
   const { onSelectMode } = props;
   const [fullscreen, setFullscreen] = useState(true);
-  const managerIns = useRef<EditorManager | null>(null);
+  const editorManager = useRef<EditorManager | null>(null);
 
   const container = useRef<HTMLDivElement | null>(null);
   const context = useRef<{ viewer: IViewer }>({ viewer: null });
@@ -81,11 +83,11 @@ const Map: React.FC<{
     };
   }, []);
 
-  function editorManagerIns() {
-    if (!managerIns.current) {
-      managerIns.current = new EditorManager(context.current.viewer);
+  function editoreditorManager() {
+    if (!editorManager.current) {
+      editorManager.current = new EditorManager(context.current.viewer);
     }
-    return managerIns.current;
+    return editorManager.current;
   }
   const init = async () => {
     setLoading(true);
@@ -98,11 +100,15 @@ const Map: React.FC<{
     const data = res?.data || [];
     const _data = data.map((item) => {
       const coordinates = WKT.parse(item.geoData) as any[];
+      let removeEntity = () => {};
       if (coordinates.length) {
-        addEntity(
+        const raw = addEntity(
           ApiResGeometryType[item.geometryType] as CreateGeometryType,
-          coordinates
+          coordinates,
+          false
         );
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        raw?.removeEntity && (removeEntity = raw?.removeEntity);
       }
       return {
         ...item,
@@ -110,6 +116,7 @@ const Map: React.FC<{
         showInMap: true,
         projectId,
         coordinates,
+        _removeEntity: removeEntity,
       };
     });
     console.log(_data);
@@ -140,49 +147,63 @@ const Map: React.FC<{
   };
   const addEntity = (
     type: CreateGeometryType,
-    coordinates: Coordinate | Coordinate[]
+    coordinates: Coordinate | Coordinate[],
+    isCreate = true
   ) => {
     let entity = null;
-    if (type === GeometryType.Point) {
-      entity = new PointEntity({
-        positions: coordinates as Coordinate,
-      });
-    }
-    if (type === GeometryType.LineString) {
-      entity = new LineEntity({
-        positions: coordinates as Coordinate[],
-      });
-    }
-    if (type === GeometryType.Polygon) {
-      entity = new PolygonEntity({
-        positions: coordinates as Coordinate[],
-      });
+
+    switch (type) {
+      case GeometryType.Point:
+        entity = new PointEntity({
+          positions: coordinates as Coordinate,
+        });
+        break;
+      case GeometryType.LineString:
+        entity = new LineEntity({
+          positions: coordinates as Coordinate[],
+        });
+        break;
+      case GeometryType.Polygon:
+        entity = new PolygonEntity({
+          positions: coordinates as Coordinate[],
+        });
+        break;
+      default:
+        return;
     }
     if (!entity || !context.current.viewer) return;
-
-    const geometry = {
-      // geometryName: getNameIndex(type),
-      projectId,
-      geometryType: type.toLocaleLowerCase(),
-      geoData: WKT.stringify({
-        type: GeometryType[type],
-        coordinates: (type === GeometryType.Polygon
-          ? [[...coordinates, coordinates[0]]]
-          : coordinates) as GeoCoordinate,
-      }),
-      category: 1,
-    };
+    // 创建时geometry
+    const geometry = isCreate
+      ? {
+          projectId,
+          geometryType: type.toLocaleLowerCase(),
+          geoData: WKT.stringify({
+            type: GeometryType[type],
+            coordinates: (type === GeometryType.Polygon
+              ? [[...coordinates, coordinates[0]]]
+              : coordinates) as GeoCoordinate,
+          }),
+          category: 1,
+        }
+      : null;
 
     context.current.viewer.addEntity(entity);
+    // 重制编辑要素
     menuBarRef.current?.updateType(-1);
-    return geometry;
+    return {
+      geometry,
+      removeEntity: () => {
+        context.current.viewer.removeEntity(entity);
+        return;
+      },
+    };
   };
   // 确认新增要素
   const confirmAdd = async () => {
     return Modal.confirm({
       title: "确认新增要素？",
-    })
-  }
+    });
+  };
 
   const saveAsset = async (geometry: any) => {
     setLoading(true);
@@ -200,48 +221,42 @@ const Map: React.FC<{
   };
 
   const addPoint = () => {
-    const manager = editorManagerIns();
+    const manager = editoreditorManager();
     const editor = manager.startCreate("point", {}, async (coordinates) => {
       console.log("point", editor, coordinates);
-      const geometry = addEntity(GeometryType.Point, coordinates);
-      if (geometry) {
+      const item = addEntity(GeometryType.Point, coordinates);
+      if (item?.geometry) {
         await saveAsset({
-          ...geometry,
+          ...item?.geometry,
           geometryName: getNameIndex(GeometryType.Point),
         });
-        // setList([...list, item]);
       }
     });
   };
 
   const addLine = () => {
-    const manager = editorManagerIns();
+    const manager = editoreditorManager();
     manager.startCreate("line", {}, async (coordinates) => {
       console.log("draw line", coordinates);
-      const geometry = addEntity(GeometryType.LineString, coordinates);
-      if (geometry) {
+      const item = addEntity(GeometryType.LineString, coordinates);
+      if (item?.geometry) {
         await saveAsset({
-          ...geometry,
+          ...item?.geometry,
           geometryName: getNameIndex(GeometryType.LineString),
         });
-        // setList([...list, item]);
       }
     });
   };
   const addPolygon = () => {
-    const manager = editorManagerIns();
+    const manager = editoreditorManager();
     manager.startCreate("polygon", {}, async (coordinates) => {
       console.log("draw polygon", coordinates);
-      const geometry = addEntity(
-        GeometryType.Polygon,
-        coordinates as Coordinate[]
-      );
-      if (geometry) {
+      const item = addEntity(GeometryType.Polygon, coordinates as Coordinate[]);
+      if (item?.geometry) {
         await saveAsset({
-          ...geometry,
+          ...item?.geometry,
           geometryName: getNameIndex(GeometryType.Polygon),
         });
-        // setList([...list, item]);
       }
     });
   };
@@ -255,6 +270,9 @@ const Map: React.FC<{
     if (type === GeometryType.Polygon) {
       addPolygon();
     }
+  };
+  const resetMenuBar = () => {
+    menuBarRef.current?.updateCollapsed(false);
   };
   return (
     <div
@@ -272,6 +290,9 @@ const Map: React.FC<{
           onStartCreate={(type: CreateGeometryType) => handleStartCreate(type)}
         ></MapMenuBar>
         <Search onSelect={handleSelect}></Search>
+        <div className="absolute z-10 right-4 top-30">
+          <GeometryStylePanel></GeometryStylePanel>
+        </div>
         <MapControlBar
           fullscreen={fullscreen}
           onZoom={(type: "in" | "out", amount?: number) =>
@@ -279,9 +300,15 @@ const Map: React.FC<{
           }
           onBack={() => {
             setFullscreen(false);
+            resetMenuBar();
             onSelectMode(-1);
           }}
-          onFullscreen={(v) => setFullscreen(v)}
+          onFullscreen={(v) => {
+            setFullscreen(v);
+            if (!v) {
+              resetMenuBar();
+            }
+          }}
         ></MapControlBar>
         <div
           ref={(e) => (container.current = e)}
