@@ -25,3 +25,7 @@
 ```
 <div className="h-full w-full flex flex-col bg-editor-bg text-white">...</div>
 ```
+
+## 动画关键帧
+
+动画相关的Store都包含在useAnimationStore，只能通过使用useAnimationStore提供的API来修改动画关键帧

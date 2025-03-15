@@ -1,5 +1,5 @@
 import { IService } from "./IService";
-import { EditorState } from "../../stores/useEditorStore";
+import { EditorState } from "../../stores/useAnimationStore";
 import { AniKeyframe, ServiceIds } from "../types";
 
 export interface IStateService extends IService {

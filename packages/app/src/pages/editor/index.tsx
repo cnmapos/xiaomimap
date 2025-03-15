@@ -1,7 +1,7 @@
 // layouts/MainLayout.tsx
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useEffect } from "react";
-import { useEditorStore } from "@/stores/useEditorStore";
+import { useEditorStore } from "@/stores/useAnimationStore";
 import { StateService } from "@/core/services/StateService";
 import { ServiceRegistry } from "@/core/services/ServiceRegistry";
 import { ConfigProvider } from "antd";
