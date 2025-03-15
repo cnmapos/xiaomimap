@@ -22,6 +22,9 @@ import {
   UrlTemplateImageryProvider,
   Viewer,
   JulianDate,
+  Material,
+  ColorBlendMode,
+  ArcType,
 } from 'cesium';
 import { createCirclePrimitive, HZViewer } from '@hztx/core';
 import PathGeoJSONData from '../assets/pathForBike.json';
@@ -44,27 +47,29 @@ function Trace() {
     const { viewer }: { viewer: Viewer } = hz;
     context.current.viewer = viewer;
 
-    // 停止时间自动推进
-    viewer.clock.multiplier = 0; // 或设置 shouldAnimate: false
-
     // 启用基于太阳的光照（默认通常已开启，显式设置确保生效）
     viewer.scene.globe.enableLighting = true;
+    viewer.scene.globe.baseColor = Color.WHITE;
 
     viewer.resolutionScale = 2;
 
-    const chinaTiles = new UrlTemplateImageryProvider({
-      url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', // 'https://tiles2.geovisearth.com/base/v1/img/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 替换为中国行政区级别瓦片的URL
+    // const chinaTiles = new UrlTemplateImageryProvider({
+    //   url: 'https://tiles2.geovisearth.com/base/v1/img/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', // 'https://tiles2.geovisearth.com/base/v1/img/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 替换为中国行政区级别瓦片的URL
+    // });
+    // viewer.imageryLayers.addImageryProvider(chinaTiles);
+
+    const gaodeImageProvider = new UrlTemplateImageryProvider({
+      url: 'https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', // 添加高德影像
     });
-    viewer.imageryLayers.addImageryProvider(chinaTiles);
+    viewer.imageryLayers.addImageryProvider(gaodeImageProvider);
+
     // const topoTiles = new UrlTemplateImageryProvider({
     //   url: 'https://tiles1.geovisearth.com/base/v1/cia/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 替换为中国行政区级别瓦片的URL
     // });
     // viewer.imageryLayers.addImageryProvider(topoTiles);
 
     viewer.scene.light = new DirectionalLight({
-      direction: new Cartesian3(1.0, -1.0, -1.0), // 光源方向
-      color: Color.WHITE, // 光源颜色
-      intensity: 2.0, // 光源强度
+      direction: new Cartesian3(0.354925, -0.890918, -0.283358), // 光源方向
     });
 
     // 启用环境光遮蔽（AO）
@@ -267,9 +272,13 @@ function Trace() {
         uri: 'assets/models/battleplane3.glb', // 替换为实际模型路径
         // minimumPixelSize: 256 * 16,
         // maximumScale: 1280,
-        scale: 5000,
+        scale: 8000,
         imageBasedLightingFactor: new Cartesian3(1.0, 1.0, 1.0),
-        lightColor: Color.WHITE,
+        lightColor: Color.LIGHTGREEN,
+        color: Color.WHITE,
+        colorBlendMode: ColorBlendMode.HIGHLIGHT,
+        silhouetteColor: Color.WHITE,
+        silhouetteSize: 2.0,
       },
       orientation: Transforms.headingPitchRollQuaternion(
         Cartesian3.fromDegrees(...aniList[0].points[0]),
@@ -293,7 +302,8 @@ function Trace() {
         polyline: {
           // positions: Cartesian3.fromDegreesArrayHeights(coordinates.flat()),
           positions: [],
-          width: 3,
+          width: 10,
+          arcType: ArcType.RHUMB,
           material: new PolylineGlowMaterialProperty({
             glowPower: 0.2,
             taperPower: 0.25,
@@ -344,6 +354,8 @@ function Trace() {
             // minimumPixelSize: 256 * 16,
             // maximumScale: 1280,
             scale: 10000,
+            silhouetteColor: Color.WHITE,
+            silhouetteSize: 2.0,
             imageBasedLightingFactor: new Cartesian3(1.0, 1.0, 1.0),
             lightColor: Color.WHITE,
           },
