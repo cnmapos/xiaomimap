@@ -82,7 +82,18 @@ function Vector() {
     });
     viewer.addEntity(polygon);
 
-    viewer.entities.remove(polygon);
+    // 移除entity
+    // viewer.entities.remove(polygon);
+
+    // 高亮线
+    line.setStyle({
+      width: 5,
+      color: '#ff0000',
+    });
+
+    polygon.setStyle({
+      color: 'rgba(255, 0, 0, 0.5)',
+    });
 
     return () => {
       viewer.destroy();

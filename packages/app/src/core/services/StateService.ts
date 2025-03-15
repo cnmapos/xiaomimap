@@ -1,6 +1,7 @@
 import { IService } from "./IService";
-import { EditorState } from "../../stores/useAnimationStore";
-import { AniKeyframe, ServiceIds } from "../types";
+import { AnimationState } from "../../stores/useAnimationStore";
+import { ServiceIds } from "../types";
+import { AniKeyframe } from "@/typings/animation";
 
 export interface IStateService extends IService {
   addKeyframe: (keyframe: AniKeyframe) => void;
@@ -10,9 +11,9 @@ export interface IStateService extends IService {
 export class StateService implements IStateService {
   id: string;
 
-  private state: EditorState;
+  private state: AnimationState;
 
-  constructor(state: EditorState) {
+  constructor(state: AnimationState) {
     this.id = ServiceIds.STATE;
     this.state = state;
   }
