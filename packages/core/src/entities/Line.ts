@@ -18,12 +18,16 @@ export class LineEntity extends BaseEntity implements IEntity {
     const { positions } = options;
     this.positions = positions;
     this.id = uuidv4();
+    this._style = {
+      width: 2,
+      color: '#FFF',
+    };
     this._entity = new Entity({
       id: this.id,
       polyline: {
         positions: positions.map((p) => Cartesian3.fromDegrees(...p)),
-        width: 2,
-        material: Color.WHITE,
+        width: this._style.width,
+        material: Color.fromCssColorString(this._style.color),
       },
     });
   }

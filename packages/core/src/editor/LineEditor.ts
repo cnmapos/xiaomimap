@@ -5,16 +5,21 @@ import {
   Entity,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
-} from "cesium";
-import { EditorBase } from "./EditorBase";
+} from 'cesium';
+import { EditorBase } from './EditorBase';
 
 export class LineEditor extends EditorBase {
   private positions: Cartesian3[] = [];
   private tempEntity: Entity | null = null;
   private pointEntities: Entity[] = [];
+  private handler?: ScreenSpaceEventHandler;
+
+  cancel(): void {
+    this.handler?.destroy();
+  }
 
   startCreate(customStyle?: any): void {
-    const handler = new ScreenSpaceEventHandler(
+    this.handler = new ScreenSpaceEventHandler(
       this.viewer._viewer.scene.canvas
     );
     const style = this.mergeStyles(this.defaultStyle, customStyle);
@@ -27,7 +32,7 @@ export class LineEditor extends EditorBase {
       },
     };
 
-    handler.setInputAction((movement: any) => {
+    this.handler.setInputAction((movement: any) => {
       const cartesian = this.viewer._viewer.camera.pickEllipsoid(
         movement.position
       );
@@ -50,7 +55,7 @@ export class LineEditor extends EditorBase {
       }
     }, ScreenSpaceEventType.LEFT_CLICK);
 
-    handler.setInputAction(() => {
+    this.handler.setInputAction(() => {
       if (this.tempEntity) {
         const coordinates = this.positions.map((pos) =>
           this.cartesianToDegrees(pos)
@@ -63,7 +68,7 @@ export class LineEditor extends EditorBase {
         this.pointEntities = [];
         this.tempEntity = null;
         this.positions = [];
-        handler.destroy();
+        this.handler.destroy();
       }
     }, ScreenSpaceEventType.RIGHT_CLICK);
   }

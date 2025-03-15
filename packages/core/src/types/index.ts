@@ -12,6 +12,7 @@ import {
   CallbackProperty as CesiumCallbackProperty,
   Math as CesiumMath,
 } from 'cesium';
+import { EntityCollection } from '../entities';
 
 export type Coordinate = [number, number, number?];
 
@@ -46,9 +47,12 @@ export interface Style {
   color?: string; // 点、线、面填充颜色
   pixelSize?: number;
   width?: number;
+  height?: number;
   radius?: number;
   outlineColor?: string; // 描边颜色
   outlineWidth?: number; // 描边宽度
+  scale?: number;
+  minimumPixelSize?: number;
 }
 
 export interface RasterProvider {
@@ -68,6 +72,7 @@ export interface IEntity {
   polyline?: PolylineGraphics | undefined;
   billboard: BillboardGraphics | undefined;
   model: ModelGraphics | undefined;
+
   show?: boolean;
 
   setStyle(style: Style): void;
@@ -87,6 +92,8 @@ export interface LineEntityLike extends EntityLike {}
 export interface PolygonEntityLike extends EntityLike {}
 
 export interface IViewer {
+  entities: EntityCollection;
+
   addRasterLayer(layer: RasterProvider): void;
   removeRasterLayer(layer: ILayer): void;
 

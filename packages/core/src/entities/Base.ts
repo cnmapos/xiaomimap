@@ -1,11 +1,11 @@
-import { Entity } from "cesium";
+import { Entity } from 'cesium';
 import {
   BillboardGraphics,
   IEntity,
   ModelGraphics,
   PolylineGraphics,
   Style,
-} from "../types";
+} from '../types';
 
 export abstract class BaseEntity {
   get polyline(): PolylineGraphics | undefined {

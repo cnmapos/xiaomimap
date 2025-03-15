@@ -1,50 +1,31 @@
-# React + TypeScript + Vite
+# APP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## tailwindcss
 
-Currently, two official plugins are available:
+### 使用说明
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. 应用样式使用tailwindcss，智能提示使用tailwindcss-intellisense插件.
+2. 样式使用参考：https://tailwindcss.com/docs/border-radius#examples
 
-## Expanding the ESLint configuration
+### 自定义样式
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+在App.css通过@theme补充css变量，例如：
 
-- Configure the top-level `parserOptions` property like this:
+```
+@theme {
+  --color-editor-bg: #000;
+  --color-editor-card: #262626;
+  --color-editor-fg: #ffffff;
+}
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+然后在页面中可通过`bg-editor-bg`直接使用，例如：
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
 ```
+<div className="h-full w-full flex flex-col bg-editor-bg text-white">...</div>
+```
+
+## 动画关键帧
+
+动画相关的Store都包含在useAnimationStore，只能通过使用useAnimationStore提供的API来修改动画关键帧

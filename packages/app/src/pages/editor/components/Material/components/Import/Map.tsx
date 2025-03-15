@@ -8,6 +8,7 @@ import {
   EditorManager,
   Coordinate,
 } from "@hztx/core";
+// import * as WKT from "wellknown";
 import { useEffect, useRef } from "react";
 import classNames from "classnames";
 import MapMenuBar from "./MapMenuBar";
@@ -15,31 +16,52 @@ import Search from "./MapSearch";
 import MapControlBar from "./MapControlBar";
 import { MapMenuBarRef } from "./MapMenuBar";
 import { useState } from "react";
-import { Button, Spin } from "antd";
+import { Modal, message, Spin } from "antd";
+import {
+  listProjectGeometry,
+  listProjectAsset,
+  saveProjectAsset,
+  IGeometryAssetType,
+} from "@/service/api/project";
+import {
+  Coordinate as GeoCoordinate,
+  ApiResGeometryType,
+  GeometryType,
+  CreateGeometryType,
+} from "@/typings/map";
+import * as WKT from "@/utils/parseWkt";
 
-export type CreateType = "point" | "line" | "polygon";
-// export type GeometryType<T extends CreateType> = T extends "point"
-//   ? Coordinate
-//   : Coordinate[];
+export const GeometryCname = {
+  [GeometryType.Point]: "点",
+  [GeometryType.LineString]: "线",
+  [GeometryType.Polygon]: "面",
+  [GeometryType.GeometryCollection]: "集合要素",
+};
 
-export interface PreviewListType {
-  name: string;
-  type: CreateType;
-  id: number;
+export interface PreviewListType extends IGeometryAssetType {
+  // name: string;
+  type: CreateGeometryType;
+  // id: number;
   showInMap?: boolean;
+  projectId: number;
   collect?: boolean;
-  coordinates: Coordinate | Coordinate[];
+  coordinates: GeoCoordinate;
 }
 
 const Map: React.FC<{
   onSelectMode: (v: number) => void;
 }> = (props) => {
   const { onSelectMode } = props;
-  const [fullscreen, setFullscreen] = useState(false);
+  const [fullscreen, setFullscreen] = useState(true);
+  const managerIns = useRef<EditorManager | null>(null);
+
   const container = useRef<HTMLDivElement | null>(null);
   const context = useRef<{ viewer: IViewer }>({ viewer: null });
   const [list, setList] = useState<PreviewListType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const projectId = 1;
+  const userId = 9;
 
   const menuBarRef = useRef<MapMenuBarRef>(null);
   useEffect(() => {
@@ -59,34 +81,39 @@ const Map: React.FC<{
     };
   }, []);
 
-  const init = () => {
-    const data = [
-      {
-        name: "历史点1",
-        type: "point",
-        id: 2,
-        showInMap: true,
-        coordinates: [116.397477, 39.908692],
-      },
-      {
-        name: "历史线1",
-        type: "line",
-        id: 1,
-        showInMap: true,
-        coordinates: [
-          [116.76283528817973, 42.40737146196385],
-          [117.03069047221693, 41.39360834053855],
-          [118.99044918425696, 41.4253323858586],
-        ],
-      },
-    ] as PreviewListType[];
-    setTimeout(() => {
+  function editorManagerIns() {
+    if (!managerIns.current) {
+      managerIns.current = new EditorManager(context.current.viewer);
+    }
+    return managerIns.current;
+  }
+  const init = async () => {
+    setLoading(true);
+    const res = await listProjectGeometry({
+      projectId,
+      category: 1,
+    }).finally(() => {
       setLoading(false);
-    }, 1000);
-    setList(data);
-    data.forEach((item) => {
-      addEntity(item.type, item.coordinates);
     });
+    const data = res?.data || [];
+    const _data = data.map((item) => {
+      const coordinates = WKT.parse(item.geoData) as any[];
+      if (coordinates.length) {
+        addEntity(
+          ApiResGeometryType[item.geometryType] as CreateGeometryType,
+          coordinates
+        );
+      }
+      return {
+        ...item,
+        type: ApiResGeometryType[item.geometryType],
+        showInMap: true,
+        projectId,
+        coordinates,
+      };
+    });
+    console.log(_data);
+    setList(_data);
   };
   const setViewWithZoom = (posi) => {
     context.current.viewer?.setView([posi.lng, posi.lat, 10000], {
@@ -99,14 +126,9 @@ const Map: React.FC<{
   const handleSelect = ({ location }: any) => {
     setViewWithZoom(location);
   };
-  const getNameIndex = (type: CreateType) => {
+  const getNameIndex = (type: CreateGeometryType) => {
     const i = list.filter((t) => t.type === type)?.length + 1;
-    const obj = {
-      point: "点",
-      line: "线",
-      polygon: "面",
-    };
-    return `${obj[type]}${i}`;
+    return `${GeometryCname[type]}${i}`;
   };
   const handleMapZoom = (type: "in" | "out", amount?: number) => {
     if (type === "out") {
@@ -117,76 +139,120 @@ const Map: React.FC<{
     }
   };
   const addEntity = (
-    type: CreateType,
+    type: CreateGeometryType,
     coordinates: Coordinate | Coordinate[]
   ) => {
     let entity = null;
-    if (type === "point") {
+    if (type === GeometryType.Point) {
       entity = new PointEntity({
         positions: coordinates as Coordinate,
       });
     }
-    if (type === "line") {
+    if (type === GeometryType.LineString) {
       entity = new LineEntity({
         positions: coordinates as Coordinate[],
       });
     }
-    if (type === "polygon") {
+    if (type === GeometryType.Polygon) {
       entity = new PolygonEntity({
         positions: coordinates as Coordinate[],
       });
     }
     if (!entity || !context.current.viewer) return;
+
+    const geometry = {
+      // geometryName: getNameIndex(type),
+      projectId,
+      geometryType: type.toLocaleLowerCase(),
+      geoData: WKT.stringify({
+        type: GeometryType[type],
+        coordinates: (type === GeometryType.Polygon
+          ? [[...coordinates, coordinates[0]]]
+          : coordinates) as GeoCoordinate,
+      }),
+      category: 1,
+    };
+
     context.current.viewer.addEntity(entity);
     menuBarRef.current?.updateType(-1);
-    return {
-      id: Date.now(),
-      name: getNameIndex(type),
-      showInMap: true,
-      type: type,
-      coordinates,
-    };
+    return geometry;
+  };
+  // 确认新增要素
+  const confirmAdd = async () => {
+    return Modal.confirm({
+      title: "确认新增要素？",
+    })
+  }
+
+  const saveAsset = async (geometry: any) => {
+    setLoading(true);
+    const res = await saveProjectAsset({
+      geometryList: [geometry],
+    }).finally(() => {
+      setLoading(false);
+    });
+    if (res.code === 0) {
+      message.success("保存成功");
+    } else {
+      message.error(res.msg || "保存失败");
+    }
+    return res?.data;
   };
 
   const addPoint = () => {
-    const manager = new EditorManager(context.current.viewer);
-    manager.startCreate("point", {}, (coordinates) => {
-      console.log("point", coordinates);
-      const item = addEntity("point", coordinates);
-      if (item) {
-        setList([...list, item]);
+    const manager = editorManagerIns();
+    const editor = manager.startCreate("point", {}, async (coordinates) => {
+      console.log("point", editor, coordinates);
+      const geometry = addEntity(GeometryType.Point, coordinates);
+      if (geometry) {
+        await saveAsset({
+          ...geometry,
+          geometryName: getNameIndex(GeometryType.Point),
+        });
+        // setList([...list, item]);
       }
     });
   };
 
   const addLine = () => {
-    const manager = new EditorManager(context.current.viewer);
-    manager.startCreate("line", {}, (coordinates) => {
+    const manager = editorManagerIns();
+    manager.startCreate("line", {}, async (coordinates) => {
       console.log("draw line", coordinates);
-      const item = addEntity("line", coordinates);
-      if (item) {
-        setList([...list, item]);
+      const geometry = addEntity(GeometryType.LineString, coordinates);
+      if (geometry) {
+        await saveAsset({
+          ...geometry,
+          geometryName: getNameIndex(GeometryType.LineString),
+        });
+        // setList([...list, item]);
       }
     });
   };
   const addPolygon = () => {
-    const manager = new EditorManager(context.current.viewer);
-    manager.startCreate("polygon", {}, (coordinates) => {
+    const manager = editorManagerIns();
+    manager.startCreate("polygon", {}, async (coordinates) => {
       console.log("draw polygon", coordinates);
-      const item = addEntity("polygon", coordinates);
-      if (item) {
-        setList([...list, item]);
+      const geometry = addEntity(
+        GeometryType.Polygon,
+        coordinates as Coordinate[]
+      );
+      if (geometry) {
+        await saveAsset({
+          ...geometry,
+          geometryName: getNameIndex(GeometryType.Polygon),
+        });
+        // setList([...list, item]);
       }
     });
   };
-  const handleStartCreate = (type: CreateType) => {
-    if (type === "point") {
+  const handleStartCreate = (type: CreateGeometryType) => {
+    if (type === GeometryType.Point) {
       addPoint();
     }
-    if (type === "line") {
+    if (type === GeometryType.LineString) {
       addLine();
     }
-    if (type === "polygon") {
+    if (type === GeometryType.Polygon) {
       addPolygon();
     }
   };
@@ -199,27 +265,29 @@ const Map: React.FC<{
         }
       )}
     >
-      <MapMenuBar
-        list={list}
-        ref={menuBarRef}
-        onStartCreate={(type: CreateType) => handleStartCreate(type)}
-      ></MapMenuBar>
-      <Search onSelect={handleSelect}></Search>
-      <MapControlBar
-        fullscreen={fullscreen}
-        onZoom={(type: "in" | "out", amount?: number) =>
-          handleMapZoom(type, amount)
-        }
-        onBack={() => {
-          setFullscreen(false);
-          onSelectMode(-1);
-        }}
-        onFullscreen={(v) => setFullscreen(v)}
-      ></MapControlBar>
-      <div
-        ref={(e) => (container.current = e)}
-        className="map h-full w-full"
-      ></div>
+      <Spin spinning={loading} wrapperClassName="!w-full !h-full map-spin">
+        <MapMenuBar
+          list={list}
+          ref={menuBarRef}
+          onStartCreate={(type: CreateGeometryType) => handleStartCreate(type)}
+        ></MapMenuBar>
+        <Search onSelect={handleSelect}></Search>
+        <MapControlBar
+          fullscreen={fullscreen}
+          onZoom={(type: "in" | "out", amount?: number) =>
+            handleMapZoom(type, amount)
+          }
+          onBack={() => {
+            setFullscreen(false);
+            onSelectMode(-1);
+          }}
+          onFullscreen={(v) => setFullscreen(v)}
+        ></MapControlBar>
+        <div
+          ref={(e) => (container.current = e)}
+          className="map h-full w-full"
+        ></div>
+      </Spin>
     </div>
   );
 };

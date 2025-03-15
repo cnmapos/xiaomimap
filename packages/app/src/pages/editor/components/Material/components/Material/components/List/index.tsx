@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Empty, Input, Button, Upload } from "antd";
 import { SearchOutlined, UploadOutlined } from "@ant-design/icons";
 import Styles from "./styles.module.less";
 import ImportBar from "../../../Import";
 import ImportMap from "../../../Import/Map";
+import { listProjectAsset } from "@/service/api/project";
 
 const MaterialList: React.FC = () => {
   const [mode, setMode] = useState(-1);
+  const [data, setData] = useState([]);
   const mockData = [
     {
       id: 1,
@@ -22,13 +24,26 @@ const MaterialList: React.FC = () => {
     },
   ];
 
+  useEffect(() => {
+    listProjectAsset({
+      current: 1,
+      pageSize: 10,
+      projectId: 1,
+      userId: 9,
+    }).then((res) => {
+      setData(res.data.list);
+    });
+  }, []);
+
   return (
     <div className={Styles.container}>
       <div className={Styles.header}>
         <ImportBar onSelectMode={(mode) => setMode(mode)}></ImportBar>
       </div>
       <div className={Styles.content}>
-        {mode === 2 ? <ImportMap onSelectMode={(mode) => setMode(mode)}></ImportMap> : null}
+        {mode === 2 ? (
+          <ImportMap onSelectMode={(mode) => setMode(mode)}></ImportMap>
+        ) : null}
         {mockData.length > 0 ? (
           <div className={Styles.list}>
             {mockData.map((item) => (

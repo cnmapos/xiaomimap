@@ -44,6 +44,10 @@ export default defineConfig({
         target: "http://42.51.33.23:8012/huize-map",
         changeOrigin: true,
       },
+      "/hz-project": {
+        target: "http://42.51.33.23:8012/huize-map",
+        changeOrigin: true,
+      },
     },
   },
   css: {
