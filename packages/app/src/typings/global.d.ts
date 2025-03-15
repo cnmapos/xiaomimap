@@ -3,3 +3,12 @@ declare global {
     AMap: any;
   }
 }
+
+
+declare namespace API {
+  type BaseRes<T> = {
+    code: number;
+    msg: string;
+    data: T;
+  };
+}

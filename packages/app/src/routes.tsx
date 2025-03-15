@@ -16,8 +16,12 @@ const routes: RouteObject[] = [
   //   path: '/home',
   //   element: <Home />,
   // },
+  // {
+  //   path: "/editor/:id",
+  //   element: <Editor />,
+  // },
   {
-    path: "/editor/:id",
+    path: "/editor",
     element: <Editor />,
   },
   {

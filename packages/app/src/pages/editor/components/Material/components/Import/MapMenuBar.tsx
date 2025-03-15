@@ -3,23 +3,33 @@ import {
   EnvironmentOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  PicCenterOutlined,
   RollbackOutlined,
 } from "@ant-design/icons";
 import { Tabs, Tooltip } from "antd";
 import List from "./List";
 import classNames from "classnames";
 import { useState, forwardRef, useImperativeHandle } from "react";
-import { CreateType, PreviewListType } from "./Map";
+import { PreviewListType } from "./Map";
+import { GeometryType, CreateGeometryType } from "@/typings/map";
+import GeometryIcon from "./GeometryIcon";
 import Styles from "./styles.module.less";
 const { TabPane } = Tabs;
 
 interface MapMenuBarProps {
-  onStartCreate: (v: CreateType) => void;
+  onStartCreate: (v: CreateGeometryType) => void;
   list: PreviewListType[];
 }
 export interface MapMenuBarRef {
   updateType: (v: number) => void;
 }
+
+// export const GeometryIcons  = {
+//   [GeometryType.Point]: <EnvironmentOutlined />,
+//   [GeometryType.LineString]: <RollbackOutlined />,
+//   [GeometryType.Polygon]: <BorderOuterOutlined />,
+//   [GeometryType.GeometryCollection]: <PicCenterOutlined />,
+// }
 
 const MapMenuBar = forwardRef<MapMenuBarRef, MapMenuBarProps>((props, ref) => {
   const { onStartCreate, list } = props;
@@ -51,7 +61,7 @@ const MapMenuBar = forwardRef<MapMenuBarRef, MapMenuBarProps>((props, ref) => {
         <Tooltip title="新增点" placement="top">
           <span
             onClick={() => {
-              onStartCreate("point");
+              onStartCreate(GeometryType.Point);
               setType(1);
             }}
             className={classNames(
@@ -61,13 +71,17 @@ const MapMenuBar = forwardRef<MapMenuBarRef, MapMenuBarProps>((props, ref) => {
               }
             )}
           >
-            <EnvironmentOutlined className="p-1.5" />
+            {/* <EnvironmentOutlined className="p-1.5" /> */}
+            <GeometryIcon type={GeometryType.Point} className="p-1.5" />
           </span>
         </Tooltip>
         <Tooltip title="新增线" placement="top">
           <span
             onClick={() => {
-              onStartCreate("line");
+              if(type !== -1){
+                return;
+              }
+              onStartCreate(GeometryType.LineString);
               setType(2);
             }}
             className={classNames(
@@ -77,13 +91,13 @@ const MapMenuBar = forwardRef<MapMenuBarRef, MapMenuBarProps>((props, ref) => {
               }
             )}
           >
-            <RollbackOutlined className="p-1.5" />
+            <GeometryIcon type={GeometryType.LineString} className="p-1.5" />
           </span>
         </Tooltip>
         <Tooltip title="新增面" placement="top">
           <span
             onClick={() => {
-              onStartCreate("polygon");
+              onStartCreate(GeometryType.Polygon);
               setType(3);
             }}
             className={classNames(
@@ -93,7 +107,7 @@ const MapMenuBar = forwardRef<MapMenuBarRef, MapMenuBarProps>((props, ref) => {
               }
             )}
           >
-            <BorderOuterOutlined className="p-1.5" />
+            <GeometryIcon type={GeometryType.Polygon} className="p-1.5" />
           </span>
         </Tooltip>
       </div>
@@ -114,11 +128,12 @@ const MapMenuBar = forwardRef<MapMenuBarRef, MapMenuBarProps>((props, ref) => {
             )}
           </TabPane>
           <TabPane className="text-white" tab="收藏" key="2">
-            {list.length ? (
+            {/* {list.length ? (
               <List data={list}></List>
             ) : (
               <div className="text-center text-white p-5">暂无数据</div>
-            )}
+            )} */}
+            <div className="text-center text-white p-5">暂无数据</div>
           </TabPane>
         </Tabs>
       </div>
