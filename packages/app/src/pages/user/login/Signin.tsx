@@ -18,6 +18,7 @@ const Signin: React.FC<{ jumpToSignup: () => void }> = ({ jumpToSignup }) => {
         }).then(({data}) => {
             if (!data.code) {
                 localStorage.setItem('clientKey', data.data.clientKey);
+                localStorage.setItem('user', data.data.userSessionInfo);
                 navigate('/home', { state: { userInfo: data.data.userSessionInfo } }); // 登录成功后跳转到主页
             } else {
                 message.error(data.message);

@@ -1,37 +1,56 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MailOutlined, PieChartOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { Menu } from "antd";
 import Styles from "./styles.module.less";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
 const items: MenuItem[] = [
-  { key: "1", icon: <PieChartOutlined />, label: "首页" },
+  { key: "home", icon: <PieChartOutlined />, label: "首页" },
   {
-    key: "sub1",
+    key: "workspace",
     label: "我的空间",
     icon: <MailOutlined />,
     children: [
-      { key: "5", label: "素材" },
-      { key: "6", label: "草稿" },
-      { key: "7", label: "成品" },
+      { key: "material", label: "素材" },
+      { key: "draft", label: "草稿" },
+      { key: "product", label: "成品" },
     ],
-  }
+  },
 ];
 
 const App: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+  useEffect(() => {
+    const keys = location.pathname.split("/").filter(Boolean);
+    setSelectedKeys(keys);
+    // setOpenKeys([keys?.[0]]);
+  }, [location]);
+
   const onClick: MenuProps["onClick"] = (e) => {
-    console.log("click ", e);
+    const path = e.keyPath.reverse().join("/");
+    console.log(e)
+    navigate(path);
+  };
+
+  const onOpenChange: MenuProps["onOpenChange"] = (keys) => {
+    setOpenKeys(keys);
   };
 
   return (
     <div className={Styles.menu}>
       <Menu
         onClick={onClick}
-        defaultSelectedKeys={["1"]}
-        defaultOpenKeys={["sub1"]}
         mode="inline"
+        selectedKeys={selectedKeys}
+        openKeys={openKeys}
+        onOpenChange={onOpenChange}
         items={items}
       />
     </div>

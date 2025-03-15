@@ -1,0 +1,90 @@
+.material {
+  height: 100%;
+  background: inherit;
+  height: 100%;
+  .tabs {
+    height: 100%;
+    background: inherit;
+
+    :global {
+      .ant-tabs-nav {
+        margin: 0;
+        background: inherit;  // 继承父级背景色
+        
+        &::before {
+          display: none;
+        }
+      }
+
+      .ant-tabs-nav-wrap {
+        background: inherit;  // 继承父级背景色
+      }
+
+      .ant-tabs-nav-list {
+        background: inherit;  // 继承父级背景色
+      }
+
+      .ant-tabs-content-holder {
+        background: inherit;  // 继承父级背景色
+      }
+      .ant-tabs-content{
+        height: 100%;
+      }
+
+      .ant-tabs-tab {
+        padding: 4px 16px;
+        margin: 0;
+        border: none;
+        background: transparent;
+        
+        .ant-tabs-tab-btn {
+          color: rgba(255, 255, 255, 0.65);
+        }
+
+        &:hover .ant-tabs-tab-btn {
+          color: #fff;
+        }
+
+        &.ant-tabs-tab-active .ant-tabs-tab-btn {
+          // color: #00B9C4;
+        }
+      }
+
+      .ant-tabs-ink-bar {
+        // background: #00B9C4;
+      }
+      .ant-tabs-content-holder {
+        height: calc(100% - 56px);
+        background: inherit;
+      }
+
+      .ant-tabs-content {
+        height: 100%;
+        background: inherit;
+      }
+
+      .ant-tabs-tabpane {
+        height: 100%;
+        background: inherit;
+      }
+    }
+  }
+
+  .tabItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 4px 0;
+
+    .anticon {
+      font-size: 20px;
+    }
+
+    span {
+      margin-right: 0!important;
+      font-size: 12px;
+    }
+  }
+}

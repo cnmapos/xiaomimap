@@ -1,8 +1,11 @@
 import { RouteObject } from "react-router-dom";
 import SignInAndUp from "./pages/user/login";
-import Home from "./pages";
+import Home from "./pages/home";
 import Editor from "./pages/editor";
 import Layout from "./components/Layout";
+import Draft from './pages/workspace/draft';
+import Material from './pages/workspace/material';
+import Product from './pages/workspace/product';
 
 const routes: RouteObject[] = [
   {
@@ -12,6 +15,10 @@ const routes: RouteObject[] = [
   // {
   //   path: '/home',
   //   element: <Home />,
+  // },
+  // {
+  //   path: "/editor/:id",
+  //   element: <Editor />,
   // },
   {
     path: "/editor",
@@ -24,6 +31,18 @@ const routes: RouteObject[] = [
       {
         path: "home",
         element: <Home />,
+      },
+      {
+        path: "/workspace/material",
+        element: <Material />,
+      },
+      {
+        path: "/workspace/draft",
+        element: <Draft />,
+      },
+      {
+        path: "/workspace/product",
+        element: <Product />,
       },
     ],
   },

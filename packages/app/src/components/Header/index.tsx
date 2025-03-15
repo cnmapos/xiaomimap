@@ -1,22 +1,40 @@
 import React from "react";
 import { BellOutlined, DownOutlined } from "@ant-design/icons";
-import { Dropdown, Avatar, Badge } from "antd";
+import { Dropdown, Avatar, Badge, message } from "antd";
+import { useNavigate } from "react-router-dom";
+import axios from "@/service/axiosConfig";
 import Styles from "./styles.module.less";
+
+const items = [
+  {
+    key: 1,
+    label: "绘个球",
+  },
+  {
+    key: 2,
+    label: "个人信息",
+  },
+  {
+    key: 3,
+    label: "退出登录",
+  },
+];
 const Header: React.FC = () => {
-  const items = [
-    {
-      key: "4",
-      label: "绘个球",
-    },
-    {
-      key: "4",
-      label: "个人信息",
-    },
-    {
-      key: "4",
-      label: "退出登录",
-    },
-  ];
+  const navigate = useNavigate();
+
+  const onMenuClick = ({ key }) => {
+    if (key === 3) {
+      axios.get("/hz-users/logout").then(({ data }) => {
+        if (!data.code) {
+          localStorage.removeItem("clientKey");
+          navigate("/");
+        } else {
+          message.error(data.message);
+        }
+      });
+    }
+    console.log("click", key);
+  };
   return (
     <div className={Styles.header}>
       <div className={Styles.logo}></div>
@@ -24,7 +42,7 @@ const Header: React.FC = () => {
         <Badge className="mr-20" count={5} size="small">
           <BellOutlined className="ft-20" />
         </Badge>
-        <Dropdown menu={{ items }}>
+        <Dropdown menu={{ items, onClick: onMenuClick }}>
           <div className="flex-center cursor-pointer">
             <Avatar
               className="mr-16"

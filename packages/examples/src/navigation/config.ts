@@ -1,4 +1,5 @@
 import NewMap from '../starts/NewMap';
+import Vector from '../starts/Vector';
 import AniPath from '../anims/Path';
 import CircleHalo from '../anims/CircleHalo';
 import TextAnim from '../anims/TextAnim';
@@ -20,6 +21,14 @@ import PolygonKeyframe from '../anims/Keyframes/polygon';
 import HaloKeyframe from '../anims/Keyframes/Halo';
 import TopTravel from '../anims/Keyframes/travelTop';
 import TextKeyframe from '../anims/Keyframes/text';
+import Terrain from '../anims/Keyframes/terrian';
+import Editor from '../editors/editor';
+import Model3D from '../editors/model';
+import TheLongMarch from '../anims/Keyframes/theLongMarch';
+import BalllisticMissiles from '../anims/Keyframes/ballisticMissiles';
+import Cycling from '../anims/Keyframes/cycling';
+import { PathAnimationPanel } from '../components/path-animation-panel';
+import Draw from '../editors/draw';
 
 export default [
   {
@@ -30,6 +39,12 @@ export default [
         path: '/new-map',
         thumbnail: 'XXXXXXX',
         element: NewMap,
+      },
+      {
+        name: '适量数据',
+        path: '/vector',
+        thumbnail: 'XXXXXXX',
+        element: Vector,
       },
     ],
   },
@@ -166,6 +181,59 @@ export default [
         path: '/keyframe-toptravel',
         thumbnail: 'XXXXXXX',
         element: TopTravel,
+      },
+      {
+        name: '地形图',
+        path: '/keyframe-terrain',
+        thumbnail: 'XXXXXXX',
+        element: Terrain,
+      },
+      {
+        name: '长征系列',
+        path: '/keyframe-longmarch',
+        thumbnail: 'XXXXXXX',
+        element: TheLongMarch,
+      },
+      {
+        name: '弹道导弹',
+        path: '/keyframe-ballisticmissiles',
+        thumbnail: 'XXXXXXX',
+        element: BalllisticMissiles,
+      },
+      {
+        name: '骑行轨迹',
+        path: '/keyframe-cycling',
+        thumbnail: 'XXXXXXX',
+        element: Cycling,
+      },
+    ],
+  },
+  {
+    name: '编辑',
+    children: [
+      {
+        name: '矢量编辑',
+        path: '/vector-edit',
+        thumbnail: 'XXXXXXX',
+        element: Editor,
+      },
+      {
+        name: '3D模型',
+        path: '/model-edit',
+        thumbnail: 'XXXXXXX',
+        element: Model3D,
+      },
+      {
+        name: '轨迹动画配置面板',
+        path: '/path-config-panel',
+        thumbnail: 'XXXXXXX',
+        element: PathAnimationPanel,
+      },
+      {
+        name: '编辑点、线、面',
+        path: '/vector-draw',
+        thumbnail: 'XXXXXXX',
+        element: Draw,
       },
     ],
   },

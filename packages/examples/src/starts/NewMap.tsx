@@ -1,25 +1,34 @@
-import { useState, useEffect } from 'react'
-import { HZViewer } from '@hztx/core'
-
+import { createViewer, HZViewer } from '@hztx/core';
+import React, { useEffect, useRef } from 'react';
+import MapContainer from '../components/map-container';
 
 function NewMap() {
-  const [, setViewer] = useState<HZViewer>();
+  const container = useRef<HTMLElement | null>();
+  const context = useRef<{ viewer: HZViewer | null }>({ viewer: null });
 
-  // 在组件挂载时实例化HZViewer
   useEffect(() => {
-    const newViewer = new HZViewer('map');
-    setViewer(newViewer);
-    // 清理函数
-    return () => {
-      newViewer.destroy();
-    };
+    context.current.viewer = createViewer(container.current!, {
+      key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI',
+    });
+    return () => {};
   }, []);
 
   return (
-    <>
-      <div id="map" style={{ width: '100vw', height: '100vh' }}></div>
-    </>
-  )
+    <MapContainer>
+      <div
+        ref={(e) => (container.current = e)}
+        style={{ width: '100%', height: '100%' }}
+        id="map"
+      ></div>
+      <div>
+        <div className="hz-player">
+          <div></div>
+          <div></div>
+        </div>
+        <div className="hz-style"></div>
+      </div>
+    </MapContainer>
+  );
 }
 
-export default NewMap
+export default NewMap;

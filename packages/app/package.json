@@ -11,15 +11,23 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
+    "@hztx/core": "workspace:^",
     "@tailwindcss/vite": "^4.0.8",
+    "@types/react-beautiful-dnd": "^13.1.8",
+    "ahooks": "^3.8.4",
     "antd": "^5.23.0",
     "axios": "^1.7.9",
+    "classnames": "^2.5.1",
+    "lodash": "^4.17.21",
     "react": "^18.3.1",
+    "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
     "react-resizable-panels": "^2.1.7",
     "react-router-dom": "^7.1.1",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "vite-plugin-static-copy": "^2.2.0",
+    "wellknown": "^0.5.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
