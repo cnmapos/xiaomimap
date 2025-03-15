@@ -121,7 +121,8 @@ export class HZViewer implements IViewer {
   private sceneMode: SceneMode;
   private _viewer: Viewer;
   private layers: ILayer[] = [];
-  private entities: EntityCollection;
+
+  entities: EntityCollection;
 
   constructor(
     element: string | HTMLElement,

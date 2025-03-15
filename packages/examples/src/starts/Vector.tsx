@@ -19,11 +19,7 @@ function Vector() {
     context.current.viewer = viewer;
 
     const point = new PointEntity({
-      
-      positions: [
-        116.32821170576749,
-        42.66542575152765
-    ],
+      positions: [116.32821170576749, 42.66542575152765],
     });
     viewer.addEntity(point);
 
@@ -85,6 +81,8 @@ function Vector() {
       ],
     });
     viewer.addEntity(polygon);
+
+    viewer.entities.remove(polygon);
 
     return () => {
       viewer.destroy();
