@@ -10,17 +10,18 @@ import {
   StarFilled,
   StarOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { PreviewListType } from "./Map";
 import { Dropdown, message, Space, Tooltip, Modal } from "antd";
 import classNames from "classnames";
 import { deleteProjectAsset, mergeGeometry } from "@/service/api/project";
 import GeometryIcon from "./GeometryIcon";
-import { GeometryType } from "@/typings/map";
+import { GeometryType, GeometryActionType } from "@/typings/map";
 import { GeometryCname } from "./Map";
 import "./index.less";
 import { CommandRegistry } from "@/core/cmds/CommandRegistry";
 import { CommandIds } from "@/core/cmds/ICommand";
+import Context from "./context";
 
 export interface ImportListProps {
   data: PreviewListType[];
@@ -30,25 +31,26 @@ const Material: React.FC<ImportListProps> = (props) => {
   const { data } = props;
   const [checkedList, setCheckedList] = useState<number[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const contextProps = useContext(Context);
   const items = [
     {
-      key: 1,
+      key: GeometryActionType.Property,
       label: "属性",
       className: "!text-white hover:!text-cyan-300",
     },
     {
-      key: 2,
+      key: GeometryActionType.Delete,
       label: "删除",
       className: "!text-white hover:!text-cyan-300",
     },
     {
-      key: 3,
+      key: GeometryActionType.ApplyAnimation,
       label: "应用到动画",
       className: "!text-white hover:!text-cyan-300",
     },
     {
-      key: 4,
-      label: "生产轨迹动画",
+      key: GeometryActionType.GenerateTrailAnimation,
+      label: "生成轨迹动画",
       className: "!text-white hover:!text-cyan-300",
     },
   ];
@@ -79,13 +81,18 @@ const Material: React.FC<ImportListProps> = (props) => {
       .map((t) => t.geometryName)
       ?.join("，");
     Modal.confirm({
-      title: <>确定删除<span className="text-yellow-600 px-1">{names}</span>吗？</>,
+      title: (
+        <>
+          确定删除<span className="text-yellow-600 px-1">{names}</span>吗？
+        </>
+      ),
       okText: "确定",
       cancelText: "取消",
       onOk: async () => {
         const res = await deleteProjectAsset(params);
         if (res.code === 0) {
           message.success("删除成功");
+          contextProps.updateGeoAsset();
         } else {
           message.error(res.msg || "删除失败");
         }
@@ -131,12 +138,12 @@ const Material: React.FC<ImportListProps> = (props) => {
   };
   const handleContextMenuCommand = async ({ key }) => {
     switch (key) {
-      case "1":
+      case GeometryActionType.GenerateTrailAnimation:
         break;
-      case "2":
+      case GeometryActionType.GenerateCollection:
         mergeGeometrys();
         break;
-      case "3":
+      case GeometryActionType.Delete:
         {
           const dels = checkedList.map((id) => ({
             assetType: 4,
@@ -157,30 +164,33 @@ const Material: React.FC<ImportListProps> = (props) => {
         break;
     }
   };
-  const removeEntitys = (ids:number[]) => {
+  const removeEntitys = (ids: number[]) => {
     data
       .filter((t) => ids.includes(t.geometryId))
-      .forEach((t) => {
-        t._removeEntity?.();
+      .forEach(({removeEntity }) => {
+        removeEntity?.();
       });
   };
-  const handleCommand = ({ key }, { _removeEntity, geometryId }: PreviewListType) => {
+  const handleCommand = (
+    { key },
+    { geometryId }: PreviewListType
+  ) => {
     switch (key) {
-      case "1":
+      case GeometryActionType.Property:
         break;
-      case "2":
-        console.log("删除");
-        removeEntitys?.([geometryId]);
-        deleteAssets([
-          {
-            assetType: 4,
-            assetId: geometryId,
-          },
-        ]);
+      case GeometryActionType.Delete:
+        removeEntitys([geometryId])
+        
+        // deleteAssets([
+        //   {
+        //     assetType: 4,
+        //     assetId: geometryId,
+        //   },
+        // ]);
         break;
-      case "3":
+      case GeometryActionType.ApplyAnimation:
         break;
-      case "4":
+      case GeometryActionType.GenerateTrailAnimation:
         break;
       default:
         break;
@@ -197,18 +207,18 @@ const Material: React.FC<ImportListProps> = (props) => {
           },
           items: [
             {
-              key: 1,
-              label: "生成轨迹",
+              key: GeometryActionType.GenerateTrailAnimation,
+              label: "生成轨迹动画",
               className: "!text-white hover:!text-cyan-300",
             },
             {
-              key: 2,
-              label: "生产集合要素",
+              key: GeometryActionType.GenerateCollection,
+              label: "生成集合要素",
               className: "!text-white hover:!text-cyan-300",
             },
 
             {
-              key: 3,
+              key: GeometryActionType.Delete,
               label: "删除",
               className: "!text-white hover:!text-cyan-300",
             },

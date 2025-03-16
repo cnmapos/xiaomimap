@@ -4,9 +4,6 @@ export enum GeometryType {
   Polygon = "Polygon",
   GeometryCollection = "GeometryCollection",
 }
-// GeometryCollection = "GeometryCollection"
-// export type GeometryCollection =
-
 export interface IGeometry {
   type: keyof typeof GeometryType;
   coordinates: Coordinate;
@@ -19,19 +16,14 @@ export enum ApiResGeometryType {
   geometry_collection = "GeometryCollection",
 }
 
-/**
- * 
-集合几何 GEOMETRYCOLLECTION
-
- GEOMETRYCOLLECTION(
-  POINT(1 1),
-  LINESTRING(0 0, 1 1, 2 2),
-  POLYGON((0 0, 1 1, 1 0, 0 0))
-);
-*/
-// export const GeometryCollectionType = 'geometry_collection';
-
-// "GeometryCollection"
+export enum GeometryActionType {
+  // 属性 删除 应用到动画 生成轨迹动画 生成集合要素
+  Property = "Property",
+  Delete = "Delete",
+  ApplyAnimation = "ApplyAnimation",
+  GenerateTrailAnimation = "GenerateTrailAnimation",
+  GenerateCollection = "GenerateCollection",
+}
 
 export type CreateGeometryType = keyof typeof GeometryType;
 

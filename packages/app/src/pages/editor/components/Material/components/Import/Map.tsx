@@ -7,9 +7,10 @@ import {
   HZViewer,
   EditorManager,
   Coordinate,
+  IEntity,
 } from "@hztx/core";
 // import * as WKT from "wellknown";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import classNames from "classnames";
 import MapMenuBar from "./MapMenuBar";
 import Search from "./MapSearch";
@@ -30,7 +31,9 @@ import {
   CreateGeometryType,
 } from "@/typings/map";
 import * as WKT from "@/utils/parseWkt";
-import GeometryStylePanel from './GeometryStylePanel';
+import GeometryStylePanel from "./GeometryStylePanel";
+import Context from "./context";
+const noop = () => {};
 
 export const GeometryCname = {
   [GeometryType.Point]: "点",
@@ -47,7 +50,10 @@ export interface PreviewListType extends IGeometryAssetType {
   projectId: number;
   collect?: boolean;
   coordinates: GeoCoordinate;
-  _removeEntity: () => void;
+  entityId: string;
+  // viewer: IViewer;
+  // entity?: IEntity;
+  removeEntity?: () => void;
 }
 
 const Map: React.FC<{
@@ -56,7 +62,6 @@ const Map: React.FC<{
   const { onSelectMode } = props;
   const [fullscreen, setFullscreen] = useState(true);
   const editorManager = useRef<EditorManager | null>(null);
-
   const container = useRef<HTMLDivElement | null>(null);
   const context = useRef<{ viewer: IViewer }>({ viewer: null });
   const [list, setList] = useState<PreviewListType[]>([]);
@@ -83,7 +88,7 @@ const Map: React.FC<{
     };
   }, []);
 
-  function editoreditorManager() {
+  function genEditorManager() {
     if (!editorManager.current) {
       editorManager.current = new EditorManager(context.current.viewer);
     }
@@ -100,15 +105,16 @@ const Map: React.FC<{
     const data = res?.data || [];
     const _data = data.map((item) => {
       const coordinates = WKT.parse(item.geoData) as any[];
-      let removeEntity = () => {};
+      let entityId = "";
+      let removeEntity = null;
       if (coordinates.length) {
         const raw = addEntity(
           ApiResGeometryType[item.geometryType] as CreateGeometryType,
           coordinates,
           false
         );
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        raw?.removeEntity && (removeEntity = raw?.removeEntity);
+        entityId = raw?.entityId || "";
+        removeEntity = raw?.removeEntity;
       }
       return {
         ...item,
@@ -116,10 +122,10 @@ const Map: React.FC<{
         showInMap: true,
         projectId,
         coordinates,
-        _removeEntity: removeEntity,
+        entityId,
+        removeEntity: removeEntity || noop,
       };
     });
-    console.log(_data);
     setList(_data);
   };
   const setViewWithZoom = (posi) => {
@@ -151,7 +157,6 @@ const Map: React.FC<{
     isCreate = true
   ) => {
     let entity = null;
-
     switch (type) {
       case GeometryType.Point:
         entity = new PointEntity({
@@ -190,11 +195,16 @@ const Map: React.FC<{
     context.current.viewer.addEntity(entity);
     // 重制编辑要素
     menuBarRef.current?.updateType(-1);
+
+    // setTimeout(() => {
+    //   context.current.viewer.entities.remove(entity);
+    // }, 2000)
     return {
       geometry,
+      entityId: entity.id,
       removeEntity: () => {
-        context.current.viewer.removeEntity(entity);
-        return;
+        console.log("removeEntity", context.current.viewer.entities, entity);
+        context.current.viewer.entities.remove(entity);
       },
     };
   };
@@ -214,6 +224,7 @@ const Map: React.FC<{
     });
     if (res.code === 0) {
       message.success("保存成功");
+      init();
     } else {
       message.error(res.msg || "保存失败");
     }
@@ -221,9 +232,8 @@ const Map: React.FC<{
   };
 
   const addPoint = () => {
-    const manager = editoreditorManager();
+    const manager = genEditorManager();
     const editor = manager.startCreate("point", {}, async (coordinates) => {
-      console.log("point", editor, coordinates);
       const item = addEntity(GeometryType.Point, coordinates);
       if (item?.geometry) {
         await saveAsset({
@@ -235,7 +245,7 @@ const Map: React.FC<{
   };
 
   const addLine = () => {
-    const manager = editoreditorManager();
+    const manager = genEditorManager();
     manager.startCreate("line", {}, async (coordinates) => {
       console.log("draw line", coordinates);
       const item = addEntity(GeometryType.LineString, coordinates);
@@ -248,7 +258,7 @@ const Map: React.FC<{
     });
   };
   const addPolygon = () => {
-    const manager = editoreditorManager();
+    const manager = genEditorManager();
     manager.startCreate("polygon", {}, async (coordinates) => {
       console.log("draw polygon", coordinates);
       const item = addEntity(GeometryType.Polygon, coordinates as Coordinate[]);
@@ -271,6 +281,14 @@ const Map: React.FC<{
       addPolygon();
     }
   };
+  const contextValue = useMemo(() => {
+    return {
+      viewer: null,
+      updateGeoAsset: () => {
+        // init();
+      },
+    };
+  }, []);
   const resetMenuBar = () => {
     menuBarRef.current?.updateCollapsed(false);
   };
@@ -284,11 +302,16 @@ const Map: React.FC<{
       )}
     >
       <Spin spinning={loading} wrapperClassName="!w-full !h-full map-spin">
-        <MapMenuBar
-          list={list}
-          ref={menuBarRef}
-          onStartCreate={(type: CreateGeometryType) => handleStartCreate(type)}
-        ></MapMenuBar>
+        <Context.Provider value={contextValue}>
+          <MapMenuBar
+            list={list}
+            ref={menuBarRef}
+            onStartCreate={(type: CreateGeometryType) =>
+              handleStartCreate(type)
+            }
+          ></MapMenuBar>
+        </Context.Provider>
+
         <Search onSelect={handleSelect}></Search>
         <div className="absolute z-10 right-4 top-30">
           <GeometryStylePanel></GeometryStylePanel>
