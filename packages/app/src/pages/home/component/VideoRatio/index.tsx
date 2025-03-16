@@ -6,7 +6,15 @@ import classNames from "classnames";
 
 import "./index.less";
 
-const VideoRatio = forwardRef(
+export interface VideoRatioRef {
+  open: () => void;
+}
+
+export interface VideoRatioProps {
+  onCreate: () => void;
+}
+
+const VideoRatio = forwardRef<VideoRatioRef, VideoRatioProps>(
   (
     props,
     ref: Ref<{
@@ -16,14 +24,18 @@ const VideoRatio = forwardRef(
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [ratio, setRatio] = useState("");
-
     const handleCreate = async () => {
+      setLoading(true);
       const data = await createProject({
         screenRatio: ratio,
         projectName: "未命名草稿",
+      }).finally(() => {
+        setLoading(false);
       });
       if (data.code === 0) {
         setOpen(false);
+        props.onCreate?.();
+        message.success("创建成功");
       } else {
         message.error(data.msg || "创建失败");
       }

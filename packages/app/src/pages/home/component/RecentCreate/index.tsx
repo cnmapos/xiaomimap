@@ -3,16 +3,14 @@ import { PlusOutlined } from "@ant-design/icons";
 import { usePagination } from "ahooks";
 import { useNavigate } from "react-router-dom";
 import React, { useRef, useEffect } from "react";
-import VideoRatio from "../VideoRatio";
+import VideoRatio, { VideoRatioRef } from "../VideoRatio";
 import { getProjectList } from "@/service/api/project";
 import "./index.less";
 
 const Main: React.FC = () => {
-  const ratioDialogRef = useRef<{
-    open: () => void;
-  } | null>(null);
+  const ratioDialogRef = useRef<VideoRatioRef>(null);
   const navigate = useNavigate();
-  
+
   const { data, loading, run, params } = usePagination(
     ({ current, pageSize }) => {
       return getProjectList({
@@ -52,7 +50,10 @@ const Main: React.FC = () => {
 
           {data?.records?.map((item) => {
             return (
-              <Col span={3} onClick={() => navigate(`/editor?projectId=${item.projectId}`)}>
+              <Col
+                span={3}
+                onClick={() => navigate(`/editor?projectId=${item.projectId}`)}
+              >
                 <div className="recent-create-item">
                   <div className="recent-create-item-img mb-4">
                     <img
@@ -71,7 +72,15 @@ const Main: React.FC = () => {
             );
           })}
         </Row>
-        <VideoRatio ref={ratioDialogRef} />
+        <VideoRatio
+          onCreate={() => {
+            run({
+              current: 1,
+              pageSize: params?.[0]?.pageSize || 10,
+            });
+          }}
+          ref={ratioDialogRef}
+        />
       </div>
     </Spin>
   );
