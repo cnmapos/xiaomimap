@@ -25,6 +25,7 @@ import Editor from '../editors/editor';
 import Model3D from '../editors/model';
 import TheLongMarch from '../anims/Keyframes/theLongMarch';
 import BalllisticMissiles from '../anims/Keyframes/ballisticMissiles';
+import BallisticMissilesGD from '../anims/Keyframes/ballisticMissilesGD';
 import Cycling from '../anims/Keyframes/cycling';
 import { PathAnimationPanel } from '../components/path-animation-panel';
 import TrainCDToHK from '../anims/Keyframes/trains/CDToHK';
@@ -192,6 +193,12 @@ export default [
         path: '/keyframe-ballisticmissiles',
         thumbnail: 'XXXXXXX',
         element: BalllisticMissiles,
+      },
+      {
+        name: '广岛原子弹投放',
+        path: '/keyframe-ballisticmissilesgd',
+        thumbnail: 'XXXXXXX',
+        element: BallisticMissilesGD,
       },
       {
         name: '骑行轨迹',
