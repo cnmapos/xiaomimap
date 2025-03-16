@@ -6,6 +6,13 @@ import classNames from "classnames";
 
 import "./index.less";
 
+export enum VideoRatioType {
+  NineToSixteen = "9:16",
+  SixteenToNine = "16:9",
+  FourToThree = "4:3",
+  OneToOne = "1:1",
+};
+
 export interface VideoRatioRef {
   open: () => void;
 }
@@ -76,12 +83,12 @@ const VideoRatio = forwardRef<VideoRatioRef, VideoRatioProps>(
             <Col
               span={6}
               className={classNames("hover:text-blue-500", {
-                "video-ratio-active": ratio === "9:16",
+                "video-ratio-active": ratio === VideoRatioType.NineToSixteen,
               })}
             >
               <div
                 className="video-ratio-item relative border border-transparent hover:border-blue-600"
-                onClick={() => setRatio("9:16")}
+                onClick={() => setRatio(VideoRatioType.NineToSixteen)}
               >
                 <img
                   className="absolute top-0 object-contain h-full w-full"
@@ -95,12 +102,12 @@ const VideoRatio = forwardRef<VideoRatioRef, VideoRatioProps>(
             <Col
               span={6}
               className={classNames("hover:text-blue-500", {
-                "video-ratio-active": ratio === "16:9",
+                "video-ratio-active": ratio === VideoRatioType.SixteenToNine,
               })}
             >
               <div
                 className="video-ratio-item relative border border-transparent hover:border-blue-600"
-                onClick={() => setRatio("16:9")}
+                onClick={() => setRatio(VideoRatioType.SixteenToNine)}
               >
                 <img
                   className="absolute top-0 object-contain h-full w-full"
@@ -114,12 +121,12 @@ const VideoRatio = forwardRef<VideoRatioRef, VideoRatioProps>(
             <Col
               span={6}
               className={classNames("hover:text-blue-500", {
-                "video-ratio-active": ratio === "4:3",
+                "video-ratio-active": ratio === VideoRatioType.FourToThree,
               })}
             >
               <div
                 className="video-ratio-item relative border border-transparent hover:border-blue-600"
-                onClick={() => setRatio("4:3")}
+                onClick={() => setRatio(VideoRatioType.FourToThree)}
               >
                 <img
                   className="absolute top-0 object-contain h-full w-full"
@@ -133,12 +140,12 @@ const VideoRatio = forwardRef<VideoRatioRef, VideoRatioProps>(
             <Col
               span={6}
               className={classNames("hover:text-blue-500", {
-                "video-ratio-active": ratio === "1:1",
+                "video-ratio-active": ratio === VideoRatioType.OneToOne,
               })}
             >
               <div
                 className="video-ratio-item relative border border-transparent hover:border-blue-600"
-                onClick={() => setRatio("1:1")}
+                onClick={() => setRatio(VideoRatioType.OneToOne)}
               >
                 <img
                   className="absolute top-0 object-contain w-25 h-25 left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2"
