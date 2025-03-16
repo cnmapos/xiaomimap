@@ -2,10 +2,10 @@ export enum GeometryType {
   Point = "Point",
   LineString = "LineString",
   Polygon = "Polygon",
-  GeometryCollection = "GeometryCollection"
+  GeometryCollection = "GeometryCollection",
 }
-  // GeometryCollection = "GeometryCollection"
-// export type GeometryCollection = 
+// GeometryCollection = "GeometryCollection"
+// export type GeometryCollection =
 
 export interface IGeometry {
   type: keyof typeof GeometryType;
@@ -16,7 +16,7 @@ export enum ApiResGeometryType {
   point = "Point",
   linestring = "LineString",
   polygon = "Polygon",
-  geometry_collection = 'GeometryCollection'
+  geometry_collection = "GeometryCollection",
 }
 
 /**
@@ -32,7 +32,6 @@ export enum ApiResGeometryType {
 // export const GeometryCollectionType = 'geometry_collection';
 
 // "GeometryCollection"
-
 
 export type CreateGeometryType = keyof typeof GeometryType;
 

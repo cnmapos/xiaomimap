@@ -19,11 +19,7 @@ function Vector() {
     context.current.viewer = viewer;
 
     const point = new PointEntity({
-      
-      positions: [
-        116.32821170576749,
-        42.66542575152765
-    ],
+      positions: [116.32821170576749, 42.66542575152765],
     });
     viewer.addEntity(point);
 
@@ -85,6 +81,19 @@ function Vector() {
       ],
     });
     viewer.addEntity(polygon);
+
+    // 移除entity
+    // viewer.entities.remove(polygon);
+
+    // 高亮线
+    line.setStyle({
+      width: 5,
+      color: '#ff0000',
+    });
+
+    polygon.setStyle({
+      color: 'rgba(255, 0, 0, 0.5)',
+    });
 
     return () => {
       viewer.destroy();

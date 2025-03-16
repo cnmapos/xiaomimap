@@ -10,6 +10,7 @@ import {
   Color as CesiumColor,
   Transforms as CesiumCTransforms,
 } from 'cesium';
+import { EntityCollection } from '../entities';
 
 export type Coordinate = [number, number, number?];
 
@@ -85,6 +86,8 @@ export interface LineEntityLike extends EntityLike {}
 export interface PolygonEntityLike extends EntityLike {}
 
 export interface IViewer {
+  entities: EntityCollection;
+
   addRasterLayer(layer: RasterProvider): void;
   removeRasterLayer(layer: ILayer): void;
 

@@ -19,6 +19,8 @@ import GeometryIcon from "./GeometryIcon";
 import { GeometryType } from "@/typings/map";
 import { GeometryCname } from "./Map";
 import "./index.less";
+import { CommandRegistry } from "@/core/cmds/CommandRegistry";
+import { CommandIds } from "@/core/cmds/ICommand";
 
 export interface ImportListProps {
   data: PreviewListType[];
@@ -127,7 +129,7 @@ const Material: React.FC<ImportListProps> = (props) => {
       message.error(res.msg || "创建失败");
     }
   };
-  const handleContextMenuCommand = ({ key }) => {
+  const handleContextMenuCommand = async ({ key }) => {
     switch (key) {
       case "1":
         break;
@@ -145,6 +147,11 @@ const Material: React.FC<ImportListProps> = (props) => {
         }
         break;
       case "4":
+        // 使用Command通知命令，动画关键帧组件接受命令
+        // const res = await CommandRegistry.execute(
+        //   CommandIds.TRACE_ANIMATION_GENERATION,
+        //   {}
+        // );
         break;
       default:
         break;
