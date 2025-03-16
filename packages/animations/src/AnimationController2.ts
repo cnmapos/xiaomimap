@@ -2,7 +2,7 @@ import { IViewer } from '@hztx/core';
 import { IAnimationController, IAnimationTrack } from './types';
 
 // 负责计时、触发动画对象的 applyValue
-export class AnimationController implements IAnimationController {
+export class AnimationController2 implements IAnimationController {
   private animationFrameId?: number;
   // 上一次计时
   private prevTime: number = Date.now();
@@ -52,6 +52,18 @@ export class AnimationController implements IAnimationController {
           // 计算animationTarget的新value，并apply
           const value = animationTarget.getValue(this.currentTime);
           animationTarget.applyValue(value);
+        } else {
+          // 不在范围内、要移除
+          if (this.viewer) {
+            // 拿到动画要素提供的需要加入到 viewer 中的实体、然后加入
+            const entities = animationTarget.getAnimationEntities();
+            entities.forEach((entity) => {
+              if (this.viewer.entities.contains(entity)) {
+                this.viewer.removeEntity(entity);
+              }
+            })
+          }
+
         }
 
       })

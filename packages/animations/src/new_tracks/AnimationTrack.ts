@@ -2,7 +2,7 @@
 // 图层、只负责管理所有 animationTarget，加到数组里面、统一控制 show、hide
 import { AnimationTarget, IAnimationTrack } from '../types';
 
-export class AnimationTrack implements IAnimationTrack {
+export class AnimationTrack2 implements IAnimationTrack {
   targets: AnimationTarget[] = [];
   constructor(targets: AnimationTarget[]) {
     this.targets = targets;

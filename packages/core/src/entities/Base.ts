@@ -41,6 +41,10 @@ export abstract class BaseEntity {
     this._entity.orientation = orientation;
   }
 
+  get entity(): Entity {
+    return this._entity;
+  }
+
   get show(): boolean {
     return this._entity.show;
   }

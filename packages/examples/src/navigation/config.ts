@@ -29,6 +29,7 @@ import BalllisticMissiles from '../anims/Keyframes/ballisticMissiles';
 import Cycling from '../anims/Keyframes/cycling';
 import { PathAnimationPanel } from '../components/path-animation-panel';
 import Draw from '../editors/draw';
+import TestPathAnimation from '../anims/Keyframes/TestPathAnimation';
 
 export default [
   {
@@ -206,6 +207,12 @@ export default [
         thumbnail: 'XXXXXXX',
         element: Cycling,
       },
+      {
+        name: '测试新动画库',
+        path: 'test-animation',
+        thumbnail: 'YYYY',
+        element: TestPathAnimation
+      }
     ],
   },
   {

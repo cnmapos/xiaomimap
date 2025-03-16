@@ -54,13 +54,20 @@ export type AnimationTargetConfig = {
   interpolate: InterpolateFunction
 }
 
-export type PathAnimationTargetConfig = AnimationTarget & {
-  model: {
+export type PathAnimationTargetConfig = {
+  start: number;
+  end: number;
+  startDelay: number;
+  duration: number;
+  startValue: any; // 动画开始值
+  endValue: any; // 动画结束时的值
+
+  model?: {
     uri: string;
     scale?: number;
     positions: Coordinate;
   },
-  billboard: {
+  billboard?: {
     image: string;
     width?: number;
     height?: number,

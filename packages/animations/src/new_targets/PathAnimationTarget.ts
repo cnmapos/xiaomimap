@@ -5,7 +5,7 @@ import { createPointRoamingSlerp } from '../interpolations';
 
 const TIME_ERROR = 50; // 时间误差，防止时间精度问题导致的误差
 
-class PathAnimationTarget implements AnimationTarget {
+export class PathAnimationTarget implements AnimationTarget {
   status: AnimationStatus = AnimationStatus.PENDING;
 
   // 基础线要素
@@ -39,7 +39,7 @@ class PathAnimationTarget implements AnimationTarget {
   }
 
 
-  constructor(viewer: IViewer, path: any, config: PathAnimationTargetConfig) {
+  constructor(viewer: IViewer, path: LineEntity, config: PathAnimationTargetConfig) {
     this.viewer = viewer;
     this.baseEntity = path;
     Object.assign(this, config);
@@ -100,14 +100,13 @@ class PathAnimationTarget implements AnimationTarget {
           // 模型角度计算更新
           const heading =
             -(Math.atan2(direction.y, direction.x) + CMath.PI_OVER_TWO);
-          console.log('heading: ', CMath.toDegrees(heading));
 
           const hpr = new HeadingPitchRoll(heading, 0, 0);
           const orientation = Transforms.headingPitchRollQuaternion(
             this.positions[this.positions.length - 1],
             hpr
           );
-          this.modelEntity.orientation = orientation;
+          this.modelEntity.entity.orientation = orientation;
         }
 
         return this.positions;
@@ -143,20 +142,22 @@ class PathAnimationTarget implements AnimationTarget {
     if (time >= startTime && time <= endTime) {
       let t = Math.min((time - startTime) / (endTime - startTime), 1); // 非重复性执行动画
       // 如果是非重复动画、则
-      return this.interpolate(this.startValue, this.endValue, t); // 插值计算
+      const nextPosition = this.interpolate(this.startValue, this.endValue, t); // 插值计算
+      return nextPosition;
     }
   }
 
   applyValue(value: [number, number, number]): void {
     if (this.status === AnimationStatus.PENDING) {
       this.onBefore?.();
+      this.baseEntity.show = false;
       this.status = AnimationStatus.RUNNING;
     }
     const position = Cartesian3.fromDegrees(...value);
     const lastPosition = this.positions.at(-1);
     if (!lastPosition || !Cartesian3.equals(position, lastPosition)) {
       this.positions.push(position);
-      this.modelEntity.position = position;
+      this.modelEntity.entity.position = position;
     }
   }
 
@@ -165,7 +166,7 @@ class PathAnimationTarget implements AnimationTarget {
   }
 
   onAfter(): void {
-
+    
   }
 
   reset(): void {
