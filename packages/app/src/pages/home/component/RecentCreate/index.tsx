@@ -52,7 +52,7 @@ const Main: React.FC = () => {
 
           {data?.records?.map((item) => {
             return (
-              <Col span={3} onClick={() => navigate(`/editor/${item.projectId}`)}>
+              <Col span={3} onClick={() => navigate(`/editor?projectId=${item.projectId}`)}>
                 <div className="recent-create-item">
                   <div className="recent-create-item-img mb-4">
                     <img

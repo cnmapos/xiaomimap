@@ -33,6 +33,7 @@ import {
 import * as WKT from "@/utils/parseWkt";
 import GeometryStylePanel from "./GeometryStylePanel";
 import Context from "./context";
+import { useSearchParams } from "react-router-dom";
 const noop = () => {};
 
 export const GeometryCname = {
@@ -59,6 +60,8 @@ export interface PreviewListType extends IGeometryAssetType {
 const Map: React.FC<{
   onSelectMode: (v: number) => void;
 }> = (props) => {
+  const [searchParams]= useSearchParams();
+  const projectId = searchParams.get('projectId')
   const { onSelectMode } = props;
   const [fullscreen, setFullscreen] = useState(true);
   const editorManager = useRef<EditorManager | null>(null);
@@ -66,9 +69,6 @@ const Map: React.FC<{
   const context = useRef<{ viewer: IViewer }>({ viewer: null });
   const [list, setList] = useState<PreviewListType[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const projectId = 1;
-  const userId = 9;
 
   const menuBarRef = useRef<MapMenuBarRef>(null);
   useEffect(() => {
