@@ -1,5 +1,5 @@
 
-import { Coordinate, IEntity, IViewer } from '@hztx/core';
+import { BillboardEntity, Coordinate, IEntity, IViewer, LineEntity, ModelEntity, PointEntity, PolygonEntity } from '@hztx/core';
 
 export enum AnimationStatus {
   PENDING = 0,
@@ -55,12 +55,19 @@ export type AnimationTargetConfig = {
 }
 
 export type PathAnimationTargetConfig = {
+  // 必填项：基础要素、生命周期时间、开始值和结束值
+  baseEntity: LineEntity;
+  isShowBaseEntity: boolean; // 是否展示基础的 Entity
   start: number;
   end: number;
-  startDelay: number;
-  duration: number;
   startValue: any; // 动画开始值
   endValue: any; // 动画结束时的值
+
+  startDelay?: number;
+  endStay?: number;
+
+  onBefore?: () => void;
+  onAfter?: () => void;
 
   model?: {
     uri: string;
@@ -80,9 +87,13 @@ export interface AnimationTarget {
   // interpolate function
   interpolate: InterpolateFunction;
   isInKeyframes: (time: number) => boolean; // 传入的时间节点、是否属于动画对象的生命周期内
+  // hooks
+  onBefore?: (arg: any) => void;
+  onAfter?: (arg: any) => void;
 
   // 初始化函数、创建实体等都在这里做
   init(): void;
+  // 返回实现动画效果需要的实体数组
   getAnimationEntities(): IEntity[];
 
   // animation
@@ -93,19 +104,15 @@ export interface AnimationTarget {
   applyValue(value: any): void;
   reset(): void;
 
-  // hooks
-  onBefore(): void;
-  onAfter(): void;
-
   // lifecycle
   start: number;
   end: number;
   startDelay: number;
-  duration: number;
+  endStay: number;
   setStart(start: number): void;
   setEnd(start: number): void;
   setStartDelay(start: number): void;
-  setDuration(duration: number): void;
+  setEndStay(stay: number): void;
 
   // config, style是比较通用的、所以放在类型定义里，一些特殊的配置、则对应animationTarget自行定义修改方法
   style: any;

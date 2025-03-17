@@ -1,48 +1,72 @@
-import { IEntity, LineEntity, CallbackProperty, Cartesian3, Cartographic, Transforms, Math as CMath, HeadingPitchRoll, IViewer, ModelEntity, BillboardEntity, Coordinate } from '@hztx/core';
+import { IEntity, LineEntity, CallbackProperty, Cartesian3, Cartographic, Transforms, Math as CMath, HeadingPitchRoll, IViewer, ModelEntity, BillboardEntity, Coordinate, Style } from '@hztx/core';
 import { linearInterpolate } from '../interpolations/common';
-import { AnimationStatus, AnimationTarget, AnimationTargetConfig, InterpolateFunction, PathAnimationTargetConfig } from '../types';
+import { AnimationStatus, AnimationTarget, InterpolateFunction, PathAnimationTargetConfig } from '../types';
 import { createPointRoamingSlerp } from '../interpolations';
+import { BaseAnimationTarget } from './BaseAnimationTarget';
 
 const TIME_ERROR = 50; // 时间误差，防止时间精度问题导致的误差
 
-export class PathAnimationTarget implements AnimationTarget {
+export class PathAnimationTarget extends BaseAnimationTarget implements AnimationTarget {
   status: AnimationStatus = AnimationStatus.PENDING;
-
   // 基础线要素
   baseEntity: LineEntity; // 基础线要素、只是用来继承他的一些样式和属性、动画用到的实体另外实例化
+  isShowBaseEntity: boolean;
+  start: number;
+  end: number;
+  startValue: Coordinate;
+  endValue: Coordinate;
+
+  startDelay: number = 0;
+  endStay: number = 0;
+  model?: PathAnimationTargetConfig['model'];
+  billboard?: PathAnimationTargetConfig['billboard'];
+
+  customOnBefore: () => void = () => { };
+  customOnAfter: () => void = () => { };
 
   // 保存线路坐标
   private positions: Cartesian3[] = [];
 
-  start: number = 0; // 时间点， 生命周期、新增动画要素时间
-  end: number = 0; // 时间点，生命周期、要素删除时间
-  startDelay: number = 0; // 动画开始等待时长，在生命周期内、动画需要等几秒后才开始
-  duration: number = 0; // 动画持续时长
-  startValue!: Coordinate;
-  endValue!: Coordinate;
-
   style: any = {};
-  model!: PathAnimationTargetConfig['model'];
-  billboard!: PathAnimationTargetConfig['billboard'];
+
 
   interpolate: InterpolateFunction = linearInterpolate; // 默认是xx插值函数
 
-  viewer: IViewer;
-  lineEntity!: LineEntity;
-  modelEntity!: ModelEntity;
-  billboardEntity!: BillboardEntity;
+  lineEntity?: LineEntity | null;
+  modelEntity?: ModelEntity | null;
+  billboardEntity?: BillboardEntity | null;
 
-  
-  isInKeyframes (time: number): boolean {
-    return time >= this.start && time <= this.end + TIME_ERROR;
-    // 这里加了50毫秒的误差，是为了防止时间精度问题导致的误差
-  }
+  constructor(config: PathAnimationTargetConfig) {
+    super();
+    this.baseEntity = config.baseEntity;
+    this.start = config.start;
+    this.end = config.end;
+    this.startValue = config.startValue;
+    this.endValue = config.endValue;
+    this.isShowBaseEntity = config.isShowBaseEntity;
 
+    if (config.startDelay) {
+      this.startDelay = config.startDelay;
+    }
+    if (config.endStay) {
+      this.endStay = config.endStay;
+    }
 
-  constructor(viewer: IViewer, path: LineEntity, config: PathAnimationTargetConfig) {
-    this.viewer = viewer;
-    this.baseEntity = path;
-    Object.assign(this, config);
+    if (config.model) {
+      this.model = config.model;
+    }
+    if (config.billboard) {
+      this.billboard = config.billboard;
+    }
+
+    if (config.onBefore) {
+      this.customOnBefore = config.onBefore;
+    }
+
+    if (config.onAfter) {
+      this.customOnAfter = config.onAfter;
+    }
+
     this.init();
   }
 
@@ -76,7 +100,7 @@ export class PathAnimationTarget implements AnimationTarget {
         ...this.billboard
       })
     }
-    
+
 
     if (this.lineEntity.polyline) {
       this.lineEntity.polyline.positions = new CallbackProperty((e, result) => {
@@ -87,7 +111,7 @@ export class PathAnimationTarget implements AnimationTarget {
         // TODO: 通过billboard.alignedAxis来实时更新entity的朝向，让其始终沿着轨迹方向行驶。
         const direction = Cartesian3.subtract(
           this.positions[this.positions.length - 1],
-          this.positions[this.positions.length - 2], 
+          this.positions[this.positions.length - 2],
           new Cartesian3()
         );
         // 如果轨迹动画用的图片、则 修改图片的角度
@@ -115,7 +139,7 @@ export class PathAnimationTarget implements AnimationTarget {
   }
 
   // 提供给外界、告知本动画对应的实体有哪些，用于让 animationControler 把我们的动画相关实体添加到viewer中
-  getAnimationEntities() {
+  override getAnimationEntities() {
     if (this.lineEntity) {
       const arr: IEntity[] = [this.lineEntity];
       if (this.modelEntity) {
@@ -149,7 +173,7 @@ export class PathAnimationTarget implements AnimationTarget {
 
   applyValue(value: [number, number, number]): void {
     if (this.status === AnimationStatus.PENDING) {
-      this.onBefore?.();
+      this.onBefore?.(this.modelEntity);
       this.baseEntity.show = false;
       this.status = AnimationStatus.RUNNING;
     }
@@ -161,40 +185,82 @@ export class PathAnimationTarget implements AnimationTarget {
     }
   }
 
-  onBefore(): void {
-
-  }
-
-  onAfter(): void {
-    
-  }
-
   reset(): void {
     this.positions = [];
   }
 
-  setStart(start: number): void {
-    this.start = start;
+  // 设置billboard
+  setBillboard(billboard: PathAnimationTargetConfig['billboard']) {
+    if (billboard) {
+      // 把模型先隐藏
+      if (this.modelEntity) {
+        this.modelEntity.show = false;
+      }
+
+      if (this?.billboardEntity?.billboard) {
+        // 更新billboard的图像和其他配置
+        this.billboardEntity.billboard.image = billboard.image;
+        this.billboardEntity.billboard.height = billboard.height;
+        this.billboardEntity.billboard.width = billboard.width;
+      } else {
+        this.billboard = billboard;
+        this.billboardEntity = new BillboardEntity({
+          ...this.billboard
+        })
+      }
+    }
   }
 
-  setEnd(end: number): void {
-    this.end = end;
+  // 设置model
+  setModel(model: PathAnimationTargetConfig['model']) {
+    if (model) {
+      // 把billboard先隐藏
+      if (this.billboardEntity) {
+        this.billboardEntity.show = false;
+      }
+
+      if (this.modelEntity?.model) {
+        // 更新model
+        // @ts-ignore
+        this.modelEntity.model.uri = model.uri;
+        // @ts-ignore
+        this.modelEntity.model.scale = model.scale;
+      } else {
+        this.model = model;
+        this.modelEntity = new ModelEntity({
+          ...this.model
+        })
+      }
+    }
   }
 
-  setStartDelay(delay: number): void {
-    this.startDelay = delay;
+  setStyle(style: Style): void {
+    if (this.lineEntity) {
+      this.lineEntity.setStyle(style);
+    }
   }
 
-  setDuration(duration: number): void {
-    this.duration = duration;
+  onBefore(e: { viewer: IViewer; }): void {
+    super.onBefore(e);
+    this.customOnBefore();
   }
 
-  setStyle(style: any): void {
+  onAfter(e: { viewer: IViewer; }): void {
+    super.onAfter(e);
+    this.customOnAfter();
   }
 
   show(): void {
+    const entities = this.getAnimationEntities();
+    entities.forEach((ety) => {
+      ety.show = true;
+    })
   }
 
   hide(): void {
+    const entities = this.getAnimationEntities();
+    entities.forEach((ety) => {
+      ety.show = false;
+    })
   }
 }

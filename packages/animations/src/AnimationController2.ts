@@ -8,12 +8,10 @@ export class AnimationController2 implements IAnimationController {
   private prevTime: number = Date.now();
   currentTime: number = 0;
   isPlaying: boolean = false;
-  viewer: IViewer;
 
   tracks: IAnimationTrack[] = [];
 
-  constructor(viewer: IViewer, tracks: IAnimationTrack[]) {
-    this.viewer = viewer; // 这个是core代码中的容器，我们所有动画要素最终都要加到这个容器里面去
+  constructor(tracks: IAnimationTrack[]) {
     this.tracks = tracks;
   }
 
@@ -38,34 +36,21 @@ export class AnimationController2 implements IAnimationController {
         // 如果符合动画时间、则开始动画
         if (animationTarget.isInKeyframes(this.currentTime)) {
 
-          if (this.viewer) {
-            // 拿到动画要素提供的需要加入到 viewer 中的实体、然后加入
-            const entities = animationTarget.getAnimationEntities();
-            entities.forEach((entity) => {
-              // 避免重复添加
-              if (!this.viewer.entities.contains(entity)) {
-                this.viewer.addEntity(entity);
-              }
-            })
-          }
+          // if (this.viewer) {
+          //   // 拿到动画要素提供的需要加入到 viewer 中的实体、然后加入
+          //   const entities = animationTarget.getAnimationEntities();
+          //   entities.forEach((entity) => {
+          //     // 避免重复添加
+          //     if (!this.viewer.entities.contains(entity)) {
+          //       this.viewer.addEntity(entity);
+          //     }
+          //   })
+          // }
 
           // 计算animationTarget的新value，并apply
           const value = animationTarget.getValue(this.currentTime);
           animationTarget.applyValue(value);
-        } else {
-          // 不在范围内、要移除
-          if (this.viewer) {
-            // 拿到动画要素提供的需要加入到 viewer 中的实体、然后加入
-            const entities = animationTarget.getAnimationEntities();
-            entities.forEach((entity) => {
-              if (this.viewer.entities.contains(entity)) {
-                this.viewer.removeEntity(entity);
-              }
-            })
-          }
-
         }
-
       })
     });
   }

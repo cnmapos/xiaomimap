@@ -4,7 +4,7 @@ import {
     PathAnimationTarget,
 } from '@hztx/animations';
 
-import { Coordinate, createViewer, IViewer, LineEntity } from '@hztx/core';
+import { Cartesian3, Coordinate, createViewer, IViewer, LineEntity, ModelEntity } from '@hztx/core';
 import React, { useEffect, useRef } from 'react';
 import MapContainer from '../../components/map-container';
 import { Button } from 'antd';
@@ -191,20 +191,52 @@ function TestPathAnimation() {
             const lineEty = new LineEntity({ positions: positions });
             context.current.viewer.addEntity(lineEty);
 
+
+            //  ----->
+            // [   start,     start + startDelay,   start + startDelay + duration,    end ]
+            //   插入viewer        开始动画                       执行动画               移除
+
+            // 创建轨迹动画对象
             const pathAnimationTarget = new PathAnimationTarget(context.current.viewer, lineEty, {
                 start: 0,
-                end: 20 * 1000,
+                end: 15 * 1000,
+
                 startDelay: 2000,
+                // endStay: 3000, // TODO: 不用duration
                 duration: 10 * 1000,
+
                 startValue: positions[0],
                 endValue: positions[positions.length - 1],
+
                 model: {
                     uri: 'assets/models/people_run_2.glb', // 替换为实际模型路径
                     scale: 15000,
                     positions: positions[0],
                 },
-            });
+                onBefore: (modelEntity: ModelEntity) => {
+                    //xxxxxx
+                    // 新增？viewer？
 
+                    // modelEntity.show = true;
+                    // if (!context.current.viewer?.trackedEntity) {
+                    //   context.current.viewer.trackedEntity = modelEntity;
+
+                    //   const distance = 107953; // 设置你想要的固定距离
+                    //   context.current.viewer.trackedEntity.viewFrom = new Cartesian3(
+                    //     distance / 2,
+                    //     -distance,
+                    //     distance * 1.2
+                    //   );
+                    // }
+                }
+            });
+            pathAnimationTarget.setStyle({
+                width: 3,
+                color: '#ff0000',
+                outlineWidth: 1,
+                outlineColor: '#00ff00'
+            })
+            // 新增动画对象到图层里
             track.add(pathAnimationTarget);
         }
 
