@@ -9,6 +9,7 @@ import {
   Cartographic as CesiumCartographic,
   Color as CesiumColor,
   Transforms as CesiumCTransforms,
+  ScreenSpaceEventType,
 } from 'cesium';
 import { EntityCollection } from '../entities';
 
@@ -28,6 +29,12 @@ export type HeadingPitchRoll = {
   heading: number;
   pitch: number;
   roll: number;
+};
+
+export type HeadingPitchRange = {
+  heading: number;
+  pitch: number;
+  range: number;
 };
 
 export enum SceneMode {
@@ -85,6 +92,17 @@ export interface LineEntityLike extends EntityLike {}
 
 export interface PolygonEntityLike extends EntityLike {}
 
+export enum EventTypes {
+  LEFT_CLICK = ScreenSpaceEventType.LEFT_CLICK,
+  RIGHT_CLICK = ScreenSpaceEventType.RIGHT_CLICK,
+  MOUSE_MOVE = ScreenSpaceEventType.MOUSE_MOVE,
+}
+
+export interface MapEvent {
+  entities: IEntity;
+  coordinate: Coordinate;
+}
+
 export interface IViewer {
   entities: EntityCollection;
 
@@ -92,13 +110,17 @@ export interface IViewer {
   removeRasterLayer(layer: ILayer): void;
 
   flyTo(options: {
-    destination: Coordinate;
+    destination?: Coordinate;
+    entities?: IEntity[];
     orientation?: any;
     duration?: number;
     complete?: () => void;
     cancel?: () => void;
   }): void;
   setView(position: Coordinate, orientation: HeadingPitchRoll): void;
+
+  setTrackEntity(entity: IEntity): void;
+  getTrackEntity(): IEntity;
 
   addEntity(entity: IEntity | EntityLike): IEntity;
   removeEntity(entity: IEntity): void;

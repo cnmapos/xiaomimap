@@ -29,6 +29,7 @@ import BalllisticMissiles from '../anims/Keyframes/ballisticMissiles';
 import Cycling from '../anims/Keyframes/cycling';
 import { PathAnimationPanel } from '../components/path-animation-panel';
 import Draw from '../editors/draw';
+import Event from '../starts/Events';
 
 export default [
   {
@@ -45,6 +46,12 @@ export default [
         path: '/vector',
         thumbnail: 'XXXXXXX',
         element: Vector,
+      },
+      {
+        name: '地图事件',
+        path: '/event',
+        thumbnail: 'XXXXXXX',
+        element: Event,
       },
     ],
   },

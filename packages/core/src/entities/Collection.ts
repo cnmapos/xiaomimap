@@ -9,6 +9,10 @@ export class EntityCollection {
     this._entities = entities;
   }
 
+  find(predicate: (e: IEntity) => boolean) {
+    return this.entities.find(predicate);
+  }
+
   add(entity: IEntity): IEntity {
     if (!this.contains(entity)) {
       this.entities.push(entity);
