@@ -22,6 +22,7 @@ interface MapMenuBarProps {
 }
 export interface MapMenuBarRef {
   updateType: (v: number) => void;
+  updateCollapsed: (v: boolean) => void;
 }
 
 // export const GeometryIcons  = {
@@ -42,6 +43,9 @@ const MapMenuBar = forwardRef<MapMenuBarRef, MapMenuBarProps>((props, ref) => {
   useImperativeHandle(ref, () => ({
     updateType: (v: number) => {
       setType(v);
+    },
+    updateCollapsed: (v: boolean) => {
+      setCollapsed(v);
     },
   }));
 

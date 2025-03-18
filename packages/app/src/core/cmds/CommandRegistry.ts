@@ -8,10 +8,14 @@ export class CommandRegistry {
     this.commands.set(command.id, command);
   }
 
-  static execute(commandId: string, ...args: Arg[]) {
+  static unregister(commandId: string) {
+    this.commands.delete(commandId);
+  }
+
+  static async execute(commandId: string, ...args: Arg[]) {
     const command = this.commands.get(commandId);
     if (command) {
-      command.execute(...args);
+      return await command.execute(...args);
     } else {
       console.warn(`Command not found: ${commandId}`);
     }

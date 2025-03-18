@@ -1,21 +1,17 @@
 import {
   createViewer,
+  EventTypes,
   HZViewer,
-  IEntity,
   LineEntity,
   PointEntity,
   PolygonEntity,
 } from '@hztx/core';
 import React, { useEffect, useRef } from 'react';
 import MapContainer from '../components/map-container';
-import { Button } from 'antd';
 
-function Vector() {
+function Events() {
   const container = useRef<HTMLElement | null>();
-  const context = useRef<{ viewer: HZViewer | null; entities: IEntity[] }>({
-    viewer: null,
-    entities: [],
-  });
+  const context = useRef<{ viewer: HZViewer | null }>({ viewer: null });
 
   useEffect(() => {
     const viewer = createViewer(container.current!, {
@@ -27,7 +23,6 @@ function Vector() {
       positions: [116.32821170576749, 42.66542575152765],
     });
     viewer.addEntity(point);
-    context.current.entities.push(point);
 
     const line = new LineEntity({
       positions: [
@@ -47,7 +42,6 @@ function Vector() {
       ],
     });
     viewer.addEntity(line);
-    context.current.entities.push(line);
 
     const polygon = new PolygonEntity({
       positions: [
@@ -88,31 +82,15 @@ function Vector() {
       ],
     });
     viewer.addEntity(polygon);
-    context.current.entities.push(polygon);
 
-    // 移除entity
-    // viewer.entities.remove(polygon);
-
-    // 高亮线
-    line.setStyle({
-      width: 5,
-      color: '#ff0000',
-    });
-
-    polygon.setStyle({
-      color: 'rgba(255, 0, 0, 0.5)',
+    viewer.on(EventTypes.LEFT_CLICK, (e) => {
+      console.log('left_click', e.entities);
     });
 
     return () => {
       viewer.destroy();
     };
   }, []);
-
-  const onclick = () => {
-    context.current.viewer?.flyToEntities({
-      entities: context.current.entities,
-    });
-  };
 
   return (
     <MapContainer>
@@ -123,9 +101,7 @@ function Vector() {
       ></div>
       <div>
         <div className="hz-player">
-          <div>
-            <Button onClick={onclick}>按Entities居中显示</Button>
-          </div>
+          <div></div>
           <div></div>
         </div>
         <div className="hz-style"></div>
@@ -134,4 +110,4 @@ function Vector() {
   );
 }
 
-export default Vector;
+export default Events;

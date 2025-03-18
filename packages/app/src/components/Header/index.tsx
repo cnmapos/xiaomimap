@@ -1,27 +1,29 @@
 import React from "react";
-import { BellOutlined, DownOutlined } from "@ant-design/icons";
+import { BellOutlined } from "@ant-design/icons";
 import { Dropdown, Avatar, Badge, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "@/service/axiosConfig";
 import Styles from "./styles.module.less";
 
-const items = [
-  {
-    key: 1,
-    label: "绘个球",
-  },
-  {
-    key: 2,
-    label: "个人信息",
-  },
-  {
-    key: 3,
-    label: "退出登录",
-  },
-];
 const Header: React.FC = () => {
   const navigate = useNavigate();
-
+  const username =
+    JSON.parse(localStorage.getItem("user") || "")?.userName || "-";
+  const items = [
+    {
+      key: 1,
+      label: username,
+      disabled: true,
+    },
+    {
+      key: 2,
+      label: "个人信息",
+    },
+    {
+      key: 3,
+      label: "退出登录",
+    },
+  ];
   const onMenuClick = ({ key }) => {
     if (key === 3) {
       axios.get("/hz-users/logout").then(({ data }) => {

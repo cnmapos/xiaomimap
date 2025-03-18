@@ -9,19 +9,29 @@ export interface IGeometryAssetType {
   geometryId: number;
   geometryJson: null | string;
 }
+export interface IProjectItemType {
+  assetId: number;
+  assetName: string;
+  assetType: number;
+  comment: string;
+  createTime: string;
+  filePath: string;
+}
 // 创建项目信息
-export const createProject = (params: {
+export const createProject = async (params: {
   projectName: string;
   comment?: string;
   duration?: string;
   screenRatio: string;
   remark?: string;
 }) => {
-  return axios({
+  const res =  await axios({
     url: '/hz-project/create',
     method: 'post',
     data: params
   });
+  return res.data;
+
 }
 
 export const getProjectList = async (params: {
@@ -92,7 +102,12 @@ export const listProjectAsset = async (params: {
   uploadTimeStart?: string;
   uploadTimeEnd?: string;
   userId: number;
-}) => {
+}): Promise<API.BaseRes<{
+  records: IProjectItemType[];
+  page: number;
+  total: number;
+  current: number;
+}>> => {
   const res = await axios({
     url: '/hz-project/listProjectAsset',
     method: 'post',
