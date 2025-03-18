@@ -242,7 +242,7 @@ function TestPathAnimation() {
     }
 
     function replay() {
-        aniCtr.current && aniCtr.current.seek(0);
+        aniCtr.current && aniCtr.current.reset();
         play();
     }
 

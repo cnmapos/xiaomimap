@@ -53,7 +53,7 @@ export abstract class BaseAnimationTarget {
     }
 
     reset() {
-        this.status === AnimationStatus.PENDING;
+        this.status = AnimationStatus.PENDING;
     }
 
     // 动画开始之前执行的回调、通用逻辑是添加到 viewer 视图中
