@@ -7,8 +7,6 @@ import { BaseAnimationTarget } from './BaseAnimationTarget';
 const TIME_ERROR = 50; // 时间误差，防止时间精度问题导致的误差
 
 export class PathAnimationTarget extends BaseAnimationTarget implements AnimationTarget {
-  status: AnimationStatus = AnimationStatus.PENDING;
-  // 基础线要素
   baseEntity: LineEntity; // 基础线要素、只是用来继承他的一些样式和属性、动画用到的实体另外实例化
   isShowBaseEntity: boolean;
   start: number;
@@ -26,11 +24,8 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
 
   // 保存线路坐标
   private positions: Cartesian3[] = [];
-
   style: any = {};
-
-
-  interpolate: InterpolateFunction = linearInterpolate; // 默认是xx插值函数
+  interpolationFn: InterpolateFunction = linearInterpolate; // 默认是xx插值函数
 
   lineEntity?: LineEntity | null;
   modelEntity?: ModelEntity | null;
@@ -80,7 +75,7 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
     this.startValue = positions[0];
     this.endValue = positions[positions.length - 1];
 
-    this.interpolate = createPointRoamingSlerp(positions.slice(1, -1))
+    this.interpolationFn = createPointRoamingSlerp(positions.slice(1, -1))
 
     // 创建线实体
     this.lineEntity = new LineEntity({
@@ -138,7 +133,7 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
     }
   }
 
-  // 提供给外界、告知本动画对应的实体有哪些，用于让 animationControler 把我们的动画相关实体添加到viewer中
+  // 获取实现动画效果需要的实体
   override getAnimationEntities() {
     if (this.lineEntity) {
       const arr: IEntity[] = [this.lineEntity];
@@ -153,32 +148,14 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
     return [];
   }
 
-  // 根据传入的时间、计算新的value值, 在这里是返回
-  getValue(time: number): any {
-    // 1. 如果时间 <= 动画真正开始的时刻，返回初始值
-    // 2. 如果时间 >= 动画执行结束的时刻、返回最终值
-    let startTime = this.start + this.startDelay;
-    let endTime = this.start + this.duration;
-    if (time <= startTime) return this.startValue;
-    if (time >= endTime) return this.endValue;
 
-    // 找到当前时间所在的关键帧区间, 目前就默认只有起点和终点这一个keyframe区间
-    if (time >= startTime && time <= endTime) {
-      let t = Math.min((time - startTime) / (endTime - startTime), 1); // 非重复性执行动画
-      // 如果是非重复动画、则
-      const nextPosition = this.interpolate(this.startValue, this.endValue, t); // 插值计算
-      return nextPosition;
-    }
-  }
-
-  applyValue(value: [number, number, number]): void {
-    if (this.status === AnimationStatus.PENDING) {
-      this.onBefore?.(this.modelEntity);
-      this.baseEntity.show = false;
-      this.status = AnimationStatus.RUNNING;
+  applyValue(viewer: IViewer, value: [number, number, number]): void {
+    // 这里需要根据是否配置了展示旧要素、去控制旧要素是否要隐藏
+    if (this.isShowBaseEntity && this.baseEntity.show === false) {
+      this.baseEntity.show = true;
     }
     const position = Cartesian3.fromDegrees(...value);
-    const lastPosition = this.positions.at(-1);
+    const lastPosition = this.positions[this.positions.length - 1];
     if (!lastPosition || !Cartesian3.equals(position, lastPosition)) {
       this.positions.push(position);
       this.modelEntity.entity.position = position;
@@ -186,6 +163,7 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
   }
 
   reset(): void {
+    super.reset();
     this.positions = [];
   }
 
@@ -240,6 +218,7 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
     }
   }
 
+  // onBefore和onAfter会被track调用
   onBefore(e: { viewer: IViewer; }): void {
     super.onBefore(e);
     this.customOnBefore();

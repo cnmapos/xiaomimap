@@ -30,28 +30,7 @@ export class AnimationController2 implements IAnimationController {
 
     this.currentTime += deltaTime;
     this.tracks.forEach((track) => {
-
-      track.targets.forEach((animationTarget) => {
-
-        // 如果符合动画时间、则开始动画
-        if (animationTarget.isInKeyframes(this.currentTime)) {
-
-          // if (this.viewer) {
-          //   // 拿到动画要素提供的需要加入到 viewer 中的实体、然后加入
-          //   const entities = animationTarget.getAnimationEntities();
-          //   entities.forEach((entity) => {
-          //     // 避免重复添加
-          //     if (!this.viewer.entities.contains(entity)) {
-          //       this.viewer.addEntity(entity);
-          //     }
-          //   })
-          // }
-
-          // 计算animationTarget的新value，并apply
-          const value = animationTarget.getValue(this.currentTime);
-          animationTarget.applyValue(value);
-        }
-      })
+      track.run(this.currentTime);
     });
   }
 
@@ -76,9 +55,7 @@ export class AnimationController2 implements IAnimationController {
     this.currentTime = 0;
     this.isPlaying = false;
     this.tracks.forEach((track) => {
-      track.targets.forEach((animationTarget) => {
-        animationTarget.reset();
-      })
+      track.reset();
     });
   }
 

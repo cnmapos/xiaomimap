@@ -172,7 +172,7 @@ function TestPathAnimation() {
             key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI',
         });
 
-        aniCtr.current = new AnimationController2(context.current.viewer, []);
+        aniCtr.current = new AnimationController2([]);
 
         init()
 
@@ -184,7 +184,7 @@ function TestPathAnimation() {
     // 初始化
     const init = () => {
         if (aniCtr.current) {
-            const track = new AnimationTrack2([]);
+            const track = new AnimationTrack2(context.current.viewer, []);
             aniCtr.current.addTrack(track);
 
             // 创建基础线实体
@@ -197,13 +197,13 @@ function TestPathAnimation() {
             //   插入viewer        开始动画                       执行动画               移除
 
             // 创建轨迹动画对象
-            const pathAnimationTarget = new PathAnimationTarget(context.current.viewer, lineEty, {
+            const pathAnimationTarget = new PathAnimationTarget({
+                baseEntity: lineEty,
+                isShowBaseEntity: true,
                 start: 0,
                 end: 15 * 1000,
-
                 startDelay: 2000,
-                // endStay: 3000, // TODO: 不用duration
-                duration: 10 * 1000,
+                endStay: 3000,
 
                 startValue: positions[0],
                 endValue: positions[positions.length - 1],
@@ -213,21 +213,11 @@ function TestPathAnimation() {
                     scale: 15000,
                     positions: positions[0],
                 },
-                onBefore: (modelEntity: ModelEntity) => {
-                    //xxxxxx
-                    // 新增？viewer？
-
-                    // modelEntity.show = true;
-                    // if (!context.current.viewer?.trackedEntity) {
-                    //   context.current.viewer.trackedEntity = modelEntity;
-
-                    //   const distance = 107953; // 设置你想要的固定距离
-                    //   context.current.viewer.trackedEntity.viewFrom = new Cartesian3(
-                    //     distance / 2,
-                    //     -distance,
-                    //     distance * 1.2
-                    //   );
-                    // }
+                onBefore: () => {
+                    console.log('onBefore执行');
+                },
+                onAfter: () => {
+                    console.log('onAfter执行');
                 }
             });
             pathAnimationTarget.setStyle({

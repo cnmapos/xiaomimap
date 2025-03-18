@@ -13,6 +13,13 @@ export enum AnimationStatus {
 //   reset(): void;
 // }
 
+export enum AnimationCategory {
+  ENTER = 'enter',
+  EXIT = 'exit',
+  REPEAT = 'repeat',
+  NEUTER = 'neuter', // 中性的动画、入场、出场、循环动画外的动画、比如相机从A->B没有入场出场一说，轨迹动画也没有这一说
+}
+
 export type AnimationTargetConstructorOptions = {
   onBefore?: () => void;
   heading?: number;
@@ -33,9 +40,12 @@ export interface IAnimationController {
 
 // 管理动画要素
 export interface IAnimationTrack {
+  viewer: IViewer;
   targets: AnimationTarget[];
+  run(currentTime: number): void; // 根据时间、判断是否需要调用 target 的getValue
   add(target: AnimationTarget): void;
   remove(target: AnimationTarget): void;
+  reset(): void;
   show(): void;
   hide(): void;
 }
@@ -85,11 +95,11 @@ export type PathAnimationTargetConfig = {
 export interface AnimationTarget {
   baseEntity: IEntity;
   // interpolate function
-  interpolate: InterpolateFunction;
+  interpolationFn: InterpolateFunction;
   isInKeyframes: (time: number) => boolean; // 传入的时间节点、是否属于动画对象的生命周期内
   // hooks
-  onBefore?: (arg: any) => void;
-  onAfter?: (arg: any) => void;
+  onBefore: (e: { viewer: IViewer }) => void;
+  onAfter: (e: { viewer: IViewer }) => void;
 
   // 初始化函数、创建实体等都在这里做
   init(): void;
@@ -101,7 +111,7 @@ export interface AnimationTarget {
   startValue: any; // 动画开始值
   endValue: any; // 动画结束时的值
   getValue(time: number): any; // 根据传入的时间、计算value值
-  applyValue(value: any): void;
+  applyValue(viewer: IViewer, value: any): void;
   reset(): void;
 
   // lifecycle
@@ -109,6 +119,8 @@ export interface AnimationTarget {
   end: number;
   startDelay: number;
   endStay: number;
+  duration: number;
+  category: AnimationCategory;
   setStart(start: number): void;
   setEnd(start: number): void;
   setStartDelay(start: number): void;
@@ -121,4 +133,7 @@ export interface AnimationTarget {
   // common control
   show(): void;
   hide(): void;
+  
+  // track会控制动画是否开始的状态
+  setStatus(status: AnimationStatus): void;
 }
