@@ -111,7 +111,7 @@ export interface AnimationTarget {
   startValue: any; // 动画开始值
   endValue: any; // 动画结束时的值
   getValue(time: number): any; // 根据传入的时间、计算value值
-  applyValue(viewer: IViewer, value: any): void;
+  applyValue(value: any): void;
   reset(): void;
 
   // lifecycle

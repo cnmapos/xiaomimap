@@ -27,7 +27,7 @@ export abstract class BaseAnimationTarget {
     abstract getAnimationEntities(): IEntity[];
 
     // 子类实现
-    abstract applyValue(viewer: IViewer, value: any): void;
+    abstract applyValue(value: any): void;
 
       // 根据传入的时间、计算新的value值, 在这里是返回
     getValue(time: number): any {

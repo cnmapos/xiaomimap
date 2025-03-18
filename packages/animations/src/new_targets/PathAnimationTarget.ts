@@ -111,11 +111,12 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
         );
         // 如果轨迹动画用的图片、则 修改图片的角度
         if (this.billboardEntity?.billboard) {
+          //@ts-ignore
           this.billboardEntity.billboard.alignedAxis = Cartesian3.normalize(
             direction,
             new Cartesian3()
           );
-        } else if (this.modelEntity.model) {
+        } else if (this.modelEntity?.model) {
           // 模型角度计算更新
           const heading =
             -(Math.atan2(direction.y, direction.x) + CMath.PI_OVER_TWO);
@@ -125,6 +126,7 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
             this.positions[this.positions.length - 1],
             hpr
           );
+          // @ts-ignore
           this.modelEntity.entity.orientation = orientation;
         }
 
@@ -149,7 +151,7 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
   }
 
 
-  applyValue(viewer: IViewer, value: [number, number, number]): void {
+  applyValue(value: [number, number, number]): void {
     // 这里需要根据是否配置了展示旧要素、去控制旧要素是否要隐藏
     if (this.isShowBaseEntity && this.baseEntity.show === false) {
       this.baseEntity.show = true;
@@ -158,7 +160,10 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
     const lastPosition = this.positions[this.positions.length - 1];
     if (!lastPosition || !Cartesian3.equals(position, lastPosition)) {
       this.positions.push(position);
-      this.modelEntity.entity.position = position;
+      if (this.modelEntity?.entity) {
+        // @ts-ignore
+        this.modelEntity.entity.position = position;
+      }
     }
   }
 
