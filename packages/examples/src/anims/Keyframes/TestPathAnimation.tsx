@@ -208,6 +208,11 @@ function TestPathAnimation() {
                 startValue: positions[0],
                 endValue: positions[positions.length - 1],
 
+                tracked: true,
+                camera: {
+                    distance: 307953,
+                },
+
                 model: {
                     uri: 'assets/models/people_run_2.glb', // 替换为实际模型路径
                     scale: 15000,

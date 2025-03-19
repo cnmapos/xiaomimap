@@ -22,7 +22,7 @@ export class AnimationTrack2 implements IAnimationTrack {
         }
         // 计算animationTarget的新value，并apply
         const value = animationTarget.getValue(currentTime);
-        animationTarget.applyValue(this.viewer, value);
+        animationTarget.applyValue(value);
       } else if (currentTime > animationTarget.end && animationTarget.status === AnimationStatus.RUNNING) {
         animationTarget.onAfter({ viewer: this.viewer })
         animationTarget.setStatus(AnimationStatus.FINISHED);

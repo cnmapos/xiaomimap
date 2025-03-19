@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {
   Cartesian3,
   ImageryProvider,
@@ -243,11 +244,13 @@ export class HZViewer implements IViewer {
         movement.endPosition.y
       );
 
+      
       const entities = pickedObjects
         .map((obj) => obj.id)
         .filter((id) => id instanceof Entity)
         .map((entity) => this.entities.find((e) => e._entity === entity));
 
+      // @ts-ignore
       this.triggerEvent(EventTypes.MOUSE_MOVE, { coordinate, entities });
     }, ScreenSpaceEventType.MOUSE_MOVE);
   }

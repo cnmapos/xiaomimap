@@ -1,4 +1,4 @@
-import { Entity, Property} from 'cesium';
+import { Entity, Property } from 'cesium';
 import {
   BillboardGraphics,
   IEntity,
@@ -37,8 +37,16 @@ export abstract class BaseEntity {
     return this._entity.orientation
   }
 
-  set orientation(orientation: Property) {
+  set orientation(orientation: Property | undefined) {
     this._entity.orientation = orientation;
+  }
+
+  set viewFrom(viewFrom: Property | undefined) {
+    this._entity.viewFrom = viewFrom;
+  }
+
+  get viewFrom(): Property | undefined {
+    return this._entity.viewFrom;
   }
 
   get entity(): Entity {

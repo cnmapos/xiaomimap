@@ -16,6 +16,13 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
 
   startDelay: number = 0;
   endStay: number = 0;
+  tracked: boolean = true; // 是否配置相机跟随模型，默认为true
+  camera?: {
+    distance: number; // 视点距离（米）
+    head?: number;  // 左右方位
+    pitch?: number; // 上下倾斜
+    roll?: number; // 滚动角
+  }
   model?: PathAnimationTargetConfig['model'];
   billboard?: PathAnimationTargetConfig['billboard'];
 
@@ -24,7 +31,7 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
 
   // 保存线路坐标
   private positions: Cartesian3[] = [];
-  style: any = {};
+  style: Style = {};
   interpolationFn: InterpolateFunction = linearInterpolate; // 默认是xx插值函数
 
   lineEntity?: LineEntity | null;
@@ -62,6 +69,18 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
       this.customOnAfter = config.onAfter;
     }
 
+    if (config.style) {
+      this.style = config.style;
+    }
+
+    if (config.camera) {
+      this.camera = { ...config.camera };
+    }
+
+    if (config.tracked) {
+      this.tracked = config.tracked;
+    }
+
     this.init();
   }
 
@@ -81,7 +100,10 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
     this.lineEntity = new LineEntity({
       positions: [...positions]
     });
-    this.lineEntity.setStyle(baseStyle);
+    this.lineEntity.setStyle({
+      ...baseStyle,
+      ...this.style
+    });
 
     if (this.model) {
       // 创建跟随的模型
@@ -175,6 +197,10 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
   // 设置billboard
   setBillboard(billboard: PathAnimationTargetConfig['billboard']) {
     if (billboard) {
+
+      this.billboard = billboard;
+      this.model = undefined;
+
       // 把模型先隐藏
       if (this.modelEntity) {
         this.modelEntity.show = false;
@@ -197,6 +223,9 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
   // 设置model
   setModel(model: PathAnimationTargetConfig['model']) {
     if (model) {
+      this.model = model;
+      this.billboard = undefined;
+
       // 把billboard先隐藏
       if (this.billboardEntity) {
         this.billboardEntity.show = false;
@@ -209,7 +238,6 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
         // @ts-ignore
         this.modelEntity.model.scale = model.scale;
       } else {
-        this.model = model;
         this.modelEntity = new ModelEntity({
           ...this.model
         })
@@ -219,13 +247,34 @@ export class PathAnimationTarget extends BaseAnimationTarget implements Animatio
 
   setStyle(style: Style): void {
     if (this.lineEntity) {
-      this.lineEntity.setStyle(style);
+      const baseStyle = this.baseEntity.getStyle();
+      this.lineEntity.setStyle({
+        ...baseStyle,
+        ...style,
+      });
     }
   }
 
   // onBefore和onAfter会被track调用
   onBefore(e: { viewer: IViewer; }): void {
     super.onBefore(e);
+    if (this.tracked) {
+      const entityToTrack = this.model ? this.modelEntity : this.billboardEntity;
+      if (entityToTrack) {
+        e.viewer.setTrackEntity(entityToTrack);
+
+        if (this.camera) {
+          const distance = this.camera.distance; // 设置你想要的固定距离
+          entityToTrack.viewFrom = new Cartesian3(
+            distance / 2,
+            -distance,
+            distance * 1.2
+          );
+        }
+        
+
+      }
+    }
     this.customOnBefore();
   }
 

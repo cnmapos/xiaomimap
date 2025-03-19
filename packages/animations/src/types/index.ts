@@ -1,5 +1,5 @@
 
-import { BillboardEntity, Coordinate, IEntity, IViewer, LineEntity, ModelEntity, PointEntity, PolygonEntity } from '@hztx/core';
+import { BillboardEntity, Coordinate, IEntity, IViewer, LineEntity, ModelEntity, PointEntity, PolygonEntity, Style } from '@hztx/core';
 
 export enum AnimationStatus {
   PENDING = 0,
@@ -72,6 +72,17 @@ export type PathAnimationTargetConfig = {
   end: number;
   startValue: any; // 动画开始值
   endValue: any; // 动画结束时的值
+
+  
+  tracked?: boolean; // 是否配置相机跟随模型
+  style?: Style; // 线样式，不传就是继承默认的baseEntity的样式
+  camera?: {
+    distance: number; // 视点距离（米）
+    head?: number;  // 左右方位
+    pitch?: number; // 上下倾斜
+    roll?: number; // 滚动角
+  }
+
 
   startDelay?: number;
   endStay?: number;
