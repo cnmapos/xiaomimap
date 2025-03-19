@@ -29,6 +29,7 @@ import BallisticMissilesGD from '../anims/Keyframes/ballisticMissilesGD';
 import Cycling from '../anims/Keyframes/cycling';
 import { PathAnimationPanel } from '../components/path-animation-panel';
 import TrainCDToHK from '../anims/Keyframes/trains/CDToHK';
+import TrainCDToHLGZ from '../anims/Keyframes/trains/CDToHLGZ';
 
 export default [
   {
@@ -211,6 +212,12 @@ export default [
         path: '/keyframe-train',
         thumbnail: 'XXXXXXX',
         element: TrainCDToHK,
+      },
+      {
+        name: '高铁轨迹:成都到青海（黄龙段）',
+        path: '/keyframe-CDToHLGZ',
+        thumbnail: 'XXXXXXX',
+        element: TrainCDToHLGZ,
       },
     ],
   },
