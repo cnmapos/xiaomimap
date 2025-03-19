@@ -6,11 +6,16 @@ import { BaseEntity } from './Base';
 export class BillboardEntity extends BaseEntity implements IEntity {
   positions: Coordinate;
 
-  constructor(options: { positions: Coordinate; image: string }) {
+  constructor(
+    options: Entity.ConstructorOptions & {
+      positions: Coordinate;
+      image: string;
+    }
+  ) {
     super();
-    const { positions, image } = options;
+    const { positions, image, id } = options;
     this.positions = positions;
-    this.id = uuidv4();
+    this.id = id || uuidv4();
     this._entity = new Entity({
       id: this.id,
       position: Cartesian3.fromDegrees(...positions),

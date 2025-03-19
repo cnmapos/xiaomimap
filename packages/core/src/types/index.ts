@@ -13,6 +13,12 @@ import {
 } from 'cesium';
 import { EntityCollection } from '../entities';
 
+export namespace Entity {
+  type ConstructorOptions = {
+    id?: string;
+  };
+}
+
 export type Coordinate = [number, number, number?];
 
 export type PolylineGraphics = CesiumPolylineGraphics;
