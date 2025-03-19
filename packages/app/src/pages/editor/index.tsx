@@ -12,6 +12,7 @@ import "../../styles/editors/index.less";
 import Player from "./components/Player/index";
 import Timeline from "./components/Timeline/index";
 import { ServiceIds } from "@/core/types";
+import { PathAnimationPanel } from "./components/AnimationPanel";
 
 /**
  *  使用ConfigProvider 包裹，因为editor的样式其他主题色
@@ -75,7 +76,8 @@ export default function MainLayout() {
 
           {/* 底部关键帧编辑区域 */}
           <Panel defaultSize={40} className="bg-editor-card">
-            <Timeline />
+            <PathAnimationPanel/>
+            {/* <Timeline /> */}
           </Panel>
         </PanelGroup>
       </div>
