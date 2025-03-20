@@ -10,6 +10,7 @@ import Material from "./components/Material/index";
 import Property from "./components/Property/index";
 import "../../styles/editors/index.less";
 import Player from "./components/Player/index";
+import MapPlayer from "./components/Player/MapPlayer";
 import Timeline from "./components/Timeline/index";
 import { ServiceIds } from "@/core/types";
 
@@ -56,7 +57,7 @@ export default function MainLayout() {
                 minSize={20}
                 className="bg-editor-card  rounded-md"
               >
-                <Player />
+                <MapPlayer />
               </Panel>
 
               <PanelResizeHandle className="w-2" />
