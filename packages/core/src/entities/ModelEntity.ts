@@ -6,11 +6,13 @@ import { BaseEntity } from './Base';
 export class ModelEntity extends BaseEntity implements IEntity {
   positions: Coordinate;
 
-  constructor(options: { positions: Coordinate; uri: string }) {
+  constructor(
+    options: Entity.ConstructorOptions & { positions: Coordinate; uri: string }
+  ) {
     super();
-    const { positions, uri } = options;
+    const { positions, uri, id } = options;
     this.positions = positions;
-    this.id = uuidv4();
+    this.id = id || uuidv4();
     this._style = {
       scale: 1.0,
       minimumPixelSize: 128,

@@ -10,7 +10,7 @@ import {
   IEntity,
 } from "@hztx/core";
 // import * as WKT from "wellknown";
-import { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import classNames from "classnames";
 import MapMenuBar from "./MapMenuBar";
 import Search from "./MapSearch";
@@ -59,9 +59,9 @@ export interface PreviewListType extends IGeometryAssetType {
 
 const Map: React.FC<{
   onSelectMode: (v: number) => void;
-}> = (props) => {
-  const [searchParams]= useSearchParams();
-  const projectId = searchParams.get('projectId')
+}> = React.memo((props) => {
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get("projectId");
   const { onSelectMode } = props;
   const [fullscreen, setFullscreen] = useState(true);
   const editorManager = useRef<EditorManager | null>(null);
@@ -82,7 +82,7 @@ const Map: React.FC<{
     });
     context.current.viewer = viewer;
     // 把默认的要素数据添加到地图
-    init();
+    init(viewer);
     return () => {
       viewer?.destroy();
     };
@@ -94,7 +94,7 @@ const Map: React.FC<{
     }
     return editorManager.current;
   }
-  const init = async () => {
+  const init = async (viewer: IViewer) => {
     setLoading(true);
     const res = await listProjectGeometry({
       projectId,
@@ -109,6 +109,7 @@ const Map: React.FC<{
       let removeEntity = null;
       if (coordinates.length) {
         const raw = addEntity(
+          viewer,
           ApiResGeometryType[item.geometryType] as CreateGeometryType,
           coordinates,
           false
@@ -152,6 +153,7 @@ const Map: React.FC<{
     }
   };
   const addEntity = (
+    viewer: IViewer,
     type: CreateGeometryType,
     coordinates: Coordinate | Coordinate[],
     isCreate = true
@@ -176,7 +178,7 @@ const Map: React.FC<{
       default:
         return;
     }
-    if (!entity || !context.current.viewer) return;
+    if (!entity || !viewer) return;
     // 创建时geometry
     const geometry = isCreate
       ? {
@@ -192,7 +194,7 @@ const Map: React.FC<{
         }
       : null;
 
-    context.current.viewer.addEntity(entity);
+    viewer.addEntity(entity);
     // 重制编辑要素
     menuBarRef.current?.updateType(-1);
 
@@ -234,7 +236,11 @@ const Map: React.FC<{
   const addPoint = () => {
     const manager = genEditorManager();
     const editor = manager.startCreate("point", {}, async (coordinates) => {
-      const item = addEntity(GeometryType.Point, coordinates);
+      const item = addEntity(
+        context.current.viewer,
+        GeometryType.Point,
+        coordinates
+      );
       if (item?.geometry) {
         await saveAsset({
           ...item?.geometry,
@@ -248,7 +254,11 @@ const Map: React.FC<{
     const manager = genEditorManager();
     manager.startCreate("line", {}, async (coordinates) => {
       console.log("draw line", coordinates);
-      const item = addEntity(GeometryType.LineString, coordinates);
+      const item = addEntity(
+        context.current.viewer,
+        GeometryType.LineString,
+        coordinates
+      );
       if (item?.geometry) {
         await saveAsset({
           ...item?.geometry,
@@ -261,7 +271,11 @@ const Map: React.FC<{
     const manager = genEditorManager();
     manager.startCreate("polygon", {}, async (coordinates) => {
       console.log("draw polygon", coordinates);
-      const item = addEntity(GeometryType.Polygon, coordinates as Coordinate[]);
+      const item = addEntity(
+        context.current.viewer,
+        GeometryType.Polygon,
+        coordinates as Coordinate[]
+      );
       if (item?.geometry) {
         await saveAsset({
           ...item?.geometry,
@@ -340,6 +354,6 @@ const Map: React.FC<{
       </Spin>
     </div>
   );
-};
+});
 
 export default Map;

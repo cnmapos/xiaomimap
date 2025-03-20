@@ -6,11 +6,13 @@ import { BaseEntity } from './Base';
 export class PolygonEntity extends BaseEntity implements IEntity {
   positions: Coordinate[];
 
-  constructor(options: { positions: Coordinate[] }) {
+  constructor(
+    options: Entity.ConstructorOptions & { positions: Coordinate[] }
+  ) {
     super();
-    const { positions } = options;
+    const { positions, id } = options;
     this.positions = positions;
-    this.id = uuidv4();
+    this.id = id || uuidv4();
     this._style = {
       pixelSize: 10,
       color: '#FFF',
