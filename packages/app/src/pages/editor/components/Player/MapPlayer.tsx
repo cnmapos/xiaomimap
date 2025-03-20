@@ -32,7 +32,7 @@ const Player: React.FC = () => {
                     <span className="text-white">00:00:00:00</span>
                   </div>
                 </div>
-                <div className="flex-1"><Slider className="w-full !m-0" defaultValue={30} styles={{
+                <div className="flex-1 px-1.5"><Slider className="w-full !m-0" defaultValue={30} styles={{
                   rail: {
                     background: 'rgba(255, 255, 255, 0.2)',
                   },
