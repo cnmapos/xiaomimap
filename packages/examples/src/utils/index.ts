@@ -1,4 +1,12 @@
-import { Cartesian2, Cartographic, defined, Math as CMath } from 'cesium';
+import {
+  Cartesian2,
+  Cartographic,
+  defined,
+  Math as CMath,
+  Cartesian3,
+  CatmullRomSpline,
+  Viewer,
+} from 'cesium';
 
 export const pixel2Coordinates = (viewer: any, x: number, y: number) => {
   const screenWidth = viewer.scene.canvas.clientWidth;
@@ -120,3 +128,28 @@ export const createCanvasText = (
 
   return canvas;
 };
+
+export function smoothPoints(
+  viewer: Viewer,
+  path: [number, number, number?][]
+) {
+  const positions = path.map((l) => Cartesian3.fromDegrees(...l));
+  const spline = new CatmullRomSpline({
+    times: positions.map((_, i) => i),
+    points: positions,
+  });
+  let smoothPoints = [];
+  for (let i = 0; i <= positions.length * 10; i++) {
+    const time = (i / (positions.length * 10)) * (positions.length - 1);
+    smoothPoints.push(spline.evaluate(time));
+  }
+  smoothPoints = smoothPoints.map((p) => {
+    // 将Cartesian3对象转换为Degree经纬度
+    const cartographic = Cartographic.fromCartesian(p);
+    const longitude = CMath.toDegrees(cartographic.longitude);
+    const latitude = CMath.toDegrees(cartographic.latitude);
+    return [longitude, latitude, cartographic.height];
+  });
+
+  return smoothPoints;
+}

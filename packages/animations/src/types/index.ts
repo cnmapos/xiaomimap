@@ -1,5 +1,14 @@
-
-import { BillboardEntity, Coordinate, IEntity, IViewer, LineEntity, ModelEntity, PointEntity, PolygonEntity, Style } from '@hztx/core';
+import {
+  BillboardEntity,
+  Coordinate,
+  IEntity,
+  IViewer,
+  LineEntity,
+  ModelEntity,
+  PointEntity,
+  PolygonEntity,
+  Style,
+} from '@hztx/core';
 
 export enum AnimationStatus {
   PENDING = 0,
@@ -25,8 +34,6 @@ export type AnimationTargetConstructorOptions = {
   heading?: number;
 };
 
-
-
 // 管理所有图层、以及动画的播放暂停
 export interface IAnimationController {
   tracks: IAnimationTrack[];
@@ -50,7 +57,6 @@ export interface IAnimationTrack {
   hide(): void;
 }
 
-
 export type InterpolateFunction = (start: any, end: any, t: number) => any;
 
 export type AnimationTargetConfig = {
@@ -61,8 +67,8 @@ export type AnimationTargetConfig = {
   style?: {
     [key: string]: any;
   };
-  interpolate: InterpolateFunction
-}
+  interpolate: InterpolateFunction;
+};
 
 export type PathAnimationTargetConfig = {
   // 必填项：基础要素、生命周期时间、开始值和结束值
@@ -73,16 +79,15 @@ export type PathAnimationTargetConfig = {
   startValue: any; // 动画开始值
   endValue: any; // 动画结束时的值
 
-  
   tracked?: boolean; // 是否配置相机跟随模型
+  smooth?: boolean; // 是否平滑过渡
   style?: Style; // 线样式，不传就是继承默认的baseEntity的样式
   camera?: {
     distance: number; // 视点距离（米）
-    head?: number;  // 左右方位
+    head?: number; // 左右方位
     pitch?: number; // 上下倾斜
     roll?: number; // 滚动角
-  }
-
+  };
 
   startDelay?: number;
   endStay?: number;
@@ -94,14 +99,17 @@ export type PathAnimationTargetConfig = {
     uri: string;
     scale?: number;
     positions: Coordinate;
-  },
+    heading?: number; // 模型初始化朝向（度），动画时需要纠正
+    pitch?: number;
+    roll?: number;
+  };
   billboard?: {
     image: string;
     width?: number;
-    height?: number,
+    height?: number;
     positions: Coordinate;
-  }
-}
+  };
+};
 
 export interface AnimationTarget {
   baseEntity: IEntity;
@@ -144,7 +152,7 @@ export interface AnimationTarget {
   // common control
   show(): void;
   hide(): void;
-  
+
   // track会控制动画是否开始的状态
   setStatus(status: AnimationStatus): void;
 }
