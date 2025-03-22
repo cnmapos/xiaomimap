@@ -8,7 +8,7 @@ const Header: React.FC = () => {
   const [searchParams] = useSearchParams();
   const projectId = Number(searchParams.get("projectId"));
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState("项目名称");
+  const [title, setTitle] = useState("-");
 
   useEffect(() => {
     getProjectInfo(projectId).then((res) => {
