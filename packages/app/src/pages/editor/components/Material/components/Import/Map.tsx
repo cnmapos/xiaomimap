@@ -347,9 +347,7 @@ const Map: React.FC<{
     if (style) {
       entity.setStyle(style);
     }
-    setTimeout(() => {
-      viewer.addEntity(entity);
-    }, 100);
+    viewer.addEntity(entity);
     // 重制编辑要素
     menuBarRef.current?.updateType(-1);
     // 添加到地图
@@ -392,7 +390,7 @@ const Map: React.FC<{
         context.current.viewer,
         GeometryType.Point,
         coordinates,
-        false,
+        true,
         {}
       );
       if (item?.geometry) {
@@ -413,7 +411,7 @@ const Map: React.FC<{
         context.current.viewer,
         GeometryType.LineString,
         coordinates,
-        false,
+        true,
         {}
       );
       if (item?.geometry) {
@@ -433,7 +431,7 @@ const Map: React.FC<{
         context.current.viewer,
         GeometryType.Polygon,
         coordinates as Coordinate[],
-        false,
+        true,
         {}
       );
       if (item?.geometry) {
