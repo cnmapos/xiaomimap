@@ -148,3 +148,13 @@ export interface IViewer {
   zoomIn: (amount?: number) => void;
   zoomOut: (amount?: number) => void;
 }
+
+export namespace HzEditor {
+  export type Types = 'point' | 'line' | 'polygon';
+
+  export type CreateOption = {
+    point: { style?: any };
+    line: { style?: any; smooth?: boolean };
+    polygon: { style?: any };
+  };
+}

@@ -3,7 +3,7 @@ import { LineEditor } from './LineEditor';
 import { PolygonEditor } from './PolygonEditor';
 import { Color } from 'cesium';
 import { EditorBase } from './EditorBase';
-import { IViewer } from '../types';
+import { HzEditor, IViewer } from '../types';
 
 export class EditorManager {
   private editors: Map<string, EditorBase> = new Map();
@@ -34,8 +34,8 @@ export class EditorManager {
   }
 
   startCreate(
-    type: string,
-    customStyle?: any,
+    type: HzEditor.Types,
+    options?: HzEditor.CreateOption[typeof type],
     onEndCreate?: (coordinates: number[] | number[][]) => void
   ): EditorBase {
     const editor = this.editors.get(type);
@@ -43,7 +43,7 @@ export class EditorManager {
       if (onEndCreate) {
         editor.onEndCreate = onEndCreate;
       }
-      editor.startCreate(customStyle);
+      editor.startCreate(options);
     }
 
     return editor;

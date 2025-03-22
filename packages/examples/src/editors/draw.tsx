@@ -46,7 +46,7 @@ function Editor() {
 
   function addLine() {
     const manager = new EditorManager(context.current.viewer);
-    manager.startCreate('line', {}, (coordinates) => {
+    manager.startCreate('line', { style: {}, smooth: true }, (coordinates) => {
       console.log('draw line', coordinates);
     });
   }

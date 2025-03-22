@@ -7,6 +7,7 @@ import {
   ScreenSpaceEventType,
 } from 'cesium';
 import { EditorBase } from './EditorBase';
+import { HzEditor } from '../types';
 
 export class PolygonEditor extends EditorBase {
   private positions: Cartesian3[] = [];
@@ -18,7 +19,8 @@ export class PolygonEditor extends EditorBase {
     this.handler?.destroy();
   }
 
-  startCreate(customStyle?: any): void {
+  startCreate(options: HzEditor.CreateOption['polygon']): void {
+    const { style: customStyle } = options;
     this.handler = new ScreenSpaceEventHandler(
       this.viewer._viewer.scene.canvas
     );

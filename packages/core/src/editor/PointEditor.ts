@@ -1,5 +1,6 @@
 import { Entity, ScreenSpaceEventHandler, ScreenSpaceEventType } from 'cesium';
 import { EditorBase } from './EditorBase';
+import { HzEditor } from '../types';
 
 export class PointEditor extends EditorBase {
   private handler?: ScreenSpaceEventHandler;
@@ -8,7 +9,8 @@ export class PointEditor extends EditorBase {
     this.handler?.destroy();
   }
 
-  startCreate(customStyle?: any): void {
+  startCreate(options: HzEditor.CreateOption['point']): void {
+    const { style: customStyle } = options;
     this.handler = new ScreenSpaceEventHandler(
       this.viewer._viewer.scene.canvas
     );

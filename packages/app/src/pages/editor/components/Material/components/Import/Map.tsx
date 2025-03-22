@@ -252,7 +252,7 @@ const Map: React.FC<{
 
   const addLine = () => {
     const manager = genEditorManager();
-    manager.startCreate("line", {}, async (coordinates) => {
+    manager.startCreate("line", { smooth: true }, async (coordinates) => {
       console.log("draw line", coordinates);
       const item = addEntity(
         context.current.viewer,

@@ -2,8 +2,11 @@ import { CatmullRomSpline } from 'cesium';
 import { Cartesian3, Cartographic, Coordinate } from '../types';
 import { HzMath } from './math';
 
-export function smoothLine(path: [number, number, number?][]) {
-  const positions = path.map((l) => Cartesian3.fromDegrees(...l));
+export function smoothLine(path: Coordinate[] | Cartesian3[]) {
+  const positions: Cartesian3[] =
+    path.length && Array.isArray(path[0])
+      ? path.map((l) => Cartesian3.fromDegrees(...l))
+      : (path as Cartesian3[]);
   const spline = new CatmullRomSpline({
     times: positions.map((_, i) => i),
     points: positions,
