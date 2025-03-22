@@ -4,25 +4,35 @@ import { v4 as uuidv4 } from 'uuid';
 import { BaseEntity } from './Base';
 
 export class BillboardEntity extends BaseEntity implements IEntity {
+  private width: number;
+  private height: number;
+  private image: string;
+
   positions: Coordinate;
 
   constructor(
     options: Entity.ConstructorOptions & {
       positions: Coordinate;
       image: string;
+      width?: number;
+      height?: number;
     }
   ) {
     super();
-    const { positions, image, id } = options;
+    const { positions, image, id, width = 50, height = 50 } = options;
     this.positions = positions;
     this.id = id || uuidv4();
+    this.width = width;
+    this.height = height;
+    this.image = image;
+
     this._entity = new Entity({
       id: this.id,
       position: Cartesian3.fromDegrees(...positions),
       billboard: {
         image,
-        width: 50,
-        height: 50,
+        width,
+        height,
       },
     });
   }

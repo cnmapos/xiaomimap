@@ -8,6 +8,7 @@ import {
   EditorManager,
   Coordinate,
   IEntity,
+  BillboardEntity,
 } from "@hztx/core";
 // import * as WKT from "wellknown";
 import React, { useEffect, useRef, useMemo } from "react";
@@ -69,6 +70,7 @@ const Map: React.FC<{
   const context = useRef<{ viewer: IViewer }>({ viewer: null });
   const [list, setList] = useState<PreviewListType[]>([]);
   const [loading, setLoading] = useState(false);
+  const poiEntity = useRef<PointEntity>();
 
   const menuBarRef = useRef<MapMenuBarRef>(null);
   useEffect(() => {
@@ -137,8 +139,20 @@ const Map: React.FC<{
     });
   };
 
-  const handleSelect = ({ location }: any) => {
+  const handleSelect = ({ location, name, type }: any) => {
     setViewWithZoom(location);
+    if (poiEntity.current) {
+      context.current.viewer.removeEntity(poiEntity.current);
+    }
+    poiEntity.current = new BillboardEntity({
+      positions: [location.lng, location.lat],
+      width: 48,
+      height: 48,
+      image: "assets/geos/locate.png",
+    });
+    context.current.viewer.addEntity(poiEntity.current);
+
+    // TODO: 显示POI信息面板
   };
   const getNameIndex = (type: CreateGeometryType) => {
     const i = list.filter((t) => t.type === type)?.length + 1;
