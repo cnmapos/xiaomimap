@@ -64,7 +64,7 @@ const Search: React.FC<{
         className="!w-60"
         onSelect={onSelect}
         onSearch={(text) => handleInputChange(text)}
-        popupClassName="!bg-black/70 !text-white map-search-popup"
+        popupClassName="!bg-neutral-800 !text-white map-search-popup"
       >
         <Input
           placeholder="请输入你要搜索的内容"

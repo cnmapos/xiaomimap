@@ -10,7 +10,7 @@ import {
   StarFilled,
   StarOutlined,
 } from "@ant-design/icons";
-import { useContext, useState } from "react";
+import { useContext, useState, memo } from "react";
 import { PreviewListType } from "./Map";
 import { Dropdown, message, Space, Tooltip, Modal } from "antd";
 import classNames from "classnames";
@@ -27,7 +27,7 @@ export interface ImportListProps {
   data: PreviewListType[];
 }
 
-const Material: React.FC<ImportListProps> = (props) => {
+const List: React.FC<ImportListProps> = (props) => {
   const { data } = props;
   const [checkedList, setCheckedList] = useState<number[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -61,6 +61,7 @@ const Material: React.FC<ImportListProps> = (props) => {
     } else {
       setCheckedList([...checkedList, item.geometryId]);
     }
+    item.flyToEntity?.();
   };
   const handleOpenChange = async (open: boolean) => {
     if (!open) {
@@ -92,6 +93,8 @@ const Material: React.FC<ImportListProps> = (props) => {
         const res = await deleteProjectAsset(params);
         if (res.code === 0) {
           message.success("删除成功");
+          removeEntitys(params.map((t) => t.assetId));
+          setCheckedList([]);
           contextProps.updateGeoAsset();
         } else {
           message.error(res.msg || "删除失败");
@@ -179,14 +182,13 @@ const Material: React.FC<ImportListProps> = (props) => {
       case GeometryActionType.Property:
         break;
       case GeometryActionType.Delete:
-        removeEntitys([geometryId])
-        
-        // deleteAssets([
-        //   {
-        //     assetType: 4,
-        //     assetId: geometryId,
-        //   },
-        // ]);
+        // removeEntitys([geometryId])
+        deleteAssets([
+          {
+            assetType: 4,
+            assetId: geometryId,
+          },
+        ]);
         break;
       case GeometryActionType.ApplyAnimation:
         break;
@@ -298,4 +300,4 @@ const Material: React.FC<ImportListProps> = (props) => {
   );
 };
 
-export default Material;
+export default memo(List);

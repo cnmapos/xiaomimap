@@ -7,7 +7,9 @@ export interface IGeometryAssetType {
   geometryType: keyof typeof ApiResGeometryType;
   geometryName: string;
   geometryId: number;
-  geometryJson: null | string;
+  geometryJson: null | {
+    [key: string]: any;
+  };
 }
 export interface IProjectItemType {
   assetId: number;
@@ -68,16 +70,16 @@ export const saveProjectAsset = async (params: {
   audioList?: any[];
   geometryList?: {
     geometryId?: number;
-    geometryName: string;
-    projectId: number;
+    geometryName?: string;
+    projectId?: number;
     // 枚举值：'point'-点/标注, 'linestring'-线串, polygon-多边形,'multi_point'-多点, 'multi_linestring'-多线串, 'multi_polygon'-多边形集合, 'geometry_collection'-几何集合（'broken_line'-折线, circular-圆，ellipse-椭圆，sector-扇形，curve-曲线，rectangle-矩形，curved_surface-曲面）
-    geometryType: string;
+    geometryType?: string;
     // wkt格式
-    geoData: string;
+    geoData?: string;
     // 一些扩展信息
     geometryJson?: string;
     // 1：系统素材、2：用户上传素材
-    category: number;
+    category?: number;
     comment?: string;
     updateUserId?: number;
     parentId?: number;
@@ -126,13 +128,22 @@ export const listProjectGeometry = async (params: {
   geometryType?: string;
   // 1：系统素材、2：用户上传素材
   category: number;
+  
 }): Promise<API.BaseRes<IGeometryAssetType[]>> => {
   const res = await axios({
     url: '/hz-project/listProjectGeometry',
     method: 'post',
     data: params
   });
-  return res.data;
+  return {
+    ...res.data,
+    data: res.data.data.map((t: any) => {
+      return {
+        ...t,
+        geometryJson: JSON.parse(t.geometryJson || "{}")
+      }
+    })
+  };
 }
 
 // 删除项目素材(图片、音频、视频、几何对象)

@@ -29,3 +29,24 @@ export type CreateGeometryType = keyof typeof GeometryType;
 
 // 定义geo Coordinate
 export type Coordinate = number[] | number[][] | number[][][];
+
+
+// 高亮样式
+export const  entityHighlightStyle =  {
+  [GeometryType.Point]: {
+    color: "#00b9c4",
+    pixelSize:10,
+    outlineColor:'#fff',
+    outlineWidth:2
+  },
+  [GeometryType.LineString]: {
+    color: "#00b9c4",
+    width:2,
+  },
+  [GeometryType.Polygon]: {
+    color: "#00b9c4",
+    outlineColor:"#fff",
+    outlineWidth:2
+  },
+  
+}

@@ -33,6 +33,14 @@ export class PointEntity extends BaseEntity implements IEntity {
     if (style.pixelSize) {
       this._entity.point!.pixelSize = style.pixelSize as any;
     }
+    if (style.outlineColor) {
+      this._entity.point!.outlineColor = Color.fromCssColorString(
+        style.outlineColor
+      ) as any;
+    }
+    if (style.outlineWidth) {
+      this._entity.point!.outlineWidth = style.outlineWidth as any;
+    }
   }
 
   getStyle(): Style {
