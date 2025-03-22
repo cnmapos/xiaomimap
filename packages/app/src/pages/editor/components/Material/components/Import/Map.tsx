@@ -394,7 +394,7 @@ const Map: React.FC<{
     } else {
       message.error(res.msg || "保存失败");
     }
-    return res?.data;
+    return res;
   };
 
   const addPoint = () => {
@@ -428,10 +428,13 @@ const Map: React.FC<{
       {}
     );
     if (item?.geometry) {
-      await saveAsset({
+      const res =  await saveAsset({
         ...item?.geometry,
         geometryName: getNameIndex(GeometryType.Point),
       });
+      if (res.code === 0 && poiEntity.current) {
+        context.current.viewer.entities.remove(poiEntity.current);
+      }
     }
   };
 
