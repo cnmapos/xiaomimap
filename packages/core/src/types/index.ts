@@ -16,6 +16,7 @@ import {
   ScreenSpaceEventType,
 } from 'cesium';
 import { EntityCollection } from '../entities';
+import { RasterLayer } from '../layers';
 
 export namespace Entity {
   type ConstructorOptions = {
@@ -124,7 +125,7 @@ export interface MapEvent {
 export interface IViewer {
   entities: EntityCollection;
 
-  addRasterLayer(layer: RasterProvider): void;
+  addRasterLayer(layer: RasterProvider | RasterLayer): void;
   removeRasterLayer(layer: ILayer): void;
 
   flyTo(options: {

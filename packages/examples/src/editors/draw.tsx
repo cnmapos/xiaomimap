@@ -4,7 +4,7 @@ import {
   CameraAnimationTarget,
   cameraFlyInterpolate,
 } from '@hztx/animations';
-import { EditorManager, createViewer, IViewer } from '@hztx/core';
+import { EditorManager, createViewer, IViewer, RasterLayer } from '@hztx/core';
 import React, { useEffect, useRef } from 'react';
 import MapContainer from '../components/map-container';
 import { Button } from 'antd';
@@ -17,6 +17,10 @@ function Editor() {
   useEffect(() => {
     context.current.viewer = createViewer('map', {
       key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjliYjIwYi0zMWE0LTQ4MTgtYWU4NC0wNWZmNTFmZjVhYmMiLCJpZCI6MjY1NzYxLCJpYXQiOjE3MzU1NzA3MTl9.BOJDK-WqsLV-QcQhbnAEf-wG1mtkftG1BYV6JIv0VoI',
+    });
+
+    context.current.viewer.addRasterLayer({
+      url: 'https://tiles1.geovisearth.com/base/v1/cia/{z}/{x}/{y}?format=webp&tmsIds=w&token=fa74f216c7265ac713a224dcd0a4d0f20e27b61051ed729b587111b4c410528b', // 替换为中国行政区级别瓦片的URL
     });
 
     return () => {
