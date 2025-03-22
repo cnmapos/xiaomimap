@@ -1,15 +1,30 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Input, AutoComplete, AutoCompleteProps } from "antd";
+import { Input, AutoComplete, AutoCompleteProps, Button } from "antd";
 import { useState, useEffect, useCallback } from "react";
 import debounce from "lodash/debounce";
 import loadAMapScript from "@/utils/loadAMap";
+import MapPanel from "./MapPanel";
+import { FALLBACK_IMG_URL } from "@/constant";
 import "./index.less";
 
-const Search: React.FC<{
+export interface PlaceType {
+  name: string;
+  address: string;
+  location: {
+    lng: number;
+    lat: number;
+  };
+}
+
+
+const Search: React.FC<{  
   onSelect: (v: any) => void;
+  onReset?: () => void;
+  // 新增到要素
+  onAddToAsset?: (place: PlaceType) => void;
 }> = (props) => {
   const [options, setOptions] = useState<AutoCompleteProps["options"]>([]);
-  // const [value, setValue] = useState('');
+  const [place, setPlace] = useState<PlaceType | null>(null);
   useEffect(() => {
     loadAMapScript();
   }, []);
@@ -54,9 +69,15 @@ const Search: React.FC<{
     []
   );
   const onSelect = (value, options) => {
-    console.log("poi select",value, options);
+    console.log("poi select", value, options);
     props.onSelect(options);
+    setPlace(options);
   };
+  const handleAddToAsset = () => {
+    if (!place) return;
+    props.onAddToAsset?.(place);
+    setPlace(null);
+  }
   return (
     <div className="absolute map-search top-4 right-4 z-10">
       <AutoComplete
@@ -68,10 +89,28 @@ const Search: React.FC<{
       >
         <Input
           placeholder="请输入你要搜索的内容"
+          onFocus={props.onReset}
           className="!w-60 !bg-black/70 !text-white"
           suffix={<SearchOutlined />}
         />
       </AutoComplete>
+      {place && (
+        <MapPanel
+          onClose={() => setPlace(null)}
+          title={place?.name || "-"}
+          className="w-full left-0 !top-16"
+        >
+          <img
+            className="h-40 object-cover w-full rounded-sm"
+            src={place?.cover || FALLBACK_IMG_URL}
+            alt={place?.name}
+          />
+          <p className="text-sm text-gray-300 my-2">{place?.address}</p>
+          <Button onClick={handleAddToAsset} block size="small" type="primary" className="mt-2">
+            添加至要素
+          </Button>
+        </MapPanel>
+      )}
     </div>
   );
 };
