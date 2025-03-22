@@ -5,27 +5,34 @@ import { useNavigate } from "react-router-dom";
 import axios from "@/service/axiosConfig";
 import Styles from "./styles.module.less";
 
+
+const enum MenuKey {
+  Name = 'name',
+  UserInfo = 'userInfo',
+  Logout = 'logout',
+
+}
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const username =
     JSON.parse(localStorage.getItem("user") || "")?.userName || "-";
   const items = [
     {
-      key: 1,
+      key: MenuKey.Name,
       label: username,
       disabled: true,
     },
     {
-      key: 2,
+      key: MenuKey.UserInfo,
       label: "个人信息",
     },
     {
-      key: 3,
+      key: MenuKey.Logout,
       label: "退出登录",
     },
   ];
   const onMenuClick = ({ key }) => {
-    if (key === 3) {
+    if (key === MenuKey.Logout) {
       axios.get("/hz-users/logout").then(({ data }) => {
         if (!data.code) {
           localStorage.removeItem("clientKey");
@@ -35,7 +42,6 @@ const Header: React.FC = () => {
         }
       });
     }
-    console.log("click", key);
   };
   return (
     <div className={Styles.header}>

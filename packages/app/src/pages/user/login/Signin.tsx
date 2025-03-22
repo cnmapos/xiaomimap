@@ -10,7 +10,6 @@ const Signin: React.FC<{ jumpToSignup: () => void }> = ({ jumpToSignup }) => {
 
     const onFinish = (values: any) => {
         const { userMobile, password } = values;
-        navigate('/home');
 
         axios.post('/hz-users/login', {
             userMobile,
