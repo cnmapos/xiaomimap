@@ -79,8 +79,6 @@ aniCtr.addTrack(track3);
 3. 前端操作过程中、如何关联新增的资源、动画属性的变更、样式属性的变更、最后解析成json给后端？
 
 
-
-
 第一步、定义格式、后端会提供怎样的数据，后端提供数据肯定是以 图层为维度返回的、不同的图层里头包含了不同的项目素材、并控制了素材的一些基础属性、例如可见、锁定等。
 对渲染模块来说、他不关心你的图层有多少层、只接收 素材、素材是一个支持动画的要素描述对象。详细介绍了我这个要素在哪、渲染的样式(包含外部资源)、以及动画帧
 ```ts
@@ -88,6 +86,92 @@ type Asset = {
     
 }
 
+```
+
+
+
+
+## 重新设计一下基本使用方式
+```js
+import { PointEntity, LineEntity, PolygonEntity, AnimationController, AnimationTrack, PointHaloAnimationTarget, PathAnimationTarget } from '@hztx/animations'
+import { cameraFlyInterpolate } from '@hztx/animations/interpolations'
+
+const aniCtr = new AnimationController(); // 动画管理器
+let pointTrack = new AnimationTrack(); // 创建动画图层、负责保存动画对象、并且对动画对象做一些简单的统一管理。
+let pointEntity = new PointEntity([104.16, 30.75, 0], 'p1', 0, 3000); // 基础的点对象接收：坐标、id、以及要素存在的开始和结束时间
+let haloAnimationTarget = new PointHaloAnimationTarget( // 对点对象进行包装、创建一个带光晕效果的点动画对象，接收一个点实体、和一个动画配置对象
+    pointEntity,
+    {
+        // 差异化的内容在 config 里面
+        config: {
+            // 动画的样式
+            style: {
+                power: 1, // 光晕强度
+                radius: 0.0, // 初始圆半径
+                maxRadius: 20, // px
+            },
+            duration: 1000, // 动画重复周期，控制动画快慢，部分循环动画才用该配置，例如光晕
+        },
+        onBefore: () => {}, // 动画开始前回调
+        onAfter: () => {}, // 动画完成后回调
+        startDelay: 0, // 等待多久后开始执行动画
+        endDelay: 0, // 结束动画后、还需要保持多久
+        start: 0, // 动画开始时间，真正动起来的时间、比如轨迹动画、可能 总共 10 秒、前2秒都在原地、两秒后再开始动。动到第八秒停了、保持最终状态、直到动画的end时间
+        end: 2000, // 动画结束时间、动画要素直接消失
+    }
+);
+// 动画真正执行的时间线： startDelay [start + startDelay,  end - endDelay] endDelay
+//        onBefore     开始前等待  [                动画时长             ] 动画完毕   onAfter
+
+pointTrack.add(haloAnimationTarget);
+aniCtr.add(pointTrack);
+
+const lineTrack = new AnimationTrack();
+const lineEntity = new LineEntity([
+    [104.16, 30.75, 0],
+    [104.17, 30.75, 0],
+    [104.18, 30.7, 0],
+    [104.19, 30.75, 0],
+], 'l1');
+
+const pathAnimationConfig = {
+    config: {
+        tracked: true; // 是否配置相机视角跟随，默认为true
+        mark: {// 模型或图片
+            uri: 'http://xxxx.xxx.glb',
+            width: 100,
+            height: 100,
+        },
+        initRotate: 20, // 图标初始朝向，正北方向夹角
+        // 相机的位置配置
+        camera: {
+            distance: 100; // 视点距离（米）
+            head: 0,  // 左右方位
+            pitch: 0, // 上下倾斜
+            roll: 0 // 滚动角
+        },
+        // 样式配置，默认继承装饰的线要素的样式
+        style: {
+            width: 3,
+            color: '#00ff00',
+            outlineWidth: 1,
+            outlineColor: '#ffff00,
+            glowPower: 0.3, // 发光强度，0-1之前的值、为1代表没有任何发光效果、为0则是整个线条都看不到了、中间值则随着0.1->0.9逐渐增强发光效果
+        },
+    },
+    interpolate: cameraFlyInterpolate,
+    onBefore: () => {}, // 动画开始前回调
+    onAfter: () => {}, // 动画完成后回调
+    startDelay: 2000, // 等待多久后开始执行动画
+    endDelay: 2000, // 结束动画后、还需要保持多久
+    start: 0, // 动画开始时间、渲染出来了
+    end: 7000, // 动画结束时间、动画要素直接消失
+}
+const pathAnimationTarget = new PathAnimationTarget(lineEntity, pathAnimationConfig);
+lineTrack.add(pathAnimationTarget);
+aniCtr.add(lineTrack);
+
+aniCtr.play(); // 开始播放动画
 ```
 
 

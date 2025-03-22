@@ -380,6 +380,7 @@ function Trace() {
     const target = new PointRoamingAnimationTarget(modelEntity, lineEntity, {
       heading: -Math.PI / 2,
       onBefore: () => {
+
         modelEntity.show = true;
         if (!context.current.viewer?.trackedEntity) {
           context.current.viewer.trackedEntity = modelEntity;

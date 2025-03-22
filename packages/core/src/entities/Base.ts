@@ -1,10 +1,11 @@
-import { Entity } from 'cesium';
+import { Entity, Property } from 'cesium';
 import {
   BillboardGraphics,
   IEntity,
   ModelGraphics,
   PolylineGraphics,
   Style,
+  Quaternion
 } from '../types';
 
 export abstract class BaseEntity {
@@ -30,6 +31,26 @@ export abstract class BaseEntity {
 
   set model(model: ModelGraphics) {
     this._entity.model = model;
+  }
+
+  get orientation(): Property | Quaternion | undefined {
+    return this._entity.orientation
+  }
+
+  set orientation(orientation: Property | undefined) {
+    this._entity.orientation = orientation;
+  }
+
+  set viewFrom(viewFrom: Property | undefined) {
+    this._entity.viewFrom = viewFrom;
+  }
+
+  get viewFrom(): Property | undefined {
+    return this._entity.viewFrom;
+  }
+
+  get entity(): Entity {
+    return this._entity;
   }
 
   get show(): boolean {

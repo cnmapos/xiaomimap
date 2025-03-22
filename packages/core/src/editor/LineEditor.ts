@@ -1,12 +1,26 @@
 import {
   CallbackProperty,
-  Cartesian3,
   Color,
   Entity,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
 } from 'cesium';
 import { EditorBase } from './EditorBase';
+import { Cartesian3, Cartographic, HzEditor } from '../types';
+import { HzMath, smoothLine } from '../utils';
+
+function generateLine(positions: Cartesian3[], smooth?: boolean) {
+  if (positions.length < 2 || !smooth) {
+    return positions.map((p) => {
+      // 将Cartesian3对象转换为Degree经纬度
+      const cartographic = Cartographic.fromCartesian(p);
+      const longitude = HzMath.toDegrees(cartographic.longitude);
+      const latitude = HzMath.toDegrees(cartographic.latitude);
+      return [longitude, latitude, cartographic.height];
+    });
+  }
+  return smoothLine(positions);
+}
 
 export class LineEditor extends EditorBase {
   private positions: Cartesian3[] = [];
@@ -18,11 +32,12 @@ export class LineEditor extends EditorBase {
     this.handler?.destroy();
   }
 
-  startCreate(customStyle?: any): void {
+  startCreate(options: HzEditor.CreateOption['line']): void {
+    const { smooth } = options;
     this.handler = new ScreenSpaceEventHandler(
       this.viewer._viewer.scene.canvas
     );
-    const style = this.mergeStyles(this.defaultStyle, customStyle);
+    const style = this.mergeStyles(this.defaultStyle, options.style);
     const pointStyle = {
       point: {
         pixelSize: 8,
@@ -47,7 +62,13 @@ export class LineEditor extends EditorBase {
         if (!this.tempEntity) {
           this.tempEntity = this.viewer._viewer.entities.add({
             polyline: {
-              positions: new CallbackProperty(() => this.positions, false),
+              positions: new CallbackProperty(
+                () =>
+                  generateLine(this.positions, smooth).map((p) =>
+                    Cartesian3.fromDegrees(...p)
+                  ),
+                false
+              ),
               ...style,
             },
           });
@@ -57,9 +78,7 @@ export class LineEditor extends EditorBase {
 
     this.handler.setInputAction(() => {
       if (this.tempEntity) {
-        const coordinates = this.positions.map((pos) =>
-          this.cartesianToDegrees(pos)
-        );
+        let coordinates = generateLine(this.positions, smooth);
         this.onEndCreate(coordinates);
         this.viewer._viewer.entities.remove(this.tempEntity);
         this.pointEntities.forEach((entity) =>

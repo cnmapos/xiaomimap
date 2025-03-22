@@ -33,13 +33,13 @@ const Search: React.FC<{
       //     }
       //   });
       // });
-      window.AMap.plugin(["AMap.PlaceSearch"], function() {
+      window.AMap.plugin(["AMap.PlaceSearch"], function () {
         //构造地点查询类
         const placeSearch = new window.AMap.PlaceSearch({
-          pageSize:15,
+          pageSize: 15,
         });
         //关键字查询
-        placeSearch.search(value.trim(), function(status, result) {
+        placeSearch.search(value.trim(), function (status, result) {
           if (status === "complete" && result.info === "OK") {
             const options = (result.poiList.pois || []).map((item: any) => ({
               value: `${item.name}`,
@@ -49,14 +49,14 @@ const Search: React.FC<{
             setOptions(options);
           }
         });
-       
-    });
+      });
     }, 500),
     []
   );
   const onSelect = (value, options) => {
+    console.log("poi select", options);
     props.onSelect(options);
-  }
+  };
   return (
     <div className="absolute map-search top-4 right-4 z-10">
       <AutoComplete

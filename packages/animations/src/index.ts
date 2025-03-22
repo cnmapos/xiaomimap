@@ -12,3 +12,7 @@ export {
   createPointRoamingSlerp,
   parabolaInterpolate,
 } from './interpolations';
+
+export { AnimationController2 } from './AnimationController2';
+export { AnimationTrack2 } from './new_tracks/AnimationTrack';
+export { PathAnimationTarget } from './new_targets/PathAnimationTarget';

@@ -9,6 +9,10 @@ import {
   Cartographic as CesiumCartographic,
   Color as CesiumColor,
   Transforms as CesiumCTransforms,
+  CallbackProperty as CesiumCallbackProperty,
+  Math as CesiumMath,
+  HeadingPitchRoll as CesiumHeadingPitchRoll,
+  Quaternion as CesiumQuaternion,
   ScreenSpaceEventType,
 } from 'cesium';
 import { EntityCollection } from '../entities';
@@ -26,10 +30,18 @@ export type BillboardGraphics = CesiumBillboardGraphics;
 export type ModelGraphics = CesiumModelGraphics;
 
 export const Transforms = CesiumCTransforms;
+export const Cartesian3 = CesiumCartesian3;
+export const CallbackProperty = CesiumCallbackProperty;
+export const Cartographic = CesiumCartographic;
+export const Math = CesiumMath;
+export const HeadingPitchRoll = CesiumHeadingPitchRoll;
+export const Quaternion = CesiumQuaternion;
+
 export type Cartesian3 = CesiumCartesian3;
-export type Cartographic = CesiumCartographic;
 
 export type Color = CesiumColor;
+
+export type Quaternion = CesiumQuaternion;
 
 export type HeadingPitchRoll = {
   heading: number;
@@ -135,4 +147,14 @@ export interface IViewer {
 
   zoomIn: (amount?: number) => void;
   zoomOut: (amount?: number) => void;
+}
+
+export namespace HzEditor {
+  export type Types = 'point' | 'line' | 'polygon';
+
+  export type CreateOption = {
+    point: { style?: any };
+    line: { style?: any; smooth?: boolean };
+    polygon: { style?: any };
+  };
 }

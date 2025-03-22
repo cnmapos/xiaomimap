@@ -1,5 +1,5 @@
 import { Cartesian3, Cartographic, Math } from 'cesium';
-import { IViewer } from '../types';
+import { HzEditor, IViewer } from '../types';
 
 export abstract class EditorBase {
   protected viewer: IViewer & { _viewer?: any };
@@ -12,7 +12,7 @@ export abstract class EditorBase {
   }
 
   // 开始创建
-  abstract startCreate(customStyle?: any): void;
+  abstract startCreate(options: HzEditor.CreateOption[HzEditor.Types]): void;
   abstract cancel(): void;
 
   // 合并样式

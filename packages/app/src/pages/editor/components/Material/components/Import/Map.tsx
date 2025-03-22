@@ -10,6 +10,7 @@ import {
   Coordinate,
   IEntity,
   Style,
+  BillboardEntity,
 } from "@hztx/core";
 // import * as WKT from "wellknown";
 import React, { useEffect, useRef, useMemo, useCallback } from "react";
@@ -38,7 +39,7 @@ import * as WKT from "@/utils/parseWkt";
 import GeometryStylePanel from "./GeometryStylePanel";
 import Context from "./context";
 import { useSearchParams } from "react-router-dom";
-const noop = () => { };
+const noop = () => {};
 
 export const GeometryCname = {
   [GeometryType.Point]: "点",
@@ -61,7 +62,6 @@ export interface PreviewListType extends IGeometryAssetType {
   // entityRawStyle: Style;
   removeEntity?: () => void;
   flyToEntity?: () => void;
-
 }
 
 const Map: React.FC<{
@@ -73,21 +73,27 @@ const Map: React.FC<{
   const [fullscreen, setFullscreen] = useState(true);
   const editorManager = useRef<EditorManager | null>(null);
   const container = useRef<HTMLDivElement | null>(null);
-  const context = useRef<{ viewer: IViewer, entities: IEntity[] }>({ viewer: null, entities: [] });
+  const context = useRef<{ viewer: IViewer; entities: IEntity[] }>({
+    viewer: null,
+    entities: [],
+  });
   const [list, setList] = useState<PreviewListType[]>([]);
   const [loading, setLoading] = useState(false);
   // 当前样式面板类型
-  const [stylePanelType, setStylePanelType] = useState<GeometryType | null>(null);
+  const [stylePanelType, setStylePanelType] = useState<GeometryType | null>(
+    null
+  );
 
   // 当前选中的要素
   const [selectedEntity, setSelectedEntity] = useState<IEntity | null>(null);
   const [selectedEntityStyle, setSelectedEntityStyle] = useState<Style>({});
-  const [selectedSelectedGeometry, setSelectedSelectedGeometry] = useState<PreviewListType>();
+  const [selectedSelectedGeometry, setSelectedSelectedGeometry] =
+    useState<PreviewListType>();
   // 当前选中的要素样式
   // const selectedEntityStyle = useRef<Style | null>(null);
   // const [, setSelectedEntity] = useState<IEntity | null>(null);
 
-
+  const poiEntity = useRef<PointEntity>();
 
   const menuBarRef = useRef<MapMenuBarRef>(null);
   useEffect(() => {
@@ -106,43 +112,47 @@ const Map: React.FC<{
       viewer?.destroy();
     };
   }, []);
-  const handleLeftClick = useCallback((e) => {
-    const entity = e.entities?.[0] as IEntity;
-    const geometryType = getGeometryType(entity);
-    // 重制上一次的要素样式
-    const prevGeometry = list.find((item) => item.entityId === selectedEntity?.id)
-    const prevEntityStyle  = prevGeometry?.entity?.getStyle();
-    if (selectedEntity && prevEntityStyle) {
-      setGeometryStyle(selectedEntity, prevEntityStyle);
-    }
-    // 选中要素的id
+  const handleLeftClick = useCallback(
+    (e) => {
+      const entity = e.entities?.[0] as IEntity;
+      const geometryType = getGeometryType(entity);
+      // 重制上一次的要素样式
+      const prevGeometry = list.find(
+        (item) => item.entityId === selectedEntity?.id
+      );
+      const prevEntityStyle = prevGeometry?.entity?.getStyle();
+      if (selectedEntity && prevEntityStyle) {
+        setGeometryStyle(selectedEntity, prevEntityStyle);
+      }
+      // 选中要素的id
 
-    if (!geometryType) {
-      setStylePanelType(null);
-      setSelectedEntity(null);
-      return;
-    };
-    const geometry = list?.find((item) => item.entityId === entity.id);
-    setSelectedSelectedGeometry(geometry);
-    // 获取当前要素的样式在面板使用
-    const entityStyle = entity?.getStyle();
-    setSelectedEntityStyle(entityStyle);
+      if (!geometryType) {
+        setStylePanelType(null);
+        setSelectedEntity(null);
+        return;
+      }
+      const geometry = list?.find((item) => item.entityId === entity.id);
+      setSelectedSelectedGeometry(geometry);
+      // 获取当前要素的样式在面板使用
+      const entityStyle = entity?.getStyle();
+      setSelectedEntityStyle(entityStyle);
 
-    // 如果当前选中和上一次的一样，则取消选中
-    if (selectedEntity && selectedEntity.id === entity.id) {
-      setStylePanelType(null);
-      setSelectedEntity(null);
-      return;
-    }
+      // 如果当前选中和上一次的一样，则取消选中
+      if (selectedEntity && selectedEntity.id === entity.id) {
+        setStylePanelType(null);
+        setSelectedEntity(null);
+        return;
+      }
 
-    setStylePanelType(geometryType);
-    // 选中要素
-    setSelectedEntity(entity);
+      setStylePanelType(geometryType);
+      // 选中要素
+      setSelectedEntity(entity);
 
-    // 高亮
-    setGeometryStyle(entity, entityHighlightStyle[geometryType]);
-
-  }, [list, selectedEntity]);
+      // 高亮
+      setGeometryStyle(entity, entityHighlightStyle[geometryType]);
+    },
+    [list, selectedEntity]
+  );
 
   useEffect(() => {
     if (!context.current.viewer) return;
@@ -150,7 +160,7 @@ const Map: React.FC<{
     context.current.viewer?.on(EventTypes.LEFT_CLICK, handleLeftClick);
     return () => {
       context.current.viewer?.off(EventTypes.LEFT_CLICK, handleLeftClick);
-    }
+    };
   }, [context.current.viewer, handleLeftClick, list]);
 
   useEffect(() => {
@@ -158,8 +168,6 @@ const Map: React.FC<{
       setStylePanelType(getGeometryType(selectedEntity));
     }
   }, [selectedEntity]);
-
-
 
   // 根据entity 实例 类型获取几何类型
   const getGeometryType = (entity: IEntity) => {
@@ -218,7 +226,7 @@ const Map: React.FC<{
           ApiResGeometryType[item.geometryType] as CreateGeometryType,
           coordinates,
           false,
-          style,
+          style
         );
         entityId = raw?.entityId || "";
         removeEntity = raw?.removeEntity;
@@ -261,8 +269,20 @@ const Map: React.FC<{
     });
   };
 
-  const handleSelect = ({ location }: any) => {
+  const handleSelect = ({ location, name, type }: any) => {
     setViewWithZoom(location);
+    if (poiEntity.current) {
+      context.current.viewer.removeEntity(poiEntity.current);
+    }
+    poiEntity.current = new BillboardEntity({
+      positions: [location.lng, location.lat],
+      width: 48,
+      height: 48,
+      image: "assets/geos/locate.png",
+    });
+    context.current.viewer.addEntity(poiEntity.current);
+
+    // TODO: 显示POI信息面板
   };
   const getNameIndex = (type: CreateGeometryType) => {
     const i = list.filter((t) => t.type === type)?.length + 1;
@@ -307,16 +327,16 @@ const Map: React.FC<{
     // 创建时geometry
     const geometry = isCreate
       ? {
-        projectId,
-        geometryType: type.toLocaleLowerCase(),
-        geoData: WKT.stringify({
-          type: GeometryType[type],
-          coordinates: (type === GeometryType.Polygon
-            ? [[...coordinates, coordinates[0]]]
-            : coordinates) as GeoCoordinate,
-        }),
-        category: 1,
-      }
+          projectId,
+          geometryType: type.toLocaleLowerCase(),
+          geoData: WKT.stringify({
+            type: GeometryType[type],
+            coordinates: (type === GeometryType.Polygon
+              ? [[...coordinates, coordinates[0]]]
+              : coordinates) as GeoCoordinate,
+          }),
+          category: 1,
+        }
       : null;
     if (style) {
       entity.setStyle(style);
@@ -367,7 +387,7 @@ const Map: React.FC<{
         GeometryType.Point,
         coordinates,
         false,
-        { }
+        {}
       );
       if (item?.geometry) {
         await saveAsset({
@@ -381,14 +401,14 @@ const Map: React.FC<{
   const addLine = () => {
     const manager = genEditorManager();
     if (!manager) return;
-    manager.startCreate("line", {}, async (coordinates) => {
+    manager.startCreate("line", { smooth: true }, async (coordinates) => {
       console.log("draw line", coordinates);
       const item = addEntity(
         context.current.viewer,
         GeometryType.LineString,
         coordinates,
         false,
-        { }
+        {}
       );
       if (item?.geometry) {
         await saveAsset({
@@ -408,7 +428,7 @@ const Map: React.FC<{
         GeometryType.Polygon,
         coordinates as Coordinate[],
         false,
-        { }
+        {}
       );
       if (item?.geometry) {
         await saveAsset({
@@ -460,15 +480,14 @@ const Map: React.FC<{
 
         <Search onSelect={handleSelect}></Search>
         <div className="absolute z-10 right-4 top-30">
-          {
-            stylePanelType &&
+          {stylePanelType && (
             <GeometryStylePanel
               updateEntityStyle={updateSelectedEntityStyle}
               geometry={selectedSelectedGeometry}
               entityStyle={selectedEntityStyle}
               type={stylePanelType}
             />
-          }
+          )}
         </div>
         <MapControlBar
           fullscreen={fullscreen}
