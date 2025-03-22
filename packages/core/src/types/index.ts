@@ -136,6 +136,10 @@ export interface IViewer {
     complete?: () => void;
     cancel?: () => void;
   }): void;
+  flyToEntities(options: {
+    entities: IEntity[];
+    headingPitchRange?: HeadingPitchRange;
+  }): void;
   setView(position: Coordinate, orientation: HeadingPitchRoll): void;
 
   setTrackEntity(entity: IEntity): void;

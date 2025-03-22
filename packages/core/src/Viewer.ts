@@ -137,7 +137,7 @@ export class HZViewer implements IViewer {
       : undefined;
 
     // 调整相机视角，使包围球位于视图中心
-    this._viewer.camera.viewBoundingSphere(boundingSphere, hpr);
+    this._viewer.camera.flyToBoundingSphere(boundingSphere, hpr);
   }
 
   addRasterLayer(provider: RasterProvider): void {
@@ -244,7 +244,6 @@ export class HZViewer implements IViewer {
         movement.endPosition.y
       );
 
-      
       const entities = pickedObjects
         .map((obj) => obj.id)
         .filter((id) => id instanceof Entity)

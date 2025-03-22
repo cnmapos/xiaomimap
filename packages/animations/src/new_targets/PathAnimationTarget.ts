@@ -218,6 +218,10 @@ export class PathAnimationTarget
     const lastPosition = this.positions[this.positions.length - 1];
     if (!lastPosition || !Cartesian3.equals(position, lastPosition)) {
       this.positions.push(position);
+      if (this.billboardEntity) {
+        // @ts-ignore
+        this.billboardEntity.entity.position = position;
+      }
       if (this.modelEntity?.entity) {
         // @ts-ignore
         this.modelEntity.entity.position = position;
@@ -311,9 +315,7 @@ export class PathAnimationTarget
       }
     }
     // 这里需要根据是否配置了展示旧要素、去控制旧要素是否要隐藏
-    if (this.isShowBaseEntity && !this.baseEntity.show) {
-      this.baseEntity.show = true;
-    }
+    this.baseEntity.show = this.isShowBaseEntity;
     this.customOnBefore();
   }
 

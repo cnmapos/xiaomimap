@@ -79,6 +79,7 @@ export class LineEditor extends EditorBase {
     this.handler.setInputAction(() => {
       if (this.tempEntity) {
         let coordinates = generateLine(this.positions, smooth);
+        console.log('draw line', coordinates);
         this.onEndCreate(coordinates);
         this.viewer._viewer.entities.remove(this.tempEntity);
         this.pointEntities.forEach((entity) =>
