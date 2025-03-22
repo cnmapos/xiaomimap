@@ -54,7 +54,7 @@ const Search: React.FC<{
     []
   );
   const onSelect = (value, options) => {
-    console.log("poi select", options);
+    console.log("poi select",value, options);
     props.onSelect(options);
   };
   return (
@@ -64,7 +64,7 @@ const Search: React.FC<{
         className="!w-60"
         onSelect={onSelect}
         onSearch={(text) => handleInputChange(text)}
-        popupClassName="!bg-neutral-800 !text-white map-search-popup"
+        popupClassName="!bg-neutral-800/80 !text-white map-search-popup"
       >
         <Input
           placeholder="请输入你要搜索的内容"
