@@ -168,11 +168,13 @@ const Panel: React.FC<StylePanel> = (props) => {
             </Form.Item>
           )
         }
-        <Form.Item className="flex justify-end !-mt-4 !mb-0">
+        <Form.Item className="!-mt-4 !mb-0">
           <Button
             size="small"
             htmlType="submit"
             type="primary"
+            loading={loading}
+            block
             className="mt-4"
           >
             保存

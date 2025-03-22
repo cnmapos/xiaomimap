@@ -46,13 +46,13 @@ const Player: React.FC = () => {
         className={classNames(
           "w-full flex-1 flex justify-center overflow-hidden",
           {
-            "fixed left-0 top-0 w-full h-full z-10 right-0 bottom-0":
+            "fixed left-0 top-0 w-full h-full z-10 right-0 bottom-0 bg-neutral-900":
               isFullscreen,
           }
         )}
       >
         <div
-          className="h-full w-full"
+          className="h-full"
           style={{ aspectRatio: "9/16" }}
           ref={mapEle}
         ></div>
@@ -61,7 +61,7 @@ const Player: React.FC = () => {
           <div className="absolute bottom-10  z-50 w-full">
             <div
               style={{ minWidth: 600 }}
-              className="h-10 bg-neutral-900/80 w-1/3 mx-auto rounded-sm flex px-3 text-white justify-between items-center"
+              className="h-10 bg-black/80 w-1/3 mx-auto rounded-sm flex px-3 text-white justify-between items-center"
             >
               <div className="flex items-center pr-2">
                 <span

@@ -39,6 +39,7 @@ import * as WKT from "@/utils/parseWkt";
 import GeometryStylePanel from "./GeometryStylePanel";
 import Context from "./context";
 import { useSearchParams } from "react-router-dom";
+import { PlaceType } from "./MapSearch";
 const noop = () => {};
 
 export const GeometryCname = {
@@ -70,7 +71,7 @@ const Map: React.FC<{
   const [searchParams] = useSearchParams();
   const projectId = Number(searchParams.get("projectId"));
   const { onSelectMode } = props;
-  const [fullscreen, setFullscreen] = useState(true);
+  const [fullscreen, setFullscreen] = useState(false);
   const editorManager = useRef<EditorManager | null>(null);
   const container = useRef<HTMLDivElement | null>(null);
   const context = useRef<{ viewer: IViewer; entities: IEntity[] }>({
@@ -112,23 +113,38 @@ const Map: React.FC<{
       viewer?.destroy();
     };
   }, []);
+  // 关闭样式面板
+  const closeStylePanel = () => {
+    setStylePanelType(null);
+    setSelectedEntity(null);
+  };
+  // 重制上一次的要素样式
+  const resetEntityStyle = () => {
+    // 重制上一次的要素样式
+    const prevGeometry = list.find(
+      (item) => item.entityId === selectedEntity?.id
+    );
+    const prevEntityStyle = prevGeometry?.entityRawStyle;
+    if (selectedEntity && prevEntityStyle) {
+      setGeometryStyle(selectedEntity, prevEntityStyle);
+    }
+  };
   const handleLeftClick = useCallback(
     (e) => {
       const entity = e.entities?.[0] as IEntity;
       const geometryType = getGeometryType(entity);
-      // 重制上一次的要素样式
-      const prevGeometry = list.find(
-        (item) => item.entityId === selectedEntity?.id
-      );
-      const prevEntityStyle = prevGeometry?.entityRawStyle;
-      if (selectedEntity && prevEntityStyle) {
-        setGeometryStyle(selectedEntity, prevEntityStyle);
-      }
+      resetEntityStyle();
+      // // 重制上一次的要素样式
+      // const prevGeometry = list.find(
+      //   (item) => item.entityId === selectedEntity?.id
+      // );
+      // const prevEntityStyle = prevGeometry?.entityRawStyle;
+      // if (selectedEntity && prevEntityStyle) {
+      //   setGeometryStyle(selectedEntity, prevEntityStyle);
+      // }
       // 选中要素的id
-
       if (!geometryType) {
-        setStylePanelType(null);
-        setSelectedEntity(null);
+        closeStylePanel();
         return;
       }
       const geometry = list?.find((item) => item.entityId === entity.id);
@@ -139,8 +155,7 @@ const Map: React.FC<{
 
       // 如果当前选中和上一次的一样，则取消选中
       if (selectedEntity && selectedEntity.id === entity.id) {
-        setStylePanelType(null);
-        setSelectedEntity(null);
+        closeStylePanel();
         return;
       }
 
@@ -193,13 +208,14 @@ const Map: React.FC<{
     selectedEntity?.setStyle(style);
 
     // 更新列表中的样式，为取消高亮样式重制
-    const index = list.findIndex((item) => item.entityId === selectedEntity?.id);
+    const index = list.findIndex(
+      (item) => item.entityId === selectedEntity?.id
+    );
     if (index !== -1) {
       list[index].entityRawStyle = style;
     }
     setList([...list]);
-    setStylePanelType(null);
-    setSelectedEntity(null);
+    closeStylePanel();
   };
   function genEditorManager() {
     if (!context.current.viewer) return null;
@@ -259,7 +275,6 @@ const Map: React.FC<{
     }
     setList(_data);
   };
-  
 
   const flyToEntities = (entities: IEntity[]) => {
     context.current.viewer?.flyToEntities({
@@ -379,13 +394,14 @@ const Map: React.FC<{
     } else {
       message.error(res.msg || "保存失败");
     }
-    return res?.data;
+    return res;
   };
 
   const addPoint = () => {
     const manager = genEditorManager();
     if (!manager) return;
     const editor = manager.startCreate("point", {}, async (coordinates) => {
+      console.log('draw point', coordinates)
       const item = addEntity(
         context.current.viewer,
         GeometryType.Point,
@@ -400,6 +416,26 @@ const Map: React.FC<{
         });
       }
     });
+  };
+  const handleAddToAsset = async (place: PlaceType) => {
+    const { location, name } = place;
+    const coordinates = [location.lng, location.lat];
+    const item = addEntity(
+      context.current.viewer,
+      GeometryType.Point,
+      coordinates as Coordinate,
+      true,
+      {}
+    );
+    if (item?.geometry) {
+      const res =  await saveAsset({
+        ...item?.geometry,
+        geometryName: getNameIndex(GeometryType.Point),
+      });
+      if (res.code === 0 && poiEntity.current) {
+        context.current.viewer.entities.remove(poiEntity.current);
+      }
+    }
   };
 
   const addLine = () => {
@@ -482,17 +518,22 @@ const Map: React.FC<{
           ></MapMenuBar>
         </Context.Provider>
 
-        <Search onSelect={handleSelectPoi}></Search>
-        <div className="absolute z-10 right-4 top-30">
-          {stylePanelType && (
-            <GeometryStylePanel
-              updateEntityStyle={updateSelectedEntityStyle}
-              geometry={selectedSelectedGeometry}
-              entityStyle={selectedEntityStyle}
-              type={stylePanelType}
-            />
-          )}
-        </div>
+        <Search
+          onSelect={handleSelectPoi}
+          onAddToAsset={handleAddToAsset}
+          onReset={() => {
+            resetEntityStyle();
+            closeStylePanel();
+          }}
+        ></Search>
+        {stylePanelType && (
+          <GeometryStylePanel
+            updateEntityStyle={updateSelectedEntityStyle}
+            geometry={selectedSelectedGeometry}
+            entityStyle={selectedEntityStyle}
+            type={stylePanelType}
+          />
+        )}
         <MapControlBar
           fullscreen={fullscreen}
           onZoom={(type: "in" | "out", amount?: number) =>
@@ -507,6 +548,8 @@ const Map: React.FC<{
             setFullscreen(v);
             if (!v) {
               resetMenuBar();
+            } else {
+              menuBarRef.current?.updateCollapsed(true);
             }
           }}
         ></MapControlBar>
