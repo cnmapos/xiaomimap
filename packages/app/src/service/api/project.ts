@@ -178,3 +178,29 @@ export const mergeGeometry = async (params: {
   });
   return res.data;
 }
+
+// 修改项目信息
+export const updateProjectInfo = async (params: {
+  projectId: number;
+  projectName?: string;
+  comment?: string;
+  duration?: string;
+  screenRatio?: string;
+  remark?: string;
+}) => {
+  const res = await axios({
+    url: '/hz-project/update',
+    method: 'post',
+    data: params
+  });
+  return res.data;
+}
+
+// 获取项目信息
+export const getProjectInfo = async (projectId: number  ) => {
+  const res = await axios({
+    url: `/hz-project/${projectId}`,
+    method: 'get',
+  });
+  return res.data;
+}

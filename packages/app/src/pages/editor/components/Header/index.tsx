@@ -1,12 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Styles from "./styles.module.less";
 import { Button, Input, message } from "antd";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { updateProjectInfo, getProjectInfo} from "@/service/api/project";
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const projectId = Number(searchParams.get("projectId"));
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState("四川省景热门景点");
+  const [title, setTitle] = useState("项目名称");
+
+  useEffect(() => {
+    getProjectInfo(projectId).then((res) => {
+      setTitle(res.data.projectName || "-");
+    });
+  }, [projectId]);
+
+
 
   const handleBack = () => {
     navigate("/");
@@ -20,8 +30,17 @@ const Header: React.FC = () => {
     setTitle(e.target.value);
   };
 
-  const handleTitleBlur = () => {
+  const handleTitleBlur = async  () => {
     setIsEditing(false);
+   const res = await updateProjectInfo({
+      projectId,
+      projectName: title,
+    });
+    if (res.code === 0) {
+      message.success("修改成功");
+    } else {
+      message.error("修改失败");
+    }
   };
 
   const handleSaveDraft = () => {
@@ -51,8 +70,10 @@ const Header: React.FC = () => {
           {isEditing ? (
             <Input
               value={title}
+              placeholder="请输入标题"
               onChange={handleTitleChange}
               onBlur={handleTitleBlur}
+              className="!bg-neutral-900  !text-white placeholder:!text-white/40"
               autoFocus
             />
           ) : (

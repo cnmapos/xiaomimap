@@ -70,7 +70,7 @@ const Map: React.FC<{
   const [searchParams] = useSearchParams();
   const projectId = Number(searchParams.get("projectId"));
   const { onSelectMode } = props;
-  const [fullscreen, setFullscreen] = useState(true);
+  const [fullscreen, setFullscreen] = useState(false);
   const editorManager = useRef<EditorManager | null>(null);
   const container = useRef<HTMLDivElement | null>(null);
   const context = useRef<{ viewer: IViewer; entities: IEntity[] }>({
@@ -507,6 +507,8 @@ const Map: React.FC<{
             setFullscreen(v);
             if (!v) {
               resetMenuBar();
+            }else{
+              menuBarRef.current?.updateCollapsed(true);
             }
           }}
         ></MapControlBar>
