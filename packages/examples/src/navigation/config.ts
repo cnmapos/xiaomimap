@@ -31,6 +31,7 @@ import { PathAnimationPanel } from '../components/path-animation-panel';
 import Draw from '../editors/draw';
 import TestPathAnimation from '../anims/Keyframes/TestPathAnimation';
 import Event from '../starts/Events';
+import GasW2TELine1 from '../anims/Keyframes/gas-west-2-east/Line1';
 
 export default [
   {
@@ -218,8 +219,14 @@ export default [
         name: '测试新动画库',
         path: 'test-animation',
         thumbnail: 'YYYY',
-        element: TestPathAnimation
-      }
+        element: TestPathAnimation,
+      },
+      {
+        name: '西气东输-1线',
+        path: 'gaswe-line1',
+        thumbnail: 'xxxxxx',
+        element: GasW2TELine1,
+      },
     ],
   },
   {
