@@ -59,7 +59,7 @@ export interface PreviewListType extends IGeometryAssetType {
   entityId: string;
   // viewer: IViewer;
   entity?: IEntity;
-  // entityRawStyle: Style;
+  entityRawStyle: Style;
   removeEntity?: () => void;
   flyToEntity?: () => void;
 }
@@ -120,7 +120,7 @@ const Map: React.FC<{
       const prevGeometry = list.find(
         (item) => item.entityId === selectedEntity?.id
       );
-      const prevEntityStyle = prevGeometry?.entity?.getStyle();
+      const prevEntityStyle = prevGeometry?.entityRawStyle;
       if (selectedEntity && prevEntityStyle) {
         setGeometryStyle(selectedEntity, prevEntityStyle);
       }
@@ -191,10 +191,15 @@ const Map: React.FC<{
 
   const updateSelectedEntityStyle = (style: Style) => {
     selectedEntity?.setStyle(style);
-    // const entityStyle = selectedEntity?.getStyle();
-    // if(entityStyle){
-    //   setSelectedEntityStyle(entityStyle);
-    // }
+
+    // 更新列表中的样式，为取消高亮样式重制
+    const index = list.findIndex((item) => item.entityId === selectedEntity?.id);
+    if (index !== -1) {
+      list[index].entityRawStyle = style;
+    }
+    setList([...list]);
+    setStylePanelType(null);
+    setSelectedEntity(null);
   };
   function genEditorManager() {
     if (!context.current.viewer) return null;
@@ -217,7 +222,7 @@ const Map: React.FC<{
       let entityId = "";
       let removeEntity = null;
       let flyToEntity = null;
-      // let entityRawStyle = null;
+      let entityRawStyle = null;
       let entity = null;
       const style = item.geometryJson?.style || {};
       if (coordinates.length) {
@@ -231,7 +236,7 @@ const Map: React.FC<{
         entityId = raw?.entityId || "";
         removeEntity = raw?.removeEntity;
         flyToEntity = raw?.flyToEntity;
-        // entityRawStyle = raw?.entityRawStyle;
+        entityRawStyle = raw?.entityRawStyle;
         entity = raw?.entity;
       }
       return {
@@ -243,7 +248,7 @@ const Map: React.FC<{
         entityId,
         removeEntity: removeEntity || noop,
         flyToEntity: flyToEntity || noop,
-        // entityRawStyle,
+        entityRawStyle,
         entity,
       };
     });
@@ -254,6 +259,7 @@ const Map: React.FC<{
     }
     setList(_data);
   };
+  
 
   const flyToEntities = (entities: IEntity[]) => {
     context.current.viewer?.flyToEntities({
@@ -268,8 +274,8 @@ const Map: React.FC<{
       roll: 0,
     });
   };
-
-  const handleSelect = ({ location, name, type }: any) => {
+  // 选中兴趣点
+  const handleSelectPoi = ({ location, name, type }: any) => {
     setViewWithZoom(location);
     if (poiEntity.current) {
       context.current.viewer.removeEntity(poiEntity.current);
@@ -352,7 +358,7 @@ const Map: React.FC<{
       geometry,
       entityId: entity.id,
       entity,
-      // entityRawStyle: entity.getStyle(),
+      entityRawStyle: entity.getStyle(),
       flyToEntity: () => {
         flyToEntities([entity]);
       },
@@ -478,7 +484,7 @@ const Map: React.FC<{
           ></MapMenuBar>
         </Context.Provider>
 
-        <Search onSelect={handleSelect}></Search>
+        <Search onSelect={handleSelectPoi}></Search>
         <div className="absolute z-10 right-4 top-30">
           {stylePanelType && (
             <GeometryStylePanel
